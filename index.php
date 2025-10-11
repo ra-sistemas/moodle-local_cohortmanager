@@ -31,6 +31,7 @@ $PAGE->set_url($url);
 $PAGE->set_context(context_system::instance());
 
 $PAGE->set_heading($SITE->fullname);
+$PAGE->requires->css(new moodle_url('/local/cohortmanager/amd/build/app.min.css'));
 $PAGE->requires->js_call_amd('local_cohortmanager/app', 'init', ['#cohort-manager-app']);
 echo $OUTPUT->header();
 echo html_writer::div('','',['id' => 'cohort-manager-app']);
