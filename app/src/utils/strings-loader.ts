@@ -1,0 +1,171 @@
+import { useStringsStore } from '../stores/strings';
+
+// Define all string keys for the entire application
+export const allStringKeys = [
+  // App component strings
+  { key: 'cohortmanager', component: 'App' },
+  { key: 'newcohort', component: 'App' },
+  { key: 'searchcohorts', component: 'App' },
+  { key: 'loadingcohorts', component: 'App' },
+  { key: 'name', component: 'App' },
+  { key: 'idnumber', component: 'App' },
+  { key: 'description', component: 'App' },
+  { key: 'visible', component: 'App' },
+  { key: 'hidden', component: 'App' },
+  { key: 'actions', component: 'App' },
+  { key: 'edit', component: 'App' },
+  { key: 'delete', component: 'App' },
+  { key: 'page', component: 'App' },
+  { key: 'of', component: 'App' },
+  { key: 'nocoortsfound', component: 'App' },
+  { key: 'createyourfirstcohort', component: 'App' },
+  { key: 'createnewcohort', component: 'App' },
+  { key: 'cancel', component: 'App' },
+  { key: 'save', component: 'App' },
+  { key: 'nodecription', component: 'App' },
+  { key: 'failedtoloadcohorts', component: 'App' },
+  { key: 'failedtodeletecohort', component: 'App' },
+  { key: 'failedtosavecohort', component: 'App' },
+  { key: 'deleteconfirmation', component: 'App' },
+  { key: 'theme', component: 'App' },
+  { key: 'makecohortvisible', component: 'App' },
+  { key: 'themedescription', component: 'App' },
+  { key: 'basicinformation', component: 'App' },
+  { key: 'cohortnamedescription', component: 'App' },
+  { key: 'entercohortdescription', component: 'App' },
+  { key: 'cohortdescription', component: 'App' },
+  { key: 'settings', component: 'App' },
+  { key: 'boost', component: 'App' },
+  { key: 'boostclean', component: 'App' },
+  { key: 'retry', component: 'App' },
+  { key: 'editcohort', component: 'App' },
+  { key: 'saving', component: 'App' },
+  { key: 'savechanges', component: 'App' },
+  { key: 'customfields', component: 'App' },
+  { key: 'loadingcohortdetails', component: 'App' },
+  { key: 'failedtoloadcohortdetails', component: 'App' },
+  { key: 'backtolist', component: 'App' },
+  { key: 'details', component: 'App' },
+  { key: 'members', component: 'App' },
+  { key: 'memberscount', component: 'App' },
+  { key: 'visibility', component: 'App' },
+  { key: 'nodescriptionprovided', component: 'App' },
+  { key: 'cohortmembers', component: 'App' },
+  { key: 'nomembersfound', component: 'App' },
+  { key: 'backtocohortlist', component: 'App' },
+  { key: 'username', component: 'App' },
+  { key: 'email', component: 'App' },
+  { key: 'loadingcohortdata', component: 'App' },
+  { key: 'failedtoloadcohortdata', component: 'App' },
+  { key: 'failedtoupdatecohort', component: 'App' },
+
+  // CohortCreate component strings
+  { key: 'createnewcohort', component: 'CohortCreate' },
+  { key: 'basicinformation', component: 'CohortCreate' },
+  { key: 'cohortname', component: 'CohortCreate' },
+  { key: 'entercohortname', component: 'CohortCreate' },
+  { key: 'cohortnamedescription', component: 'CohortCreate' },
+  { key: 'idnumber', component: 'CohortCreate' },
+  { key: 'enteridnumber', component: 'CohortCreate' },
+  { key: 'idnumberdescription', component: 'CohortCreate' },
+  { key: 'description', component: 'CohortCreate' },
+  { key: 'entercohortdescription', component: 'CohortCreate' },
+  { key: 'cohortdescription', component: 'CohortCreate' },
+  { key: 'settings', component: 'CohortCreate' },
+  { key: 'makecohortvisible', component: 'CohortCreate' },
+  { key: 'theme', component: 'CohortCreate' },
+  { key: 'defaulttheme', component: 'CohortCreate' },
+  { key: 'boost', component: 'CohortCreate' },
+  { key: 'boostclean', component: 'CohortCreate' },
+  { key: 'themedescription', component: 'CohortCreate' },
+  { key: 'category', component: 'CohortCreate' },
+  { key: 'systemcategory', component: 'CohortCreate' },
+  { key: 'coursecategorybyidnumber', component: 'CohortCreate' },
+  { key: 'coursecategorybyid', component: 'CohortCreate' },
+  { key: 'entercoursecategoryidnumber', component: 'CohortCreate' },
+  { key: 'entercoursecategoryid', component: 'CohortCreate' },
+  { key: 'reset', component: 'CohortCreate' },
+  { key: 'creating', component: 'CohortCreate' },
+  { key: 'createcohort', component: 'CohortCreate' },
+  { key: 'failedtocreatecohort', component: 'CohortCreate' },
+  { key: 'resetform', component: 'CohortCreate' },
+  { key: 'cancel', component: 'CohortCreate' },
+
+  // CohortDetail component strings
+  { key: 'loadingcohortdetails', component: 'CohortDetail' },
+  { key: 'cohortnotfound', component: 'CohortDetail' },
+  { key: 'failedtoloadcohortdetails', component: 'CohortDetail' },
+  { key: 'backtolist', component: 'CohortDetail' },
+  { key: 'retry', component: 'CohortDetail' },
+  { key: 'details', component: 'CohortDetail' },
+  { key: 'members', component: 'CohortDetail' },
+  { key: 'memberscount', component: 'CohortDetail' },
+  { key: 'basicinformation', component: 'CohortDetail' },
+  { key: 'visibility', component: 'CohortDetail' },
+  { key: 'nodescriptionprovided', component: 'CohortDetail' },
+  { key: 'customfields', component: 'CohortDetail' },
+  { key: 'cohortmembers', component: 'CohortDetail' },
+  { key: 'nomembersfound', component: 'CohortDetail' },
+  { key: 'backtocohortlist', component: 'CohortDetail' },
+  { key: 'visible', component: 'CohortDetail' },
+  { key: 'hidden', component: 'CohortDetail' },
+  { key: 'name', component: 'CohortDetail' },
+  { key: 'idnumber', component: 'CohortDetail' },
+  { key: 'description', component: 'CohortDetail' },
+  { key: 'username', component: 'CohortDetail' },
+  { key: 'email', component: 'CohortDetail' },
+
+  // CohortEdit component strings
+  { key: 'loadingcohortdata', component: 'CohortEdit' },
+  { key: 'cohortnotfound', component: 'CohortEdit' },
+  { key: 'failedtoloadcohortdata', component: 'CohortEdit' },
+  { key: 'editcohort', component: 'CohortEdit' },
+  { key: 'failedtoupdatecohort', component: 'CohortEdit' },
+  { key: 'saving', component: 'CohortEdit' },
+  { key: 'savechanges', component: 'CohortEdit' },
+  { key: 'cancel', component: 'CohortEdit' },
+  { key: 'basicinformation', component: 'CohortEdit' },
+  { key: 'cohortname', component: 'CohortEdit' },
+  { key: 'entercohortname', component: 'CohortEdit' },
+  { key: 'idnumber', component: 'CohortEdit' },
+  { key: 'enteridnumber', component: 'CohortEdit' },
+  { key: 'description', component: 'CohortEdit' },
+  { key: 'entercohortdescription', component: 'CohortEdit' },
+  { key: 'settings', component: 'CohortEdit' },
+  { key: 'visible', component: 'CohortEdit' },
+  { key: 'theme', component: 'CohortEdit' },
+  { key: 'defaulttheme', component: 'CohortEdit' },
+  { key: 'boost', component: 'CohortEdit' },
+  { key: 'boostclean', component: 'CohortEdit' },
+  { key: 'themedescription', component: 'CohortEdit' },
+  { key: 'backtocohortlist', component: 'CohortEdit' },
+  { key: 'customfields', component: 'CohortEdit' },
+];
+
+/**
+ * Load all strings for the application at once
+ * This can be called once when the app initializes to preload all strings
+ */
+export const loadAllStrings = async () => {
+  const stringsStore = useStringsStore();
+  await stringsStore.loadAllStrings(allStringKeys);
+};
+
+/**
+ * Load strings for a specific component
+ * This is useful for lazy loading strings when a component is first accessed
+ */
+export const loadComponentStrings = async (componentName: string) => {
+  const stringsStore = useStringsStore();
+  const componentKeys = allStringKeys.filter(({ component }) => component === componentName);
+  await stringsStore.loadStringsForComponent(componentName, componentKeys);
+};
+
+/**
+ * Get a string with fallback support
+ * This is a convenience function that uses the strings store
+ */
+export const getString = (key: string, fallback?: string) => {
+  const stringsStore = useStringsStore();
+  return stringsStore.getStringSafely(key, fallback);
+};

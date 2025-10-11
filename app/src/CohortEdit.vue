@@ -2,7 +2,18 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { getCohorts, updateCohorts } from './utils/moodle';
+import { useStringsStore } from './stores/strings';
 import type { Cohort } from './types/moodle-api';
+
+// Initialize strings store
+const stringsStore = useStringsStore();
+
+// Load strings when component is mounted (using centralized system)
+onMounted(async () => {
+  await import('@/utils/strings-loader').then(({ loadComponentStrings }) => {
+    loadComponentStrings('CohortEdit');
+  });
+});
 
 // Define types
 
@@ -56,11 +67,11 @@ const loadCohort = async () => {
         }
       };
     } else {
-      error.value = 'Cohort not found';
+      error.value = stringsStore.getString('cohortnotfound', 'Cohort not found');
     }
   } catch (err) {
     console.error('Error loading cohort:', err);
-    error.value = 'Failed to load cohort data. Please try again.';
+    error.value = stringsStore.getString('failedtoloadcohortdata', 'Failed to load cohort data. Please try again.');
   } finally {
     loading.value = false;
   }
@@ -102,7 +113,7 @@ const submitForm = async () => {
     router.push(`/cohort/${props.id}`);
   } catch (err) {
     console.error('Error updating cohort:', err);
-    error.value = 'Failed to update cohort. Please try again.';
+    error.value = stringsStore.getString('failedtoupdatecohort', 'Failed to update cohort. Please try again.');
   } finally {
     submitting.value = false;
   }
@@ -123,14 +134,14 @@ onMounted(() => {
   <div class="cohort-edit">
     <!-- Loading State -->
     <div v-if="loading" class="loading">
-      <i class="icon fa fa-spinner fa-spin"></i> Loading cohort data...
+      <i class="icon fa fa-spinner fa-spin"></i> {{ stringsStore.getString('loadingcohortdata') }}
     </div>
 
     <!-- Error State -->
     <div v-else-if="error" class="error-message">
       {{ error }}
       <button @click="loadCohort" class="btn btn-refresh">
-        <i class="icon fa fa-refresh"></i> Retry
+        <i class="icon fa fa-refresh"></i> {{ stringsStore.getString('retry') }}
       </button>
     </div>
 
@@ -138,10 +149,10 @@ onMounted(() => {
     <div v-else-if="cohort" class="edit-form">
       <!-- Header -->
       <div class="form-header">
-        <h1>Edit Cohort</h1>
+        <h1>{{ stringsStore.getString('editcohort') }}</h1>
         <div class="header-actions">
           <button @click="goBack" class="btn btn-secondary">
-            <i class="icon fa fa-times"></i> Cancel
+            <i class="icon fa fa-times"></i> {{ stringsStore.getString('cancel') }}
           </button>
         </div>
       </div>
@@ -149,49 +160,49 @@ onMounted(() => {
       <!-- Form Content -->
       <form @submit.prevent="submitForm" class="cohort-form">
         <div class="form-section">
-          <h2>Basic Information</h2>
+          <h2>{{ stringsStore.getString('basicinformation') }}</h2>
           
           <div class="form-group">
-            <label for="name">Cohort Name *</label>
+            <label for="name">{{ stringsStore.getString('cohortname') }} *</label>
             <input
               id="name"
               v-model="formData.name"
               type="text"
               class="form-control"
-              placeholder="Enter cohort name"
+              :placeholder="stringsStore.getString('entercohortname')"
               required
             />
-            <div class="form-help">The display name of the cohort</div>
+            <div class="form-help">{{ stringsStore.getString('cohortnamedescription') }}</div>
           </div>
           
           <div class="form-group">
-            <label for="idnumber">ID Number *</label>
+            <label for="idnumber">{{ stringsStore.getString('idnumber') }} *</label>
             <input
               id="idnumber"
               v-model="formData.idnumber"
               type="text"
               class="form-control"
-              placeholder="Enter ID number"
+              :placeholder="stringsStore.getString('enteridnumber')"
               required
             />
-            <div class="form-help">A unique identifier for the cohort</div>
+            <div class="form-help">{{ stringsStore.getString('idnumberdescription') }}</div>
           </div>
           
           <div class="form-group">
-            <label for="description">Description</label>
+            <label for="description">{{ stringsStore.getString('description') }}</label>
             <textarea
               id="description"
               v-model="formData.description"
               class="form-control"
               rows="4"
-              placeholder="Enter cohort description"
+              :placeholder="stringsStore.getString('entercohortdescription')"
             ></textarea>
-            <div class="form-help">A detailed description of the cohort</div>
+            <div class="form-help">{{ stringsStore.getString('cohortdescription') }}</div>
           </div>
         </div>
 
         <div class="form-section">
-          <h2>Settings</h2>
+          <h2>{{ stringsStore.getString('settings') }}</h2>
           
           <div class="form-group">
             <label class="checkbox-label">
@@ -200,32 +211,32 @@ onMounted(() => {
                 type="checkbox"
                 class="form-checkbox"
               />
-              Visible
+              {{ stringsStore.getString('visible') }}
             </label>
-            <div class="form-help">Make the cohort visible to users</div>
+            <div class="form-help">{{ stringsStore.getString('makecohortvisible') }}</div>
           </div>
           
           <div class="form-group">
-            <label for="theme">Theme</label>
+            <label for="theme">{{ stringsStore.getString('theme') }}</label>
             <select
               id="theme"
               v-model="formData.theme"
               class="form-control"
             >
-              <option value="">Default Theme</option>
-              <option value="boost">Boost</option>
-              <option value="boost-clean">Boost Clean</option>
+              <option value="">{{ stringsStore.getString('defaulttheme') }}</option>
+              <option value="boost">{{ stringsStore.getString('boost') }}</option>
+              <option value="boost-clean">{{ stringsStore.getString('boostclean') }}</option>
             </select>
-            <div class="form-help">Select a theme for the cohort (requires allowcohortthemes to be enabled)</div>
+            <div class="form-help">{{ stringsStore.getString('themedescription') }}</div>
           </div>
         </div>
 
         <!-- Custom Fields Section -->
         <div v-if="cohort.customfields && cohort.customfields.length > 0" class="form-section">
-          <h2>Custom Fields</h2>
+          <h2>{{ stringsStore.getString('customfields') }}</h2>
           
-          <div 
-            v-for="field in cohort.customfields" 
+          <div
+            v-for="field in cohort.customfields"
             :key="field.shortname"
             class="form-group"
           >
@@ -243,21 +254,21 @@ onMounted(() => {
 
         <!-- Form Actions -->
         <div class="form-actions">
-          <button 
-            type="button" 
-            @click="goBack" 
+          <button
+            type="button"
+            @click="goBack"
             class="btn btn-secondary"
             :disabled="submitting"
           >
-            <i class="icon fa fa-times"></i> Cancel
+            <i class="icon fa fa-times"></i> {{ stringsStore.getString('cancel') }}
           </button>
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             class="btn btn-primary"
             :disabled="submitting"
           >
             <i class="icon fa fa-save"></i>
-            {{ submitting ? 'Saving...' : 'Save Changes' }}
+            {{ submitting ? stringsStore.getString('saving') : stringsStore.getString('savechanges') }}
           </button>
         </div>
       </form>
@@ -266,10 +277,10 @@ onMounted(() => {
     <!-- Not Found State -->
     <div v-else class="not-found">
       <i class="icon fa fa-exclamation-triangle"></i>
-      <h3>Cohort Not Found</h3>
-      <p>The requested cohort could not be found.</p>
+      <h3>{{ stringsStore.getString('cohortnotfound') }}</h3>
+      <p>{{ stringsStore.getString('cohortnotfound') + ' data.' }}</p>
       <button @click="goBack" class="btn btn-primary">
-        Back to Cohort List
+        {{ stringsStore.getString('backtocohortlist') }}
       </button>
     </div>
   </div>

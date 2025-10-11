@@ -1,7 +1,18 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { createCohorts } from './utils/moodle';
+import { useStringsStore } from './stores/strings';
+
+// Initialize strings store
+const stringsStore = useStringsStore();
+
+// Load strings when component is mounted (using centralized system)
+onMounted(async () => {
+  await import('@/utils/strings-loader').then(({ loadComponentStrings }) => {
+    loadComponentStrings('CohortCreate');
+  });
+});
 
 // State management
 const router = useRouter();
@@ -57,7 +68,7 @@ const submitForm = async () => {
     }
   } catch (err) {
     console.error('Error creating cohort:', err);
-    error.value = 'Failed to create cohort. Please try again.';
+    error.value = stringsStore.getString('failedtocreatecohort', 'Failed to create cohort. Please try again.');
   } finally {
     submitting.value = false;
   }
@@ -89,10 +100,10 @@ const goBack = () => {
   <div class="cohort-create">
     <!-- Header -->
     <div class="form-header">
-      <h1>Create New Cohort</h1>
+      <h1>{{ stringsStore.getString('createnewcohort') }}</h1>
       <div class="header-actions">
         <button @click="goBack" class="btn btn-secondary">
-          <i class="icon fa fa-times"></i> Cancel
+          <i class="icon fa fa-times"></i> {{ stringsStore.getString('cancel') }}
         </button>
       </div>
     </div>
@@ -101,56 +112,56 @@ const goBack = () => {
     <div v-if="error" class="error-message">
       {{ error }}
       <button @click="resetForm" class="btn btn-refresh">
-        <i class="icon fa fa-refresh"></i> Reset Form
+        <i class="icon fa fa-refresh"></i> {{ stringsStore.getString('resetform') }}
       </button>
     </div>
 
     <!-- Form -->
     <form @submit.prevent="submitForm" class="cohort-form">
       <div class="form-section">
-        <h2>Basic Information</h2>
+        <h2>{{ stringsStore.getString('basicinformation') }}</h2>
         
         <div class="form-group">
-          <label for="name">Cohort Name *</label>
+          <label for="name">{{ stringsStore.getString('cohortname') }} *</label>
           <input
             id="name"
             v-model="formData.name"
             type="text"
             class="form-control"
-            placeholder="Enter cohort name"
+            :placeholder="stringsStore.getString('entercohortname')"
             required
           />
-          <div class="form-help">The display name of the cohort</div>
+          <div class="form-help">{{ stringsStore.getString('cohortnamedescription') }}</div>
         </div>
         
         <div class="form-group">
-          <label for="idnumber">ID Number *</label>
+          <label for="idnumber">{{ stringsStore.getString('idnumber') }} *</label>
           <input
             id="idnumber"
             v-model="formData.idnumber"
             type="text"
             class="form-control"
-            placeholder="Enter ID number"
+            :placeholder="stringsStore.getString('enteridnumber')"
             required
           />
-          <div class="form-help">A unique identifier for the cohort</div>
+          <div class="form-help">{{ stringsStore.getString('idnumberdescription') }}</div>
         </div>
         
         <div class="form-group">
-          <label for="description">Description</label>
+          <label for="description">{{ stringsStore.getString('description') }}</label>
           <textarea
             id="description"
             v-model="formData.description"
             class="form-control"
             rows="4"
-            placeholder="Enter cohort description"
+            :placeholder="stringsStore.getString('entercohortdescription')"
           ></textarea>
-          <div class="form-help">A detailed description of the cohort</div>
+          <div class="form-help">{{ stringsStore.getString('cohortdescription') }}</div>
         </div>
       </div>
 
       <div class="form-section">
-        <h2>Settings</h2>
+        <h2>{{ stringsStore.getString('settings') }}</h2>
         
         <div class="form-group">
           <label class="checkbox-label">
@@ -159,27 +170,27 @@ const goBack = () => {
               type="checkbox"
               class="form-checkbox"
             />
-            Visible
+            {{ stringsStore.getString('visible') }}
           </label>
-          <div class="form-help">Make the cohort visible to users</div>
+          <div class="form-help">{{ stringsStore.getString('makecohortvisible') }}</div>
         </div>
         
         <div class="form-group">
-          <label for="theme">Theme</label>
+          <label for="theme">{{ stringsStore.getString('theme') }}</label>
           <select
             id="theme"
             v-model="formData.theme"
             class="form-control"
           >
-            <option value="">Default Theme</option>
-            <option value="boost">Boost</option>
-            <option value="boost-clean">Boost Clean</option>
+            <option value="">{{ stringsStore.getString('defaulttheme') }}</option>
+            <option value="boost">{{ stringsStore.getString('boost') }}</option>
+            <option value="boost-clean">{{ stringsStore.getString('boostclean') }}</option>
           </select>
-          <div class="form-help">Select a theme for the cohort (requires allowcohortthemes to be enabled)</div>
+          <div class="form-help">{{ stringsStore.getString('themedescription') }}</div>
         </div>
 
         <div class="form-group">
-          <label>Category</label>
+          <label>{{ stringsStore.getString('category') }}</label>
           <div class="radio-group">
             <label class="radio-label">
               <input
@@ -188,7 +199,7 @@ const goBack = () => {
                 value="system"
                 class="form-radio"
               />
-              System Category
+              {{ stringsStore.getString('systemcategory') }}
             </label>
             <label class="radio-label">
               <input
@@ -197,7 +208,7 @@ const goBack = () => {
                 value="idnumber"
                 class="form-radio"
               />
-              Course Category by ID Number
+              {{ stringsStore.getString('coursecategorybyidnumber') }}
             </label>
             <label class="radio-label">
               <input
@@ -206,16 +217,16 @@ const goBack = () => {
                 value="id"
                 class="form-radio"
               />
-              Course Category by ID
+              {{ stringsStore.getString('coursecategorybyid') }}
             </label>
           </div>
           <div v-if="formData.categorytype.type !== 'system'" class="form-help">
-            Enter the {{ formData.categorytype.type === 'idnumber' ? 'ID number' : 'ID' }} of the course category:
+            {{ stringsStore.getString(formData.categorytype.type === 'idnumber' ? 'entercoursecategoryidnumber' : 'entercoursecategoryid') }}
             <input
               v-model="formData.categorytype.value"
               type="text"
               class="form-control"
-              :placeholder="`Enter course category ${formData.categorytype.type === 'idnumber' ? 'ID number' : 'ID'}`"
+              :placeholder="stringsStore.getString(formData.categorytype.type === 'idnumber' ? 'entercoursecategoryidnumber' : 'entercoursecategoryid')"
             />
           </div>
         </div>
@@ -223,21 +234,21 @@ const goBack = () => {
 
       <!-- Form Actions -->
       <div class="form-actions">
-        <button 
-          type="button" 
-          @click="resetForm" 
+        <button
+          type="button"
+          @click="resetForm"
           class="btn btn-secondary"
           :disabled="submitting"
         >
-          <i class="icon fa fa-undo"></i> Reset
+          <i class="icon fa fa-undo"></i> {{ stringsStore.getString('reset') }}
         </button>
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           class="btn btn-primary"
           :disabled="submitting"
         >
           <i class="icon fa fa-plus"></i>
-          {{ submitting ? 'Creating...' : 'Create Cohort' }}
+          {{ submitting ? stringsStore.getString('creating') : stringsStore.getString('createcohort') }}
         </button>
       </div>
     </form>

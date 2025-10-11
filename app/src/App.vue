@@ -1,8 +1,23 @@
 <script setup lang="ts">
-import { ref, onMounted, reactive, computed } from 'vue';
+import { ref, onMounted, reactive, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { searchCohorts as searchCohortsApi, createCohorts, updateCohorts, deleteCohorts } from './utils/moodle';
+import { useStringsStore } from './stores/strings';
 import type { Cohort } from './types/moodle-api';
+
+// Initialize strings store
+const stringsStore = useStringsStore();
+
+// Load strings when component is mounted (using centralized system)
+// Note: App strings are already loaded in main.ts during app initialization
+onMounted(async () => {
+  // Only load if not already loaded during app initialization
+  if (!stringsStore.isComponentLoaded('App')) {
+    await import('@/utils/strings-loader').then(({ loadComponentStrings }) => {
+      loadComponentStrings('App');
+    });
+  }
+});
 
 // Define types
 
@@ -55,7 +70,7 @@ const loadCohorts = async () => {
   } catch (err) {
     console.error('Error loading cohorts:', err);
     console.error('Error details:', err);
-    error.value = `Failed to load cohorts. Error: ${err instanceof Error ? err.message : 'Unknown error'}`;
+    error.value = stringsStore.getString('failedtoloadcohorts', `Failed to load cohorts. Error: ${err instanceof Error ? err.message : 'Unknown error'}`);
   } finally {
     loading.value = false;
   }
@@ -88,7 +103,8 @@ const nextPage = () => {
 
 // Delete cohort
 const deleteCohort = async (cohort: Cohort) => {
-  if (!confirm(`Are you sure you want to delete "${cohort.name}"?`)) {
+  const confirmationMessage = stringsStore.getString('deleteconfirmation', `Are you sure you want to delete "${cohort.name}"?`);
+  if (!confirm(confirmationMessage)) {
     return;
   }
 
@@ -101,7 +117,7 @@ const deleteCohort = async (cohort: Cohort) => {
     await loadCohorts();
   } catch (err) {
     console.error('Error deleting cohort:', err);
-    error.value = 'Failed to delete cohort. Please try again.';
+    error.value = stringsStore.getString('failedtodeletecohort', 'Failed to delete cohort. Please try again.');
   }
 };
 
@@ -116,7 +132,7 @@ const viewCohort = (cohort: Cohort) => {
 const showCreateForm = ref(false);
 const showEditForm = ref(false);
 const showForm = computed(() => showCreateForm.value || showEditForm.value);
-const formTitle = computed(() => showCreateForm.value ? 'Create New Cohort' : 'Edit Cohort');
+const formTitle = computed(() => showCreateForm.value ? stringsStore.getString('createnewcohort') : stringsStore.getString('editcohort'));
 const formData = reactive<Cohort>({
   id: 0,
   name: '',
@@ -159,7 +175,7 @@ const submitForm = async () => {
     await loadCohorts();
   } catch (err) {
     console.error('Error saving cohort:', err);
-    error.value = 'Failed to save cohort. Please try again.';
+    error.value = stringsStore.getString('failedtosavecohort', 'Failed to save cohort. Please try again.');
   }
 };
 
@@ -169,13 +185,13 @@ const submitForm = async () => {
   <div class="cohort-manager">
     <!-- Header -->
     <div class="header">
-      <h1>Cohort Manager</h1>
+      <h1>{{ stringsStore.getString('cohortmanager') }}</h1>
       <div class="header-actions">
         <button
           @click="showCreateForm = true"
           class="btn btn-primary"
         >
-          <i class="icon fa fa-plus"></i> New Cohort
+          <i class="icon fa fa-plus"></i> {{ stringsStore.getString('newcohort') }}
         </button>
       </div>
     </div>
@@ -186,7 +202,7 @@ const submitForm = async () => {
         <input
           v-model="searchQuery"
           type="text"
-          placeholder="Search cohorts..."
+          :placeholder="stringsStore.getString('searchcohorts')"
           class="search-input"
           @keyup.enter="searchCohorts"
         />
@@ -203,18 +219,18 @@ const submitForm = async () => {
 
     <!-- Loading State -->
     <div v-if="loading" class="loading">
-      <i class="icon fa fa-spinner fa-spin"></i> Loading cohorts...
+      <i class="icon fa fa-spinner fa-spin"></i> {{ stringsStore.getString('loadingcohorts') }}
     </div>
 
     <!-- Cohort List -->
     <div v-else-if="cohorts.length > 0" class="cohort-list">
       <div class="cohort-table">
         <div class="cohort-table-header">
-          <div class="cohort-table-cell">Name</div>
-          <div class="cohort-table-cell">ID Number</div>
-          <div class="cohort-table-cell">Description</div>
-          <div class="cohort-table-cell">Visible</div>
-          <div class="cohort-table-cell">Actions</div>
+          <div class="cohort-table-cell">{{ stringsStore.getString('name') }}</div>
+          <div class="cohort-table-cell">{{ stringsStore.getString('idnumber') }}</div>
+          <div class="cohort-table-cell">{{ stringsStore.getString('description') }}</div>
+          <div class="cohort-table-cell">{{ stringsStore.getString('visible') }}</div>
+          <div class="cohort-table-cell">{{ stringsStore.getString('actions') }}</div>
         </div>
         
         <div class="cohort-table-body">
@@ -234,25 +250,25 @@ const submitForm = async () => {
             </div>
             <div class="cohort-table-cell">{{ cohort.idnumber }}</div>
             <div class="cohort-table-cell cohort-description">
-              {{ cohort.description || 'No description' }}
+              {{ cohort.description || stringsStore.getString('nodecription') }}
             </div>
             <div class="cohort-table-cell">
               <span :class="['badge', cohort.visible ? 'badge-success' : 'badge-secondary']">
-                {{ cohort.visible ? 'Visible' : 'Hidden' }}
+                {{ cohort.visible ? stringsStore.getString('visible') : stringsStore.getString('hidden') }}
               </span>
             </div>
             <div class="cohort-table-cell cohort-actions">
-              <button 
+              <button
                 @click="showEditForm = true; formData.id = cohort.id; formData.name = cohort.name; formData.idnumber = cohort.idnumber; formData.description = cohort.description; formData.visible = cohort.visible; formData.theme = cohort.theme || ''"
                 class="btn btn-sm btn-edit"
-                title="Edit"
+                :title="stringsStore.getString('edit')"
               >
                 <i class="icon fa fa-edit"></i>
               </button>
-              <button 
-                @click="deleteCohort(cohort)" 
+              <button
+                @click="deleteCohort(cohort)"
                 class="btn btn-sm btn-delete"
-                title="Delete"
+                :title="stringsStore.getString('delete')"
               >
                 <i class="icon fa fa-trash"></i>
               </button>
@@ -272,7 +288,7 @@ const submitForm = async () => {
         </button>
         
         <div class="pagination-info">
-          Page {{ pagination.page }} of {{ Math.ceil(pagination.total / pagination.perPage) || 1 }}
+          {{ stringsStore.getString('page') }} {{ pagination.page }} {{ stringsStore.getString('of') }} {{ Math.ceil(pagination.total / pagination.perPage) || 1 }}
         </div>
         
         <button 
@@ -288,15 +304,15 @@ const submitForm = async () => {
     <!-- Empty State -->
     <div v-else class="empty-state">
       <i class="icon fa fa-users fa-3x"></i>
-      <h3>No cohorts found</h3>
+      <h3>{{ stringsStore.getString('nocoortsfound') }}</h3>
       <p v-if="!loading && !error">
-        Create your first cohort to get started.
+        {{ stringsStore.getString('createyourfirstcohort') }}
       </p>
       <button
         @click="showCreateForm = true"
         class="btn btn-primary"
       >
-        Create New Cohort
+        {{ stringsStore.getString('createnewcohort') }}
       </button>
     </div>
 
@@ -312,35 +328,35 @@ const submitForm = async () => {
         
         <div class="modal-body">
           <div class="form-group">
-            <label for="name">Cohort Name *</label>
+            <label for="name">{{ stringsStore.getString('cohortname') }} *</label>
             <input
               id="name"
               v-model="formData.name"
               type="text"
               class="form-control"
-              placeholder="Enter cohort name"
+              :placeholder="stringsStore.getString('entercohortname')"
             />
           </div>
           
           <div class="form-group">
-            <label for="idnumber">ID Number *</label>
+            <label for="idnumber">{{ stringsStore.getString('idnumber') }} *</label>
             <input
               id="idnumber"
               v-model="formData.idnumber"
               type="text"
               class="form-control"
-              placeholder="Enter ID number"
+              :placeholder="stringsStore.getString('enteridnumber')"
             />
           </div>
           
           <div class="form-group">
-            <label for="description">Description</label>
+            <label for="description">{{ stringsStore.getString('description') }}</label>
             <textarea
               id="description"
               v-model="formData.description"
               class="form-control"
               rows="3"
-              placeholder="Enter cohort description"
+              :placeholder="stringsStore.getString('entercohortdescription')"
             ></textarea>
           </div>
           
@@ -351,30 +367,30 @@ const submitForm = async () => {
                 type="checkbox"
                 class="form-checkbox"
               />
-              Visible
+              {{ stringsStore.getString('visible') }}
             </label>
           </div>
           
           <div class="form-group">
-            <label for="theme">Theme</label>
+            <label for="theme">{{ stringsStore.getString('theme') }}</label>
             <select
               id="theme"
               v-model="formData.theme"
               class="form-control"
             >
-              <option value="">Default Theme</option>
-              <option value="boost">Boost</option>
-              <option value="boost-clean">Boost Clean</option>
+              <option value="">{{ stringsStore.getString('defaulttheme') }}</option>
+              <option value="boost">{{ stringsStore.getString('boost') }}</option>
+              <option value="boost-clean">{{ stringsStore.getString('boostclean') }}</option>
             </select>
           </div>
         </div>
         
         <div class="modal-footer">
           <button @click="showForm = false" class="btn btn-secondary">
-            Cancel
+            {{ stringsStore.getString('cancel') }}
           </button>
           <button @click="submitForm" class="btn btn-primary">
-            Save
+            {{ stringsStore.getString('save') }}
           </button>
         </div>
       </div>

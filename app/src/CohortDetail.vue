@@ -2,7 +2,18 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { getCohorts, getCohortMembers, deleteCohorts } from './utils/moodle';
+import { useStringsStore } from './stores/strings';
 import type { Cohort } from './types/moodle-api';
+
+// Initialize strings store
+const stringsStore = useStringsStore();
+
+// Load strings when component is mounted (using centralized system)
+onMounted(async () => {
+  await import('@/utils/strings-loader').then(({ loadComponentStrings }) => {
+    loadComponentStrings('CohortDetail');
+  });
+});
 
 // Define types
 interface CohortMember {
@@ -40,11 +51,11 @@ const loadCohort = async () => {
       cohort.value = cohortsList[0];
       await loadMembers();
     } else {
-      error.value = 'Cohort not found';
+      error.value = stringsStore.getString('cohortnotfound', 'Cohort not found');
     }
   } catch (err) {
     console.error('Error loading cohort:', err);
-    error.value = 'Failed to load cohort details. Please try again.';
+    error.value = stringsStore.getString('failedtoloadcohortdetails', 'Failed to load cohort details. Please try again.');
   } finally {
     loading.value = false;
   }
@@ -93,7 +104,7 @@ const deleteCohort = async () => {
     router.push('/');
   } catch (err) {
     console.error('Error deleting cohort:', err);
-    error.value = 'Failed to delete cohort. Please try again.';
+    error.value = stringsStore.getString('failedtodeletecohort', 'Failed to delete cohort. Please try again.');
   }
 };
 
@@ -107,14 +118,14 @@ onMounted(() => {
   <div class="cohort-detail">
     <!-- Loading State -->
     <div v-if="loading" class="loading">
-      <i class="icon fa fa-spinner fa-spin"></i> Loading cohort details...
+      <i class="icon fa fa-spinner fa-spin"></i> {{ stringsStore.getString('loadingcohortdetails') }}
     </div>
 
     <!-- Error State -->
     <div v-else-if="error" class="error-message">
       {{ error }}
       <button @click="loadCohort" class="btn btn-refresh">
-        <i class="icon fa fa-refresh"></i> Retry
+        <i class="icon fa fa-refresh"></i> {{ stringsStore.getString('retry') }}
       </button>
     </div>
 
@@ -124,30 +135,30 @@ onMounted(() => {
       <div class="detail-header">
         <div class="header-actions">
           <button @click="goBack" class="btn btn-secondary">
-            <i class="icon fa fa-arrow-left"></i> Back to List
+            <i class="icon fa fa-arrow-left"></i> {{ stringsStore.getString('backtolist') }}
           </button>
           <button @click="editCohort" class="btn btn-edit">
-            <i class="icon fa fa-edit"></i> Edit
+            <i class="icon fa fa-edit"></i> {{ stringsStore.getString('edit') }}
           </button>
           <button @click="deleteCohort" class="btn btn-delete">
-            <i class="icon fa fa-trash"></i> Delete
+            <i class="icon fa fa-trash"></i> {{ stringsStore.getString('delete') }}
           </button>
         </div>
       </div>
 
       <!-- Tabs -->
       <div class="tabs">
-        <button 
+        <button
           :class="['tab', { active: activeTab === 'details' }]"
           @click="activeTab = 'details'"
         >
-          Details
+          {{ stringsStore.getString('details') }}
         </button>
-        <button 
+        <button
           :class="['tab', { active: activeTab === 'members' }]"
           @click="activeTab = 'members'"
         >
-          Members ({{ members.length }})
+          {{ stringsStore.getString('members') }} ({{ members.length }})
         </button>
       </div>
 
@@ -156,44 +167,44 @@ onMounted(() => {
         <!-- Details Tab -->
         <div v-if="activeTab === 'details'" class="details-tab">
           <div class="detail-section">
-            <h3>Basic Information</h3>
+            <h3>{{ stringsStore.getString('basicinformation') }}</h3>
             <div class="detail-grid">
               <div class="detail-item">
-                <label>Name:</label>
+                <label>{{ stringsStore.getString('name') }}:</label>
                 <span>{{ cohort.name }}</span>
               </div>
               <div class="detail-item">
-                <label>ID Number:</label>
+                <label>{{ stringsStore.getString('idnumber') }}:</label>
                 <span>{{ cohort.idnumber }}</span>
               </div>
               <div class="detail-item">
-                <label>Visibility:</label>
+                <label>{{ stringsStore.getString('visibility') }}:</label>
                 <span :class="['badge', cohort.visible ? 'badge-success' : 'badge-secondary']">
-                  {{ cohort.visible ? 'Visible' : 'Hidden' }}
+                  {{ cohort.visible ? stringsStore.getString('visible') : stringsStore.getString('hidden') }}
                 </span>
               </div>
               <div v-if="cohort.theme" class="detail-item">
-                <label>Theme:</label>
+                <label>{{ stringsStore.getString('theme') }}:</label>
                 <span>{{ cohort.theme }}</span>
               </div>
             </div>
           </div>
 
           <div class="detail-section">
-            <h3>Description</h3>
+            <h3>{{ stringsStore.getString('description') }}</h3>
             <div class="description-content">
               <div v-if="cohort.description" v-html="cohort.description"></div>
               <div v-else class="no-description">
-                No description provided.
+                {{ stringsStore.getString('nodescriptionprovided') }}
               </div>
             </div>
           </div>
 
           <div v-if="cohort.customfields && cohort.customfields.length > 0" class="detail-section">
-            <h3>Custom Fields</h3>
+            <h3>{{ stringsStore.getString('customfields') }}</h3>
             <div class="custom-fields">
-              <div 
-                v-for="field in cohort.customfields" 
+              <div
+                v-for="field in cohort.customfields"
                 :key="field.shortname"
                 class="custom-field"
               >
@@ -207,21 +218,21 @@ onMounted(() => {
         <!-- Members Tab -->
         <div v-if="activeTab === 'members'" class="members-tab">
           <div class="members-header">
-            <h3>Cohort Members</h3>
-            <span class="member-count">{{ members.length }} members</span>
+            <h3>{{ stringsStore.getString('cohortmembers') }}</h3>
+            <span class="member-count">{{ members.length }} {{ stringsStore.getString('memberscount') }}</span>
           </div>
 
           <div v-if="members.length > 0" class="members-list">
             <div class="member-table">
               <div class="member-table-header">
-                <div class="member-table-cell">Name</div>
-                <div class="member-table-cell">Username</div>
-                <div class="member-table-cell">Email</div>
+                <div class="member-table-cell">{{ stringsStore.getString('name') }}</div>
+                <div class="member-table-cell">{{ stringsStore.getString('username') }}</div>
+                <div class="member-table-cell">{{ stringsStore.getString('email') }}</div>
               </div>
               
               <div class="member-table-body">
-                <div 
-                  v-for="member in members" 
+                <div
+                  v-for="member in members"
                   :key="member.id"
                   class="member-row"
                 >
@@ -237,7 +248,7 @@ onMounted(() => {
 
           <div v-else class="no-members">
             <i class="icon fa fa-users"></i>
-            <p>No members found in this cohort.</p>
+            <p>{{ stringsStore.getString('nomembersfound') }}</p>
           </div>
         </div>
       </div>
@@ -246,10 +257,10 @@ onMounted(() => {
     <!-- Not Found State -->
     <div v-else class="not-found">
       <i class="icon fa fa-exclamation-triangle"></i>
-      <h3>Cohort Not Found</h3>
-      <p>The requested cohort could not be found.</p>
+      <h3>{{ stringsStore.getString('cohortnotfound') }}</h3>
+      <p>{{ stringsStore.getString('cohortnotfound') + ' details.' }}</p>
       <button @click="goBack" class="btn btn-primary">
-        Back to Cohort List
+        {{ stringsStore.getString('backtocohortlist') }}
       </button>
     </div>
   </div>
