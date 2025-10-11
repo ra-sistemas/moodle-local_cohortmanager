@@ -5,6 +5,9 @@ import path from "node:path";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [vue()],
+  define: {
+    "process.env": {},
+  },
   build: {
     emptyOutDir: false,
     outDir: path.resolve("../amd/build"),
@@ -25,8 +28,9 @@ export default defineConfig({
       output: {
         format: 'amd',
         amd: {
-          id: 'tool_cohortmanager/app'
+          id: 'local_cohortmanager/app'
         },
+        entryFileNames: 'app.min.js'
       }
     }
   }
