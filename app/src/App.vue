@@ -66,8 +66,8 @@ const loadCohorts = async () => {
       limitnum: pagination.perPage
     });
     
-    cohorts.value = response.cohorts || [];
-    pagination.total = response.cohorts?.length || 0;
+    cohorts.value = (response as any).cohorts || [];
+    pagination.total = (response as any).cohorts?.length || 0;
   } catch (err) {
     console.error('Error loading cohorts:', err);
     error.value = 'Failed to load cohorts. Please try again.';
@@ -126,15 +126,58 @@ const viewCohort = (cohort: Cohort) => {
   router.push(`/cohort/${cohort.id}`);
 };
 
-// Navigate to create form
-const createCohort = () => {
-  router.push('/cohort/create');
+
+// Form state
+const showCreateForm = ref(false);
+const showEditForm = ref(false);
+const showForm = computed(() => showCreateForm.value || showEditForm.value);
+const formTitle = computed(() => showCreateForm.value ? 'Create New Cohort' : 'Edit Cohort');
+const formData = reactive<Cohort>({
+  id: 0,
+  name: '',
+  idnumber: '',
+  description: '',
+  descriptionformat: 1,
+  visible: true,
+  theme: '',
+  customfields: []
+});
+
+const submitForm = async () => {
+  try {
+    if (showCreateForm.value) {
+      await ajax('core_cohort_create_cohorts', {
+        cohorts: [formData]
+      });
+    } else {
+      await ajax('core_cohort_update_cohorts', {
+        cohorts: [formData]
+      });
+    }
+    
+    // Reset form and close modal
+    Object.assign(formData, {
+      id: 0,
+      name: '',
+      idnumber: '',
+      description: '',
+      descriptionformat: 1,
+      visible: true,
+      theme: '',
+      customfields: []
+    });
+    
+    showCreateForm.value = false;
+    showEditForm.value = false;
+    
+    // Refresh the list
+    await loadCohorts();
+  } catch (err) {
+    console.error('Error saving cohort:', err);
+    error.value = 'Failed to save cohort. Please try again.';
+  }
 };
 
-// Navigate to edit form
-const editCohort = (cohort: Cohort) => {
-  router.push(`/cohort/${cohort.id}/edit`);
-};
 </script>
 
 <template>
@@ -143,8 +186,8 @@ const editCohort = (cohort: Cohort) => {
     <div class="header">
       <h1>Cohort Manager</h1>
       <div class="header-actions">
-        <button 
-          @click="showCreateForm" 
+        <button
+          @click="showCreateForm = true"
           class="btn btn-primary"
         >
           <i class="icon fa fa-plus"></i> New Cohort
@@ -215,7 +258,7 @@ const editCohort = (cohort: Cohort) => {
             </div>
             <div class="cohort-table-cell cohort-actions">
               <button 
-                @click="showEditForm(cohort)" 
+                @click="showEditForm = true; formData.id = cohort.id; formData.name = cohort.name; formData.idnumber = cohort.idnumber; formData.description = cohort.description; formData.visible = cohort.visible; formData.theme = cohort.theme || ''"
                 class="btn btn-sm btn-edit"
                 title="Edit"
               >
@@ -264,8 +307,8 @@ const editCohort = (cohort: Cohort) => {
       <p v-if="!loading && !error">
         Create your first cohort to get started.
       </p>
-      <button 
-        @click="showCreateForm" 
+      <button
+        @click="showCreateForm = true"
         class="btn btn-primary"
       >
         Create New Cohort

@@ -56,15 +56,15 @@ const loadCohort = async () => {
       cohortids: [props.id]
     });
     
-    if (response && response.length > 0) {
-      cohort.value = response[0];
+    if ((response as any) && (response as any).length > 0) {
+      cohort.value = (response as any)[0];
       // Populate form data
       formData.value = {
-        name: cohort.value.name,
-        idnumber: cohort.value.idnumber,
-        description: cohort.value.description,
-        visible: cohort.value.visible,
-        theme: cohort.value.theme || '',
+        name: cohort.value!.name,
+        idnumber: cohort.value!.idnumber,
+        description: cohort.value!.description,
+        visible: cohort.value!.visible,
+        theme: cohort.value!.theme || '',
         categorytype: {
           type: 'system',
           value: ''

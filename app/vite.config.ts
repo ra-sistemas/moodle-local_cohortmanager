@@ -8,6 +8,11 @@ export default defineConfig({
   define: {
     "process.env": {},
   },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
   build: {
     emptyOutDir: false,
     outDir: path.resolve("../amd/build"),
@@ -31,6 +36,13 @@ export default defineConfig({
           id: 'local_cohortmanager/app'
         },
         entryFileNames: 'app.min.js',
+        globals: {
+          'core/config': 'core/config',
+          'core/ajax': 'core/ajax',
+          'core/notification': 'core/notification',
+          'core/str': 'core/str',
+          'core/toast': 'core/toast',
+        }
       }
     }
   }

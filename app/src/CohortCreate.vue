@@ -51,8 +51,8 @@ const submitForm = async () => {
     });
 
     // Navigate to the newly created cohort details
-    if (response && response.length > 0) {
-      const newCohortId = response[0].id;
+    if ((response as any) && (response as any).length > 0) {
+      const newCohortId = (response as any)[0].id;
       router.push(`/cohort/${newCohortId}`);
     }
   } catch (err) {

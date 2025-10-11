@@ -52,8 +52,8 @@ const loadCohort = async () => {
       cohortids: [props.id]
     });
     
-    if (response && response.length > 0) {
-      cohort.value = response[0];
+    if ((response as any) && (response as any).length > 0) {
+      cohort.value = (response as any)[0];
       await loadMembers();
     } else {
       error.value = 'Cohort not found';
@@ -73,8 +73,8 @@ const loadMembers = async () => {
       cohortids: [props.id]
     });
     
-    if (response && response[props.id]) {
-      members.value = response[props.id];
+    if ((response as any) && (response as any)[props.id]) {
+      members.value = (response as any)[props.id];
     }
   } catch (err) {
     console.error('Error loading cohort members:', err);

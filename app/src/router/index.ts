@@ -1,12 +1,12 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
 
 // Import components
-const App = () => import('../App.vue');
-const CohortDetail = () => import('./CohortDetail.vue');
-const CohortEdit = () => import('./CohortEdit.vue');
-const CohortCreate = () => import('./CohortCreate.vue');
+const App = () => import('@/App.vue');
+const CohortDetail = () => import('@/CohortDetail.vue');
+const CohortEdit = () => import('@/CohortEdit.vue');
+const CohortCreate = () => import('@/CohortCreate.vue');
 
-const routes: Array<RouteRecordRaw> = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'CohortList',
@@ -49,7 +49,7 @@ const router = createRouter({
 });
 
 // Route guard for navigation
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   // Set page title
   document.title = to.meta.title ? `${to.meta.title} - Cohort Manager` : 'Cohort Manager';
   next();
