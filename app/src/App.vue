@@ -30,7 +30,7 @@ const pagination = reactive<Pagination>({
 });
 
 // Only show content on home page
-const showList = computed(() => route?.path === '/');
+const showList = computed(() => route?.path === '/local/cohortmanager/');
 
 // Initialize the component
 onMounted(async () => {
