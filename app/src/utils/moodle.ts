@@ -1,6 +1,14 @@
 import Ajax from "core/ajax";
 import * as Config from "core/config";
 import Notification from "core/notification";
+import {
+  extractSearchResponse,
+  extractCreateResponse,
+  extractUpdateResponse,
+  extractDeleteResponse,
+  extractGetCohortsResponse,
+  extractGetCohortMembersResponse
+} from './ajax-response';
 
 const isDebugEnabled = Config.developerdebug;
 
@@ -30,6 +38,56 @@ const ajax = async (method: string, args: Object): Promise<object> => {
   }
 };
 
+// Funções específicas para cada tipo de chamada AJAX com tratamento de resposta tipado
+
+/**
+ * Buscar cohorts com tratamento de resposta tipado
+ */
+const searchCohorts = async (args: Object): Promise<any[]> => {
+  const response = await ajax('core_cohort_search_cohorts', args);
+  return extractSearchResponse(response).cohorts;
+};
+
+/**
+ * Criar cohorts com tratamento de resposta tipado
+ */
+const createCohorts = async (args: Object): Promise<any[]> => {
+  const response = await ajax('core_cohort_create_cohorts', args);
+  return extractCreateResponse(response).cohorts;
+};
+
+/**
+ * Atualizar cohorts com tratamento de resposta tipado
+ */
+const updateCohorts = async (args: Object): Promise<any[]> => {
+  const response = await ajax('core_cohort_update_cohorts', args);
+  return extractUpdateResponse(response).cohorts;
+};
+
+/**
+ * Deletar cohorts com tratamento de resposta tipado
+ */
+const deleteCohorts = async (args: Object): Promise<any[]> => {
+  const response = await ajax('core_cohort_delete_cohorts', args);
+  return extractDeleteResponse(response).cohorts;
+};
+
+/**
+ * Obter detalhes de cohorts com tratamento de resposta tipado
+ */
+const getCohorts = async (args: Object): Promise<any[]> => {
+  const response = await ajax('core_cohort_get_cohorts', args);
+  return extractGetCohortsResponse(response);
+};
+
+/**
+ * Obter membros de cohorts com tratamento de resposta tipado
+ */
+const getCohortMembers = async (args: Object): Promise<Record<number, any[]>> => {
+  const response = await ajax('core_cohort_get_cohort_members', args);
+  return extractGetCohortMembersResponse(response);
+};
+
 /**
  * Perform an AJAX call to a Moodle web service with file uploads.
  *
@@ -51,4 +109,13 @@ const requestWithFiles = async (request: object, files: File[]): Promise<object>
   }
 };
 
-export { ajax, requestWithFiles };
+export {
+  ajax,
+  requestWithFiles,
+  searchCohorts,
+  createCohorts,
+  updateCohorts,
+  deleteCohorts,
+  getCohorts,
+  getCohortMembers
+};

@@ -1,25 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { ajax } from './utils/moodle';
+import { getCohorts, updateCohorts } from './utils/moodle';
+import type { Cohort } from './types/moodle-api';
 
 // Define types
-interface Cohort {
-  id: number;
-  name: string;
-  idnumber: string;
-  description: string;
-  descriptionformat: number;
-  visible: boolean;
-  theme?: string;
-  customfields?: Array<{
-    name: string;
-    shortname: string;
-    type: string;
-    valueraw: string;
-    value: string;
-  }>;
-}
 
 // Props
 const props = defineProps<{
@@ -52,12 +37,12 @@ const loadCohort = async () => {
   error.value = '';
   
   try {
-    const response = await ajax('core_cohort_get_cohorts', {
+    const cohortsList = await getCohorts({
       cohortids: [props.id]
     });
     
-    if ((response as any) && (response as any).length > 0) {
-      cohort.value = (response as any)[0];
+    if (cohortsList && cohortsList.length > 0) {
+      cohort.value = cohortsList[0];
       // Populate form data
       formData.value = {
         name: cohort.value!.name,
@@ -106,7 +91,7 @@ const submitForm = async () => {
       theme: formData.value.theme || undefined
     };
 
-    await ajax('core_cohort_update_cohorts', {
+    await updateCohorts({
       cohorts: [{
         ...cohortData,
         id: props.id

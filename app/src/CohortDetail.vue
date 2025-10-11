@@ -1,26 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { ajax } from './utils/moodle';
+import { getCohorts, getCohortMembers, deleteCohorts } from './utils/moodle';
+import type { Cohort } from './types/moodle-api';
 
 // Define types
-interface Cohort {
-  id: number;
-  name: string;
-  idnumber: string;
-  description: string;
-  descriptionformat: number;
-  visible: boolean;
-  theme?: string;
-  customfields?: Array<{
-    name: string;
-    shortname: string;
-    type: string;
-    valueraw: string;
-    value: string;
-  }>;
-}
-
 interface CohortMember {
   id: number;
   username: string;
@@ -48,12 +32,12 @@ const loadCohort = async () => {
   error.value = '';
   
   try {
-    const response = await ajax('core_cohort_get_cohorts', {
+    const cohortsList = await getCohorts({
       cohortids: [props.id]
     });
     
-    if ((response as any) && (response as any).length > 0) {
-      cohort.value = (response as any)[0];
+    if (cohortsList && cohortsList.length > 0) {
+      cohort.value = cohortsList[0];
       await loadMembers();
     } else {
       error.value = 'Cohort not found';
@@ -69,12 +53,12 @@ const loadCohort = async () => {
 // Load cohort members
 const loadMembers = async () => {
   try {
-    const response = await ajax('core_cohort_get_cohort_members', {
+    const membersResponse = await getCohortMembers({
       cohortids: [props.id]
     });
     
-    if ((response as any) && (response as any)[props.id]) {
-      members.value = (response as any)[props.id];
+    if (membersResponse && membersResponse[props.id]) {
+      members.value = membersResponse[props.id] || [];
     }
   } catch (err) {
     console.error('Error loading cohort members:', err);
@@ -101,7 +85,7 @@ const deleteCohort = async () => {
   }
 
   try {
-    await ajax('core_cohort_delete_cohorts', {
+    await deleteCohorts({
       cohortids: [props.id]
     });
     

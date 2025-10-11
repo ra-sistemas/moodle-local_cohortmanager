@@ -1,25 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, reactive, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { ajax } from './utils/moodle';
+import { searchCohorts as searchCohortsApi, createCohorts, updateCohorts, deleteCohorts } from './utils/moodle';
+import type { Cohort } from './types/moodle-api';
 
 // Define types
-interface Cohort {
-  id: number;
-  name: string;
-  idnumber: string;
-  description: string;
-  descriptionformat: number;
-  visible: boolean;
-  theme?: string;
-  customfields?: Array<{
-    name: string;
-    shortname: string;
-    type: string;
-    valueraw: string;
-    value: string;
-  }>;
-}
 
 interface Pagination {
   page: number;
@@ -41,7 +26,7 @@ const pagination = reactive<Pagination>({
 });
 
 // Only show content on home page
-const showList = computed(() => route.path === '/');
+const showList = computed(() => route?.path === '/');
 
 // Initialize the component
 onMounted(async () => {
@@ -56,7 +41,7 @@ const loadCohorts = async () => {
   error.value = '';
   
   try {
-    const response = await ajax('core_cohort_search_cohorts', {
+    const cohortsList = await searchCohortsApi({
       query: searchQuery.value,
       context: {
         contextlevel: 'system'
@@ -66,8 +51,8 @@ const loadCohorts = async () => {
       limitnum: pagination.perPage
     });
     
-    cohorts.value = (response as any).cohorts || [];
-    pagination.total = (response as any).cohorts?.length || 0;
+    cohorts.value = cohortsList || [];
+    pagination.total = cohortsList?.length || 0;
   } catch (err) {
     console.error('Error loading cohorts:', err);
     error.value = 'Failed to load cohorts. Please try again.';
@@ -108,7 +93,7 @@ const deleteCohort = async (cohort: Cohort) => {
   }
 
   try {
-    await ajax('core_cohort_delete_cohorts', {
+    await deleteCohorts({
       cohortids: [cohort.id]
     });
     
@@ -146,11 +131,11 @@ const formData = reactive<Cohort>({
 const submitForm = async () => {
   try {
     if (showCreateForm.value) {
-      await ajax('core_cohort_create_cohorts', {
+      await createCohorts({
         cohorts: [formData]
       });
     } else {
-      await ajax('core_cohort_update_cohorts', {
+      await updateCohorts({
         cohorts: [formData]
       });
     }

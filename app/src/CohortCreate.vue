@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { ajax } from './utils/moodle';
+import { createCohorts } from './utils/moodle';
 
 // State management
 const router = useRouter();
@@ -46,13 +46,13 @@ const submitForm = async () => {
       theme: formData.value.theme || undefined
     };
 
-    const response = await ajax('core_cohort_create_cohorts', {
+    const createdCohorts = await createCohorts({
       cohorts: [cohortData]
     });
 
     // Navigate to the newly created cohort details
-    if ((response as any) && (response as any).length > 0) {
-      const newCohortId = (response as any)[0].id;
+    if (createdCohorts && createdCohorts.length > 0) {
+      const newCohortId = createdCohorts[0].id;
       router.push(`/cohort/${newCohortId}`);
     }
   } catch (err) {
