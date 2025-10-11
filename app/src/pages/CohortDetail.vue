@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { getCohorts, getCohortMembers, deleteCohorts } from './utils/moodle';
-import { useStringsStore } from './stores/strings';
-import type { Cohort } from './types/moodle-api';
+import { getCohorts, getCohortMembers, deleteCohorts } from '../utils/moodle';
+import { useStringsStore } from '../stores/strings';
+import type { Cohort } from '../types/moodle-api';
 
 // Initialize strings store
 const stringsStore = useStringsStore();

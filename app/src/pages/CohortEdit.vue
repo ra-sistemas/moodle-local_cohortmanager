@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { getCohorts, updateCohorts } from './utils/moodle';
-import { useStringsStore } from './stores/strings';
-import type { Cohort } from './types/moodle-api';
+import { getCohorts, updateCohorts } from '../utils/moodle';
+import { useStringsStore } from '../stores/strings';
+import type { Cohort } from '../types/moodle-api';
 
 // Initialize strings store
 const stringsStore = useStringsStore();
@@ -141,7 +141,7 @@ onMounted(() => {
     <!-- Form -->
     <div v-else-if="cohort" class="edit-form">
       <!-- Header -->
-      <div class="form-header">
+      <div class="header">
         <h1>{{ stringsStore.getString('editcohort') }}</h1>
         <div class="header-actions">
           <button @click="goBack" class="btn btn-secondary">
@@ -305,7 +305,7 @@ onMounted(() => {
   align-items: center;
 }
 
-.form-header {
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -314,7 +314,7 @@ onMounted(() => {
   border-bottom: 1px solid #e0e0e0;
 }
 
-.form-header h1 {
+.header h1 {
   margin: 0;
   color: #333;
   font-size: 28px;

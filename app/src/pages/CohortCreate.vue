@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { createCohorts } from './utils/moodle';
-import { useStringsStore } from './stores/strings';
+import { createCohorts } from '../utils/moodle';
+import { useStringsStore } from '../stores/strings';
 
 // Initialize strings store
 const stringsStore = useStringsStore();
@@ -92,7 +92,7 @@ const goBack = () => {
 <template>
   <div class="cohort-create">
     <!-- Header -->
-    <div class="form-header">
+    <div class="header">
       <h1>{{ stringsStore.getString('createnewcohort') }}</h1>
       <div class="header-actions">
         <button @click="goBack" class="btn btn-secondary">
@@ -256,7 +256,7 @@ const goBack = () => {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
-.form-header {
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -265,7 +265,7 @@ const goBack = () => {
   border-bottom: 1px solid #e0e0e0;
 }
 
-.form-header h1 {
+.header h1 {
   margin: 0;
   color: #333;
   font-size: 28px;

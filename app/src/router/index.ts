@@ -1,20 +1,20 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
-import App from '@/App.vue';
-import CohortDetail from '@/CohortDetail.vue';
-import CohortEdit from '@/CohortEdit.vue';
-import CohortCreate from '@/CohortCreate.vue';
+import CohortList from '@/pages/CohortList.vue';
+import CohortDetail from '@/pages/CohortDetail.vue';
+import CohortEdit from '@/pages/CohortEdit.vue';
+import CohortCreate from '@/pages/CohortCreate.vue';
 
 const routes: RouteRecordRaw[] = [
   {
-    path: '/',
+    path: '/local/cohortmanager/',
     name: 'CohortList',
-    component: App,
+    component: CohortList,
     meta: {
       title: 'Cohort Manager'
     }
   },
   {
-    path: '/cohort/:id',
+    path: '/local/cohortmanager/cohort/:id',
     name: 'CohortDetail',
     component: CohortDetail,
     meta: {
@@ -23,7 +23,7 @@ const routes: RouteRecordRaw[] = [
     props: true
   },
   {
-    path: '/cohort/:id/edit',
+    path: '/local/cohortmanager/cohort/:id/edit',
     name: 'CohortEdit',
     component: CohortEdit,
     meta: {
@@ -32,7 +32,7 @@ const routes: RouteRecordRaw[] = [
     props: true
   },
   {
-    path: '/cohort/create',
+    path: '/local/cohortmanager/cohort/create',
     name: 'CohortCreate',
     component: CohortCreate,
     meta: {
