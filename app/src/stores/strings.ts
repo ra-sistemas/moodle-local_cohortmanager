@@ -54,13 +54,11 @@ export const useStringsStore = defineStore('strings', {
           this.loadedComponents.add(component);
           return;
         }
-
         // Prepare requests for get_strings
-        const requests = keysToLoad.map(({ key, component, param, lang }) => ({
+        const requests = keysToLoad.map(({ key, param }) => ({
           key,
-          component: component || 'local_cohortmanager',
-          param,
-          lang
+          component: 'local_cohortmanager',
+          param
         }));
 
         // Use get_strings for batch loading
