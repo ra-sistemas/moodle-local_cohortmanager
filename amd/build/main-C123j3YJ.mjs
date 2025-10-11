@@ -1098,35 +1098,35 @@ function Pc(e, t, n = ie) {
       Ft = I;
     }
   } : (h = me, le.NODE_ENV !== "production" && p(e)), t && r) {
-    const I = h, z = r === !0 ? 1 / 0 : r;
-    h = () => vt(I(), z);
+    const I = h, G = r === !0 ? 1 / 0 : r;
+    h = () => vt(I(), G);
   }
   const L = rc(), $ = () => {
     a.stop(), L && L.active && Er(L.effects, a);
   };
   if (i && t) {
     const I = t;
-    t = (...z) => {
-      I(...z), $();
+    t = (...G) => {
+      I(...G), $();
     };
   }
   let A = F ? new Array(e.length).fill(Jn) : Jn;
   const W = (I) => {
     if (!(!(a.flags & 1) || !a.dirty && !I))
       if (t) {
-        const z = a.run();
-        if (r || O || (F ? z.some((w, U) => Pt(w, A[U])) : Pt(z, A))) {
+        const G = a.run();
+        if (r || O || (F ? G.some((w, U) => Pt(w, A[U])) : Pt(G, A))) {
           m && m();
           const w = Ft;
           Ft = a;
           try {
             const U = [
-              z,
+              G,
               // pass undefined as the old value when it's changed for the first time
               A === Jn ? void 0 : F && A[0] === Jn ? [] : A,
               x
             ];
-            A = z, c ? c(t, 3, U) : (
+            A = G, c ? c(t, 3, U) : (
               // @ts-expect-error
               t(...U)
             );
@@ -1143,7 +1143,7 @@ function Pc(e, t, n = ie) {
       if (c)
         c(I, 4);
       else
-        for (const z of I) z();
+        for (const G of I) G();
       fo.delete(a);
     }
   }, le.NODE_ENV !== "production" && (a.onTrack = n.onTrack, a.onTrigger = n.onTrigger), t ? o ? W(!0) : A = a.run() : s ? s(W.bind(null, !0), !0) : a.run(), $.pause = a.pause.bind(a), $.resume = a.resume.bind(a), $.stop = $, $;
@@ -2014,7 +2014,7 @@ function _a(e) {
     destroyed: A,
     unmounted: W,
     render: I,
-    renderTracked: z,
+    renderTracked: G,
     renderTriggered: w,
     errorCaptured: U,
     serverPrefetch: ue,
@@ -2094,7 +2094,7 @@ function _a(e) {
   function ge(Y, Q) {
     j(Q) ? Q.forEach((ke) => Y(ke.bind(n))) : Q && Y(Q.bind(n));
   }
-  if (ge(oa, a), ge(js, h), ge(ra, m), ge(ia, x), ge(ea, O), ge(ta, F), ge(ua, U), ge(aa, z), ge(ca, w), ge(sa, $), ge(Fs, W), ge(la, ue), j(Ae))
+  if (ge(oa, a), ge(js, h), ge(ra, m), ge(ia, x), ge(ea, O), ge(ta, F), ge(ua, U), ge(aa, G), ge(ca, w), ge(sa, $), ge(Fs, W), ge(la, ue), j(Ae))
     if (Ae.length) {
       const Y = e.exposed || (e.exposed = {});
       Ae.forEach((Q) => {
@@ -2757,7 +2757,7 @@ function Fa(e, t) {
         );
         break;
       default:
-        P & 1 ? z(
+        P & 1 ? G(
           f,
           d,
           _,
@@ -2838,7 +2838,7 @@ function Fa(e, t) {
     for (; f && f !== d; )
       _ = h(f), r(f), f = _;
     r(d);
-  }, z = (f, d, _, y, E, b, C, S, D) => {
+  }, G = (f, d, _, y, E, b, C, S, D) => {
     d.type === "svg" ? C = "svg" : d.type === "math" && (C = "mathml"), f == null ? w(
       d,
       _,
@@ -2859,7 +2859,7 @@ function Fa(e, t) {
     );
   }, w = (f, d, _, y, E, b, C, S) => {
     let D, N;
-    const { props: K, shapeFlag: P, transition: H, dirs: G } = f;
+    const { props: K, shapeFlag: P, transition: H, dirs: q } = f;
     if (D = f.el = s(
       f.type,
       b,
@@ -2874,15 +2874,15 @@ function Fa(e, t) {
       Bo(f, b),
       C,
       S
-    ), G && It(f, null, y, "created"), U(D, f, f.scopeId, C, y), K) {
+    ), q && It(f, null, y, "created"), U(D, f, f.scopeId, C, y), K) {
       for (const ce in K)
         ce !== "value" && !Nn(ce) && i(D, ce, null, K[ce], b, y);
       "value" in K && i(D, "value", null, K.value, b), (N = K.onVnodeBeforeMount) && Ze(N, y, f);
     }
-    g.NODE_ENV !== "production" && (lo(D, "__vnode", f, !0), lo(D, "__vueParentComponent", y, !0)), G && It(f, null, y, "beforeMount");
+    g.NODE_ENV !== "production" && (lo(D, "__vnode", f, !0), lo(D, "__vueParentComponent", y, !0)), q && It(f, null, y, "beforeMount");
     const ee = La(E, H);
-    ee && H.beforeEnter(D), o(D, d, _), ((N = K && K.onVnodeMounted) || ee || G) && Pe(() => {
-      N && Ze(N, y, f), ee && H.enter(D), G && It(f, null, y, "mounted");
+    ee && H.beforeEnter(D), o(D, d, _), ((N = K && K.onVnodeMounted) || ee || q) && Pe(() => {
+      N && Ze(N, y, f), ee && H.enter(D), q && It(f, null, y, "mounted");
     }, E);
   }, U = (f, d, _, y, E) => {
     if (_ && m(f, _), y)
@@ -2922,8 +2922,8 @@ function Fa(e, t) {
     let { patchFlag: D, dynamicChildren: N, dirs: K } = d;
     D |= f.patchFlag & 16;
     const P = f.props || ie, H = d.props || ie;
-    let G;
-    if (_ && kt(_, !1), (G = H.onVnodeBeforeUpdate) && Ze(G, _, d, f), K && It(d, f, _, "beforeUpdate"), _ && kt(_, !0), g.NODE_ENV !== "production" && it && (D = 0, C = !1, N = null), (P.innerHTML && H.innerHTML == null || P.textContent && H.textContent == null) && u(S, ""), N ? (Fe(
+    let q;
+    if (_ && kt(_, !1), (q = H.onVnodeBeforeUpdate) && Ze(q, _, d, f), K && It(d, f, _, "beforeUpdate"), _ && kt(_, !0), g.NODE_ENV !== "production" && it && (D = 0, C = !1, N = null), (P.innerHTML && H.innerHTML == null || P.textContent && H.textContent == null) && u(S, ""), N ? (Fe(
       f.dynamicChildren,
       N,
       S,
@@ -2953,8 +2953,8 @@ function Fa(e, t) {
       }
       D & 1 && f.children !== d.children && u(S, d.children);
     } else !C && N == null && we(S, P, H, _, E);
-    ((G = H.onVnodeUpdated) || K) && Pe(() => {
-      G && Ze(G, _, d, f), K && It(d, f, _, "updated");
+    ((q = H.onVnodeUpdated) || K) && Pe(() => {
+      q && Ze(q, _, d, f), K && It(d, f, _, "updated");
     }, y);
   }, Fe = (f, d, _, y, E, b, C) => {
     for (let S = 0; S < d.length; S++) {
@@ -3005,9 +3005,9 @@ function Fa(e, t) {
     }
   }, ze = (f, d, _, y, E, b, C, S, D) => {
     const N = d.el = f ? f.el : l(""), K = d.anchor = f ? f.anchor : l("");
-    let { patchFlag: P, dynamicChildren: H, slotScopeIds: G } = d;
+    let { patchFlag: P, dynamicChildren: H, slotScopeIds: q } = d;
     g.NODE_ENV !== "production" && // #5523 dev root fragment may inherit directives
-    (it || P & 2048) && (P = 0, D = !1, H = null), G && (S = S ? S.concat(G) : G), f == null ? (o(N, _, y), o(K, _, y), ue(
+    (it || P & 2048) && (P = 0, D = !1, H = null), q && (S = S ? S.concat(q) : q), f == null ? (o(N, _, y), o(K, _, y), ue(
       // #10007
       // such fragment like `<></>` will be compiled into
       // a fragment which doesn't have a children.
@@ -3103,7 +3103,7 @@ function Fa(e, t) {
   }, Y = (f, d, _, y, E, b, C) => {
     const S = () => {
       if (f.isMounted) {
-        let { next: P, bu: H, u: G, parent: ee, vnode: ce } = f;
+        let { next: P, bu: H, u: q, parent: ee, vnode: ce } = f;
         {
           const Qe = Xs(f);
           if (Qe) {
@@ -3128,14 +3128,14 @@ function Fa(e, t) {
           f,
           E,
           b
-        ), g.NODE_ENV !== "production" && Qt(f, "patch"), P.el = De.el, se === null && Xa(f, De.el), G && Pe(G, E), (xe = P.props && P.props.onVnodeUpdated) && Pe(
+        ), g.NODE_ENV !== "production" && Qt(f, "patch"), P.el = De.el, se === null && Xa(f, De.el), q && Pe(q, E), (xe = P.props && P.props.onVnodeUpdated) && Pe(
           () => Ze(xe, ee, P, ce),
           E
         ), g.NODE_ENV !== "production" && Rs(f), g.NODE_ENV !== "production" && Zn();
       } else {
         let P;
-        const { el: H, props: G } = d, { bm: ee, m: ce, parent: se, root: xe, type: De } = f, Ye = Dn(d);
-        kt(f, !1), ee && Zt(ee), !Ye && (P = G && G.onVnodeBeforeMount) && Ze(P, se, d), kt(f, !0);
+        const { el: H, props: q } = d, { bm: ee, m: ce, parent: se, root: xe, type: De } = f, Ye = Dn(d);
+        kt(f, !1), ee && Zt(ee), !Ye && (P = q && q.onVnodeBeforeMount) && Ze(P, se, d), kt(f, !0);
         {
           xe.ce && // @ts-expect-error _def is private
           xe.ce._def.shadowRoot !== !1 && xe.ce._injectChildStyle(De), g.NODE_ENV !== "production" && Yt(f, "render");
@@ -3150,7 +3150,7 @@ function Fa(e, t) {
             b
           ), g.NODE_ENV !== "production" && Qt(f, "patch"), d.el = Qe.el;
         }
-        if (ce && Pe(ce, E), !Ye && (P = G && G.onVnodeMounted)) {
+        if (ce && Pe(ce, E), !Ye && (P = q && q.onVnodeMounted)) {
           const Qe = d;
           Pe(
             () => Ze(P, se, Qe),
@@ -3170,7 +3170,7 @@ function Fa(e, t) {
     const y = f.vnode.props;
     f.vnode = d, f.next = null, Da(f, d.props, y, _), ka(f, d.children, _), Ge(), Xr(f), qe();
   }, ke = (f, d, _, y, E, b, C, S, D = !1) => {
-    const N = f && f.children, K = f ? f.shapeFlag : 0, P = d.children, { patchFlag: H, shapeFlag: G } = d;
+    const N = f && f.children, K = f ? f.shapeFlag : 0, P = d.children, { patchFlag: H, shapeFlag: q } = d;
     if (H > 0) {
       if (H & 128) {
         Ot(
@@ -3200,7 +3200,7 @@ function Fa(e, t) {
         return;
       }
     }
-    G & 8 ? (K & 16 && v(N, E, b), P !== N && u(_, P)) : K & 16 ? G & 16 ? Ot(
+    q & 8 ? (K & 16 && v(N, E, b), P !== N && u(_, P)) : K & 16 ? q & 16 ? Ot(
       N,
       P,
       _,
@@ -3210,7 +3210,7 @@ function Fa(e, t) {
       C,
       S,
       D
-    ) : v(N, E, b, !0) : (K & 8 && u(_, ""), G & 16 && ue(
+    ) : v(N, E, b, !0) : (K & 8 && u(_, ""), q & 16 && ue(
       P,
       _,
       y,
@@ -3225,10 +3225,10 @@ function Fa(e, t) {
     const N = f.length, K = d.length, P = Math.min(N, K);
     let H;
     for (H = 0; H < P; H++) {
-      const G = d[H] = D ? Vt(d[H]) : He(d[H]);
+      const q = d[H] = D ? Vt(d[H]) : He(d[H]);
       O(
         f[H],
-        G,
+        q,
         _,
         null,
         E,
@@ -3261,10 +3261,10 @@ function Fa(e, t) {
     const K = d.length;
     let P = f.length - 1, H = K - 1;
     for (; N <= P && N <= H; ) {
-      const G = f[N], ee = d[N] = D ? Vt(d[N]) : He(d[N]);
-      if (_n(G, ee))
+      const q = f[N], ee = d[N] = D ? Vt(d[N]) : He(d[N]);
+      if (_n(q, ee))
         O(
-          G,
+          q,
           ee,
           _,
           null,
@@ -3279,10 +3279,10 @@ function Fa(e, t) {
       N++;
     }
     for (; N <= P && N <= H; ) {
-      const G = f[P], ee = d[H] = D ? Vt(d[H]) : He(d[H]);
-      if (_n(G, ee))
+      const q = f[P], ee = d[H] = D ? Vt(d[H]) : He(d[H]);
+      if (_n(q, ee))
         O(
-          G,
+          q,
           ee,
           _,
           null,
@@ -3298,7 +3298,7 @@ function Fa(e, t) {
     }
     if (N > P) {
       if (N <= H) {
-        const G = H + 1, ee = G < K ? d[G].el : y;
+        const q = H + 1, ee = q < K ? d[q].el : y;
         for (; N <= H; )
           O(
             null,
@@ -3316,7 +3316,7 @@ function Fa(e, t) {
       for (; N <= P; )
         Me(f[N], E, b, !0), N++;
     else {
-      const G = N, ee = N, ce = /* @__PURE__ */ new Map();
+      const q = N, ee = N, ce = /* @__PURE__ */ new Map();
       for (N = ee; N <= H; N++) {
         const Ee = d[N] = D ? Vt(d[N]) : He(d[N]);
         Ee.key != null && (g.NODE_ENV !== "production" && ce.has(Ee.key) && V(
@@ -3330,7 +3330,7 @@ function Fa(e, t) {
       let Ye = !1, Qe = 0;
       const hn = new Array(De);
       for (N = 0; N < De; N++) hn[N] = 0;
-      for (N = G; N <= P; N++) {
+      for (N = q; N <= P; N++) {
         const Ee = f[N];
         if (xe >= De) {
           Me(Ee, E, b, !0);
@@ -3405,14 +3405,14 @@ function Fa(e, t) {
       if (y === 0)
         S.beforeEnter(b), o(b, d, _), Pe(() => S.enter(b), E);
       else {
-        const { leave: P, delayLeave: H, afterLeave: G } = S, ee = () => {
+        const { leave: P, delayLeave: H, afterLeave: q } = S, ee = () => {
           f.ctx.isUnmounted ? r(b) : o(b, d, _);
         }, ce = () => {
           b._isLeaving && b[Zc](
             !0
             /* cancelled */
           ), P(b, () => {
-            ee(), G && G();
+            ee(), q && q();
           });
         };
         H ? H(b, ee, ce) : ce();
@@ -3429,9 +3429,9 @@ function Fa(e, t) {
       shapeFlag: K,
       patchFlag: P,
       dirs: H,
-      cacheIndex: G
+      cacheIndex: q
     } = f;
-    if (P === -2 && (E = !1), S != null && (Ge(), xn(S, null, _, f, !0), qe()), G != null && (d.renderCache[G] = void 0), K & 256) {
+    if (P === -2 && (E = !1), S != null && (Ge(), xn(S, null, _, f, !0), qe()), q != null && (d.renderCache[q] = void 0), K & 256) {
       d.ctx.deactivate(f);
       return;
     }
@@ -3756,7 +3756,7 @@ function ui(e) {
   g.NODE_ENV !== "production" && (cr = !1);
   try {
     if (n.shapeFlag & 4) {
-      const I = r || o, z = g.NODE_ENV !== "production" && m.__isScriptSetup ? new Proxy(I, {
+      const I = r || o, G = g.NODE_ENV !== "production" && m.__isScriptSetup ? new Proxy(I, {
         get(w, U, ue) {
           return V(
             `Property '${String(
@@ -3767,7 +3767,7 @@ function ui(e) {
       }) : I;
       L = He(
         p.call(
-          z,
+          G,
           I,
           u,
           g.NODE_ENV !== "production" ? rt(a) : a,
@@ -3799,9 +3799,9 @@ function ui(e) {
   }
   let A = L, W;
   if (g.NODE_ENV !== "production" && L.patchFlag > 0 && L.patchFlag & 2048 && ([A, W] = tl(L)), $ && O !== !1) {
-    const I = Object.keys($), { shapeFlag: z } = A;
+    const I = Object.keys($), { shapeFlag: G } = A;
     if (I.length) {
-      if (z & 7)
+      if (G & 7)
         i && I.some(so) && ($ = Ya(
           $,
           i
@@ -5214,7 +5214,7 @@ function cf(e, t) {
     }), s && t(s.proxiedTarget);
   }
 }
-var q = {};
+var z = {};
 const _t = typeof document < "u";
 function _l(e) {
   return typeof e == "object" || "displayName" in e || "props" in e || "__vccOpts" in e;
@@ -5262,7 +5262,7 @@ function an(e) {
   try {
     return decodeURIComponent("" + e);
   } catch {
-    q.NODE_ENV !== "production" && X(`Error decoding "${e}". Using original value`);
+    z.NODE_ENV !== "production" && X(`Error decoding "${e}". Using original value`);
   }
   return "" + e;
 }
@@ -5309,7 +5309,7 @@ function ki(e, t) {
 function Sf(e, t) {
   if (e.startsWith("/"))
     return e;
-  if (q.NODE_ENV !== "production" && !t.startsWith("/"))
+  if (z.NODE_ENV !== "production" && !t.startsWith("/"))
     return X(`Cannot resolve a relative location without an absolute path. Trying to resolve "${e}" from "${t}". It should look like "/${t}".`), e;
   if (!e)
     return t;
@@ -5373,7 +5373,7 @@ function Rf(e) {
   let t;
   if ("el" in e) {
     const n = e.el, o = typeof n == "string" && n.startsWith("#");
-    if (q.NODE_ENV !== "production" && typeof e.el == "string" && (!o || !document.getElementById(e.el.slice(1))))
+    if (z.NODE_ENV !== "production" && typeof e.el == "string" && (!o || !document.getElementById(e.el.slice(1))))
       try {
         const i = document.querySelector(e.el);
         if (o && i) {
@@ -5386,7 +5386,7 @@ function Rf(e) {
       }
     const r = typeof n == "string" ? o ? document.getElementById(n.slice(1)) : document.querySelector(n) : n;
     if (!r) {
-      q.NODE_ENV !== "production" && X(`Couldn't find element using selector "${e.el}" returned by scrollBehavior.`);
+      z.NODE_ENV !== "production" && X(`Couldn't find element using selector "${e.el}" returned by scrollBehavior.`);
       return;
     }
     t = Tf(r, e);
@@ -5493,7 +5493,7 @@ function Mf(e) {
     try {
       t[u ? "replaceState" : "pushState"](p, "", h), r.value = p;
     } catch (m) {
-      q.NODE_ENV !== "production" ? X("Error with push/replace State", m) : console.error(m), n[u ? "replace" : "assign"](h);
+      z.NODE_ENV !== "production" ? X("Error with push/replace State", m) : console.error(m), n[u ? "replace" : "assign"](h);
     }
   }
   function s(c, p) {
@@ -5519,7 +5519,7 @@ function Mf(e) {
         scroll: Io()
       }
     );
-    q.NODE_ENV !== "production" && !t.state && X(`history.state seems to have been manually replaced without preserving the necessary values. Make sure to preserve existing history state if you are manually calling history.replaceState:
+    z.NODE_ENV !== "production" && !t.state && X(`history.state seems to have been manually replaced without preserving the necessary values. Make sure to preserve existing history state if you are manually calling history.replaceState:
 
 history.replaceState(history.state, '', url)
 
@@ -5561,7 +5561,7 @@ function No(e) {
 function xl(e) {
   return typeof e == "string" || typeof e == "symbol";
 }
-const mr = Symbol(q.NODE_ENV !== "production" ? "navigation failure" : "");
+const mr = Symbol(z.NODE_ENV !== "production" ? "navigation failure" : "");
 var Fi;
 (function(e) {
   e[e.aborted = 4] = "aborted", e[e.cancelled = 8] = "cancelled", e[e.duplicated = 16] = "duplicated";
@@ -5587,7 +5587,7 @@ while being at
   }
 };
 function un(e, t) {
-  return q.NODE_ENV !== "production" ? ne(new Error(Ff[e](t)), {
+  return z.NODE_ENV !== "production" ? ne(new Error(Ff[e](t)), {
     type: e,
     [mr]: !0
   }, t) : ne(new Error(), {
@@ -5742,7 +5742,7 @@ function zf(e) {
   if (e === "/")
     return [[Gf]];
   if (!e.startsWith("/"))
-    throw new Error(q.NODE_ENV !== "production" ? `Route paths should start with a "/": "${e}" should be "/${e}".` : `Invalid path "${e}"`);
+    throw new Error(z.NODE_ENV !== "production" ? `Route paths should start with a "/": "${e}" should be "/${e}".` : `Invalid path "${e}"`);
   function t(m) {
     throw new Error(`ERR (${n})/"${p}": ${m}`);
   }
@@ -5798,7 +5798,7 @@ function zf(e) {
 }
 function Jf(e, t, n) {
   const o = Bf(zf(e.path), n);
-  if (q.NODE_ENV !== "production") {
+  if (z.NODE_ENV !== "production") {
     const i = /* @__PURE__ */ new Set();
     for (const s of o.keys)
       i.has(s.name) && X(`Found duplicated params with name "${s.name}" for path "${e.path}". Only the last one will be available on "$route.params".`), i.add(s.name);
@@ -5820,7 +5820,7 @@ function Yf(e, t) {
   }
   function i(a, h, m) {
     const x = !m, O = Ki(a);
-    q.NODE_ENV !== "production" && ed(O, h), O.aliasOf = m && m.record;
+    z.NODE_ENV !== "production" && ed(O, h), O.aliasOf = m && m.record;
     const F = Wi(t, a), L = [O];
     if ("alias" in a) {
       const W = typeof a.alias == "string" ? [a.alias] : a.alias;
@@ -5844,16 +5844,16 @@ function Yf(e, t) {
     for (const W of L) {
       const { path: I } = W;
       if (h && I[0] !== "/") {
-        const z = h.record.path, w = z[z.length - 1] === "/" ? "" : "/";
+        const G = h.record.path, w = G[G.length - 1] === "/" ? "" : "/";
         W.path = h.record.path + (I && w + I);
       }
-      if (q.NODE_ENV !== "production" && W.path === "*")
+      if (z.NODE_ENV !== "production" && W.path === "*")
         throw new Error(`Catch all routes ("*") must now be defined using a param with a custom regexp.
 See more at https://router.vuejs.org/guide/migration/#Removed-star-or-catch-all-routes.`);
-      if ($ = Jf(W, h, F), q.NODE_ENV !== "production" && h && I[0] === "/" && nd($, h), m ? (m.alias.push($), q.NODE_ENV !== "production" && Zf(m, $)) : (A = A || $, A !== $ && A.alias.push($), x && a.name && !Bi($) && (q.NODE_ENV !== "production" && td(a, h), s(a.name))), Sl($) && c($), O.children) {
-        const z = O.children;
-        for (let w = 0; w < z.length; w++)
-          i(z[w], $, m && m.children[w]);
+      if ($ = Jf(W, h, F), z.NODE_ENV !== "production" && h && I[0] === "/" && nd($, h), m ? (m.alias.push($), z.NODE_ENV !== "production" && Zf(m, $)) : (A = A || $, A !== $ && A.alias.push($), x && a.name && !Bi($) && (z.NODE_ENV !== "production" && td(a, h), s(a.name))), Sl($) && c($), O.children) {
+        const G = O.children;
+        for (let w = 0; w < G.length; w++)
+          i(G[w], $, m && m.children[w]);
       }
       m = m || $;
     }
@@ -5884,7 +5884,7 @@ See more at https://router.vuejs.org/guide/migration/#Removed-star-or-catch-all-
         throw un(1, {
           location: a
         });
-      if (q.NODE_ENV !== "production") {
+      if (z.NODE_ENV !== "production") {
         const A = Object.keys(a.params || {}).filter((W) => !m.keys.find((I) => I.name === W));
         A.length && X(`Discarded invalid param(s) "${A.join('", "')}" when navigating. See https://github.com/vuejs/router/blob/main/packages/router/CHANGELOG.md#414-2022-08-22 for more details.`);
       }
@@ -5901,7 +5901,7 @@ See more at https://router.vuejs.org/guide/migration/#Removed-star-or-catch-all-
         a.params && Ui(a.params, m.keys.map((A) => A.name))
       ), O = m.stringify(x);
     } else if (a.path != null)
-      O = a.path, q.NODE_ENV !== "production" && !O.startsWith("/") && X(`The Matcher cannot resolve relative paths but received "${O}". Unless you directly called \`matcher.resolve("${O}")\`, this is probably a bug in vue-router. Please open an issue at https://github.com/vuejs/router/issues/new/choose.`), m = n.find((A) => A.re.test(O)), m && (x = m.parse(O), F = m.record.name);
+      O = a.path, z.NODE_ENV !== "production" && !O.startsWith("/") && X(`The Matcher cannot resolve relative paths but received "${O}". Unless you directly called \`matcher.resolve("${O}")\`, this is probably a bug in vue-router. Please open an issue at https://github.com/vuejs/router/issues/new/choose.`), m = n.find((A) => A.re.test(O)), m && (x = m.parse(O), F = m.record.name);
     else {
       if (m = h.name ? o.get(h.name) : n.find((A) => A.re.test(h.path)), !m)
         throw un(1, {
@@ -6020,7 +6020,7 @@ function od(e, t) {
     Dl(e, t[i]) < 0 ? o = i : n = i + 1;
   }
   const r = rd(e);
-  return r && (o = t.lastIndexOf(r, o - 1), q.NODE_ENV !== "production" && o < 0 && X(`Finding ancestor route "${r.record.path}" failed for "${e.record.path}"`)), o;
+  return r && (o = t.lastIndexOf(r, o - 1), z.NODE_ENV !== "production" && o < 0 && X(`Finding ancestor route "${r.record.path}" failed for "${e.record.path}"`)), o;
 }
 function rd(e) {
   let t = e;
@@ -6068,7 +6068,7 @@ function sd(e) {
   }
   return t;
 }
-const ld = Symbol(q.NODE_ENV !== "production" ? "router view location matched" : ""), qi = Symbol(q.NODE_ENV !== "production" ? "router view depth" : ""), ko = Symbol(q.NODE_ENV !== "production" ? "router" : ""), Kr = Symbol(q.NODE_ENV !== "production" ? "route location" : ""), _r = Symbol(q.NODE_ENV !== "production" ? "router view location" : "");
+const ld = Symbol(z.NODE_ENV !== "production" ? "router view location matched" : ""), qi = Symbol(z.NODE_ENV !== "production" ? "router view depth" : ""), ko = Symbol(z.NODE_ENV !== "production" ? "router" : ""), Kr = Symbol(z.NODE_ENV !== "production" ? "route location" : ""), _r = Symbol(z.NODE_ENV !== "production" ? "router view location" : "");
 function vn() {
   let e = [];
   function t(o) {
@@ -6099,9 +6099,9 @@ function Ct(e, t, n, o, r, i = (s) => s()) {
         to: h
       })) : (s && // since enterCallbackArray is truthy, both record and name also are
       o.enterCallbacks[r] === s && typeof h == "function" && s.push(h), l());
-    }, u = i(() => e.call(o && o.instances[r], t, n, q.NODE_ENV !== "production" ? cd(p, t, n) : p));
+    }, u = i(() => e.call(o && o.instances[r], t, n, z.NODE_ENV !== "production" ? cd(p, t, n) : p));
     let a = Promise.resolve(u);
-    if (e.length < 3 && (a = a.then(p)), q.NODE_ENV !== "production" && e.length > 2) {
+    if (e.length < 3 && (a = a.then(p)), z.NODE_ENV !== "production" && e.length > 2) {
       const h = `The "next" callback was never called inside of ${e.name ? '"' + e.name + '"' : ""}:
 ${e.toString()}
 . If you are returning a value instead of calling "next", make sure to remove the "next" parameter from your function.`;
@@ -6124,10 +6124,10 @@ function cd(e, t, n) {
 function Yo(e, t, n, o, r = (i) => i()) {
   const i = [];
   for (const s of e) {
-    q.NODE_ENV !== "production" && !s.components && !s.children.length && X(`Record with path "${s.path}" is either missing a "component(s)" or "children" property.`);
+    z.NODE_ENV !== "production" && !s.components && !s.children.length && X(`Record with path "${s.path}" is either missing a "component(s)" or "children" property.`);
     for (const l in s.components) {
       let c = s.components[l];
-      if (q.NODE_ENV !== "production") {
+      if (z.NODE_ENV !== "production") {
         if (!c || typeof c != "object" && typeof c != "function")
           throw X(`Component "${l}" in record with path "${s.path}" is not a valid component. Received "${String(c)}".`), new Error("Invalid route component");
         if ("then" in c) {
@@ -6143,7 +6143,7 @@ function Yo(e, t, n, o, r = (i) => i()) {
           u && i.push(Ct(u, n, o, s, l, r));
         } else {
           let p = c();
-          q.NODE_ENV !== "production" && !("catch" in p) && (X(`Component "${l}" in record with path "${s.path}" is a function that does not return a Promise. If you were passing a functional component, make sure to add a "displayName" to the component. This will break in production if not fixed.`), p = Promise.resolve(p)), i.push(() => p.then((u) => {
+          z.NODE_ENV !== "production" && !("catch" in p) && (X(`Component "${l}" in record with path "${s.path}" is a function that does not return a Promise. If you were passing a functional component, make sure to add a "displayName" to the component. This will break in production if not fixed.`), p = Promise.resolve(p)), i.push(() => p.then((u) => {
             if (!u)
               throw new Error(`Couldn't resolve component "${l}" at "${s.path}"`);
             const a = af(u) ? u.default : u;
@@ -6161,7 +6161,7 @@ function zi(e) {
   let o = !1, r = null;
   const i = Ve(() => {
     const u = Lt(e.to);
-    return q.NODE_ENV !== "production" && (!o || u !== r) && (No(u) || (o ? X(`Invalid value for prop "to" in useLink()
+    return z.NODE_ENV !== "production" && (!o || u !== r) && (No(u) || (o ? X(`Invalid value for prop "to" in useLink()
 - to:`, u, `
 - previous to:`, r, `
 - props:`, e) : X(`Invalid value for prop "to" in useLink()
@@ -6194,7 +6194,7 @@ function zi(e) {
     }
     return Promise.resolve();
   }
-  if (q.NODE_ENV !== "production" && _t) {
+  if (z.NODE_ENV !== "production" && _t) {
     const u = Ro();
     if (u) {
       const a = {
@@ -6301,7 +6301,7 @@ const Yi = (e, t, n) => e ?? t ?? n, hd = /* @__PURE__ */ Ar({
   // https://github.com/vuejs/router/issues/1315
   compatConfig: { MODE: 3 },
   setup(e, { attrs: t, slots: n }) {
-    q.NODE_ENV !== "production" && gd();
+    z.NODE_ENV !== "production" && gd();
     const o = Be(_r), r = Ve(() => e.route || o.value), i = Be(qi, 0), s = Ve(() => {
       let p = Lt(i);
       const { matched: u } = r.value;
@@ -6326,7 +6326,7 @@ const Yi = (e, t, n) => e ?? t ?? n, hd = /* @__PURE__ */ Ar({
         },
         ref: c
       }));
-      if (q.NODE_ENV !== "production" && _t && F.ref) {
+      if (z.NODE_ENV !== "production" && _t && F.ref) {
         const L = {
           depth: s.value,
           name: a.name,
@@ -6636,7 +6636,7 @@ function Sd(e, t) {
 }
 function Vd(e) {
   const t = Yf(e.routes, e), n = e.parseQuery || id, o = e.stringifyQuery || Gi, r = e.history;
-  if (q.NODE_ENV !== "production" && !r)
+  if (z.NODE_ENV !== "production" && !r)
     throw new Error('Provide the "history" option when calling "createRouter()": https://router.vuejs.org/api/interfaces/RouterOptions.html#history');
   const i = vn(), s = vn(), l = vn(), c = wc(Dt);
   let p = Dt;
@@ -6647,11 +6647,11 @@ function Vd(e) {
   );
   function m(v, R) {
     let T, M;
-    return xl(v) ? (T = t.getRecordMatcher(v), q.NODE_ENV !== "production" && !T && X(`Parent route "${String(v)}" not found when adding child route`, R), M = R) : M = v, t.addRoute(M, T);
+    return xl(v) ? (T = t.getRecordMatcher(v), z.NODE_ENV !== "production" && !T && X(`Parent route "${String(v)}" not found when adding child route`, R), M = R) : M = v, t.addRoute(M, T);
   }
   function x(v) {
     const R = t.getRecordMatcher(v);
-    R ? t.removeRoute(R) : q.NODE_ENV !== "production" && X(`Cannot remove non-existent route "${String(v)}"`);
+    R ? t.removeRoute(R) : z.NODE_ENV !== "production" && X(`Cannot remove non-existent route "${String(v)}"`);
   }
   function O() {
     return t.getRoutes().map((v) => v.record);
@@ -6662,19 +6662,19 @@ function Vd(e) {
   function L(v, R) {
     if (R = ne({}, R || c.value), typeof v == "string") {
       const d = Jo(n, v, R.path), _ = t.resolve({ path: d.path }, R), y = r.createHref(d.fullPath);
-      return q.NODE_ENV !== "production" && (y.startsWith("//") ? X(`Location "${v}" resolved to "${y}". A resolved location cannot start with multiple slashes.`) : _.matched.length || X(`No match found for location with path "${v}"`)), ne(d, _, {
+      return z.NODE_ENV !== "production" && (y.startsWith("//") ? X(`Location "${v}" resolved to "${y}". A resolved location cannot start with multiple slashes.`) : _.matched.length || X(`No match found for location with path "${v}"`)), ne(d, _, {
         params: h(_.params),
         hash: an(d.hash),
         redirectedFrom: void 0,
         href: y
       });
     }
-    if (q.NODE_ENV !== "production" && !No(v))
+    if (z.NODE_ENV !== "production" && !No(v))
       return X(`router.resolve() was passed an invalid location. This will fail in production.
 - Location:`, v), L({});
     let T;
     if (v.path != null)
-      q.NODE_ENV !== "production" && "params" in v && !("name" in v) && // @ts-expect-error: the type is never
+      z.NODE_ENV !== "production" && "params" in v && !("name" in v) && // @ts-expect-error: the type is never
       Object.keys(v.params).length && X(`Path "${v.path}" was passed with params but they will be ignored. Use a named route alongside params instead.`), T = ne({}, v, {
         path: Jo(n, v.path, R.path).path
       });
@@ -6687,12 +6687,12 @@ function Vd(e) {
       }), R.params = a(R.params);
     }
     const M = t.resolve(T, R), Z = v.hash || "";
-    q.NODE_ENV !== "production" && Z && !Z.startsWith("#") && X(`A \`hash\` should always start with the character "#". Replace "${Z}" with "#${Z}".`), M.params = u(h(M.params));
+    z.NODE_ENV !== "production" && Z && !Z.startsWith("#") && X(`A \`hash\` should always start with the character "#". Replace "${Z}" with "#${Z}".`), M.params = u(h(M.params));
     const fe = xf(o, ne({}, v, {
       hash: Ef(Z),
       path: M.path
     })), f = r.createHref(fe);
-    return q.NODE_ENV !== "production" && (f.startsWith("//") ? X(`Location "${v}" resolved to "${f}". A resolved location cannot start with multiple slashes.`) : M.matched.length || X(`No match found for location with path "${v.path != null ? v.path : v}"`)), ne({
+    return z.NODE_ENV !== "production" && (f.startsWith("//") ? X(`Location "${v}" resolved to "${f}". A resolved location cannot start with multiple slashes.`) : M.matched.length || X(`No match found for location with path "${v.path != null ? v.path : v}"`)), ne({
       fullPath: fe,
       // keep the hash encoded so fullPath is effectively path + encodedQuery +
       // hash
@@ -6726,7 +6726,7 @@ function Vd(e) {
   function I(v) {
     return W(ne($(v), { replace: !0 }));
   }
-  function z(v) {
+  function G(v) {
     const R = v.matched[v.matched.length - 1];
     if (R && R.redirect) {
       const { redirect: T } = R;
@@ -6734,7 +6734,7 @@ function Vd(e) {
       if (typeof M == "string" && (M = M.includes("?") || M.includes("#") ? M = $(M) : (
         // force empty params
         { path: M }
-      ), M.params = {}), q.NODE_ENV !== "production" && M.path == null && !("name" in M))
+      ), M.params = {}), z.NODE_ENV !== "production" && M.path == null && !("name" in M))
         throw X(`Invalid redirect found:
 ${JSON.stringify(M, null, 2)}
  when navigating to "${v.fullPath}". A redirect must contain a name or path. This will break in production.`), new Error("Invalid redirect");
@@ -6747,7 +6747,7 @@ ${JSON.stringify(M, null, 2)}
     }
   }
   function w(v, R) {
-    const T = p = L(v), M = c.value, Z = v.state, fe = v.force, f = v.replace === !0, d = z(T);
+    const T = p = L(v), M = c.value, Z = v.state, fe = v.force, f = v.replace === !0, d = G(T);
     if (d)
       return w(
         ne($(d), {
@@ -6787,7 +6787,7 @@ ${JSON.stringify(M, null, 2)}
           2
           /* ErrorTypes.NAVIGATION_GUARD_REDIRECT */
         ))
-          return q.NODE_ENV !== "production" && // we are redirecting to the same location we were already at
+          return z.NODE_ENV !== "production" && // we are redirecting to the same location we were already at
           Ii(o, L(E.to), _) && // and we have done it a couple of times
           R && // @ts-expect-error: added only in dev
           (R._count = R._count ? (
@@ -6878,7 +6878,7 @@ ${JSON.stringify(M, null, 2)}
     ze || (ze = r.listen((v, R, T) => {
       if (!Gn.listening)
         return;
-      const M = L(v), Z = z(M);
+      const M = L(v), Z = G(M);
       if (Z) {
         w(ne(Z, { replace: !0, force: !0 }), M).catch(Pn);
         return;
@@ -6929,7 +6929,7 @@ ${JSON.stringify(M, null, 2)}
   function Q(v, R, T) {
     At(v);
     const M = ge.list();
-    return M.length ? M.forEach((Z) => Z(v, R, T)) : (q.NODE_ENV !== "production" && X("uncaught error during route navigation:"), console.error(v)), Promise.reject(v);
+    return M.length ? M.forEach((Z) => Z(v, R, T)) : (z.NODE_ENV !== "production" && X("uncaught error during route navigation:"), console.error(v)), Promise.reject(v);
   }
   function ke() {
     return Y && c.value !== Dt ? Promise.resolve() : new Promise((v, R) => {
@@ -6976,7 +6976,7 @@ ${JSON.stringify(M, null, 2)}
       }), _t && // used for the initial navigation client side to avoid pushing
       // multiple times when the router is used in multiple apps
       !Me && c.value === Dt && (Me = !0, W(r.location).catch((Z) => {
-        q.NODE_ENV !== "production" && X("Unexpected error when starting the router:", Z);
+        z.NODE_ENV !== "production" && X("Unexpected error when starting the router:", Z);
       }));
       const T = {};
       for (const Z in Dt)
@@ -6988,7 +6988,7 @@ ${JSON.stringify(M, null, 2)}
       const M = v.unmount;
       wt.add(v), v.unmount = function() {
         wt.delete(v), wt.size < 1 && (p = Dt, ze && ze(), ze = null, c.value = Dt, Me = !1, Y = !1), M();
-      }, q.NODE_ENV !== "production" && _t && vd(v, R, t);
+      }, z.NODE_ENV !== "production" && _t && vd(v, R, t);
     }
   };
   function xt(v) {
@@ -7012,10 +7012,13 @@ function Pd() {
 function Td(e) {
   return Be(Kr);
 }
-const Rd = (e) => ({
-  cohorts: Array.isArray(e.cohorts) ? e.cohorts : [],
-  total: e.total || 0
-}), $d = (e) => ({
+const Rd = (e) => {
+  let t = [], n = 0;
+  return t = Array.isArray(e.cohorts) ? e.cohorts : [], n = e.total || 0, {
+    cohorts: t,
+    total: n
+  };
+}, $d = (e) => ({
   cohorts: Array.isArray(e.cohorts) ? e.cohorts : []
 }), Ad = (e) => ({
   cohorts: Array.isArray(e.cohorts) ? e.cohorts : []
@@ -7027,13 +7030,13 @@ const Rd = (e) => ({
     args: Object.assign({}, t)
   };
   try {
-    return await Ml.call([n]);
+    return (await Ml.call([n]))[0];
   } catch (o) {
     throw jd && Fl.exception(o), o;
   }
 }, Fd = async (e) => {
   const t = await pn("core_cohort_search_cohorts", e);
-  return Rd(t).cohorts;
+  return Rd(t);
 }, Ld = async (e) => {
   const t = await pn("core_cohort_create_cohorts", e);
   return $d(t).cohorts;
@@ -7075,7 +7078,7 @@ const Rd = (e) => ({
     const p = async () => {
       r.value = !0, i.value = "";
       try {
-        const z = await Fd({
+        const G = await Fd({
           query: s.value,
           context: {
             contextlevel: "system"
@@ -7084,32 +7087,32 @@ const Rd = (e) => ({
           limitfrom: (l.page - 1) * l.perPage,
           limitnum: l.perPage
         });
-        o.value = z || [], l.total = z?.length || 0;
-      } catch (z) {
-        console.error("Error loading cohorts:", z), i.value = "Failed to load cohorts. Please try again.";
+        o.value = G?.cohorts || [], l.total = G?.total || 0;
+      } catch (G) {
+        console.error("Error loading cohorts:", G), console.error("Error details:", G), i.value = `Failed to load cohorts. Error: ${G instanceof Error ? G.message : "Unknown error"}`;
       } finally {
         r.value = !1;
       }
     }, u = () => {
       l.page = 1, p();
-    }, a = (z) => {
-      l.page = z, p();
+    }, a = (G) => {
+      l.page = G, p();
     }, h = () => {
       l.page > 1 && a(l.page - 1);
     }, m = () => {
-      const z = Math.ceil(l.total / l.perPage);
-      l.page < z && a(l.page + 1);
-    }, x = async (z) => {
-      if (confirm(`Are you sure you want to delete "${z.name}"?`))
+      const G = Math.ceil(l.total / l.perPage);
+      l.page < G && a(l.page + 1);
+    }, x = async (G) => {
+      if (confirm(`Are you sure you want to delete "${G.name}"?`))
         try {
           await Ud({
-            cohortids: [z.id]
+            cohortids: [G.id]
           }), await p();
         } catch (w) {
           console.error("Error deleting cohort:", w), i.value = "Failed to delete cohort. Please try again.";
         }
-    }, O = (z) => {
-      t.push(`/cohort/${z.id}`);
+    }, O = (G) => {
+      t.push(`/cohort/${G.id}`);
     }, F = jt(!1), L = jt(!1), $ = Ve(() => F.value || L.value), A = Ve(() => F.value ? "Create New Cohort" : "Edit Cohort"), W = sn({
       id: 0,
       name: "",
@@ -7135,11 +7138,11 @@ const Rd = (e) => ({
           theme: "",
           customfields: []
         }), F.value = !1, L.value = !1, await p();
-      } catch (z) {
-        console.error("Error saving cohort:", z), i.value = "Failed to save cohort. Please try again.";
+      } catch (G) {
+        console.error("Error saving cohort:", G), i.value = "Failed to save cohort. Please try again.";
       }
     };
-    return (z, w) => (et(), dt("div", Kd, [
+    return (G, w) => (et(), dt("div", Kd, [
       k("div", Bd, [
         w[13] || (w[13] = k("h1", null, "Cohort Manager", -1)),
         k("div", Wd, [
@@ -7177,7 +7180,7 @@ const Rd = (e) => ({
         ro(" Loading cohorts... ", -1)
       ])])) : o.value.length > 0 ? (et(), dt("div", Yd, [
         k("div", Qd, [
-          w[18] || (w[18] = ru('<div class="cohort-table-header" data-v-6a92ec45><div class="cohort-table-cell" data-v-6a92ec45>Name</div><div class="cohort-table-cell" data-v-6a92ec45>ID Number</div><div class="cohort-table-cell" data-v-6a92ec45>Description</div><div class="cohort-table-cell" data-v-6a92ec45>Visible</div><div class="cohort-table-cell" data-v-6a92ec45>Actions</div></div>', 1)),
+          w[18] || (w[18] = ru('<div class="cohort-table-header" data-v-3a461ae9><div class="cohort-table-cell" data-v-3a461ae9>Name</div><div class="cohort-table-cell" data-v-3a461ae9>ID Number</div><div class="cohort-table-cell" data-v-3a461ae9>Description</div><div class="cohort-table-cell" data-v-3a461ae9>Visible</div><div class="cohort-table-cell" data-v-3a461ae9>Actions</div></div>', 1)),
           k("div", Xd, [
             (et(!0), dt(Le, null, da(o.value, (U) => (et(), dt("div", {
               key: U.id,
@@ -7346,10 +7349,10 @@ const Rd = (e) => ({
   for (const [o, r] of t)
     n[o] = r;
   return n;
-}, Il = /* @__PURE__ */ Np(bp, [["__scopeId", "data-v-6a92ec45"]]), Op = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+}, Il = /* @__PURE__ */ Np(bp, [["__scopeId", "data-v-3a461ae9"]]), Op = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Il
-}, Symbol.toStringTag, { value: "Module" })), wp = () => Promise.resolve().then(() => Op), xp = () => import("./CohortDetail-C3OCaToD.mjs"), Dp = () => import("./CohortEdit-BLCPzT05.mjs"), Sp = () => import("./CohortCreate-CJxcFIus.mjs"), Vp = [
+}, Symbol.toStringTag, { value: "Module" })), wp = () => Promise.resolve().then(() => Op), xp = () => import("./CohortDetail-Dp3qv3Y9.mjs"), Dp = () => import("./CohortEdit-D_eYLKGU.mjs"), Sp = () => import("./CohortCreate-C11Z6kcp.mjs"), Vp = [
   {
     path: "/",
     name: "CohortList",
@@ -7424,4 +7427,4 @@ export {
   Ld as x,
   Ip as y
 };
-//# sourceMappingURL=main-CYti1L7s.mjs.map
+//# sourceMappingURL=main-C123j3YJ.mjs.map

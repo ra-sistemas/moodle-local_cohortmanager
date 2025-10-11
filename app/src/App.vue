@@ -41,7 +41,7 @@ const loadCohorts = async () => {
   error.value = '';
   
   try {
-    const cohortsList = await searchCohortsApi({
+    const cohortsResponse = await searchCohortsApi({
       query: searchQuery.value,
       context: {
         contextlevel: 'system'
@@ -50,12 +50,12 @@ const loadCohorts = async () => {
       limitfrom: (pagination.page - 1) * pagination.perPage,
       limitnum: pagination.perPage
     });
-    
-    cohorts.value = cohortsList || [];
-    pagination.total = cohortsList?.length || 0;
+    cohorts.value = cohortsResponse?.cohorts || [];
+    pagination.total = cohortsResponse?.total || 0;
   } catch (err) {
     console.error('Error loading cohorts:', err);
-    error.value = 'Failed to load cohorts. Please try again.';
+    console.error('Error details:', err);
+    error.value = `Failed to load cohorts. Error: ${err instanceof Error ? err.message : 'Unknown error'}`;
   } finally {
     loading.value = false;
   }

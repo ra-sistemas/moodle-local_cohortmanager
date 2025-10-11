@@ -29,7 +29,9 @@ const ajax = async (method: string, args: Object): Promise<object> => {
   };
 
   try {
-    return await Ajax.call([request]);
+    const responses = await Ajax.call([request]);
+    // Ajax.call returns an array, we need the first response
+    return responses[0];
   } catch (e) {
     if (isDebugEnabled) {
       Notification.exception(e);
@@ -43,9 +45,9 @@ const ajax = async (method: string, args: Object): Promise<object> => {
 /**
  * Buscar cohorts com tratamento de resposta tipado
  */
-const searchCohorts = async (args: Object): Promise<any[]> => {
+const searchCohorts = async (args: Object): Promise<any> => {
   const response = await ajax('core_cohort_search_cohorts', args);
-  return extractSearchResponse(response).cohorts;
+  return extractSearchResponse(response);
 };
 
 /**
