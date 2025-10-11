@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, reactive, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { searchCohorts as searchCohortsApi, createCohorts, updateCohorts, deleteCohorts } from './utils/moodle';
+import { searchCohorts as searchCohortsApi, deleteCohorts } from './utils/moodle';
 import { useStringsStore } from './stores/strings';
 import type { Cohort } from './types/moodle-api';
 
@@ -117,55 +117,9 @@ const viewCohort = (cohort: Cohort) => {
 };
 
 
-// Form state
-const showCreateForm = ref(false);
-const showEditForm = ref(false);
-const showForm = computed(() => showCreateForm.value || showEditForm.value);
-const formTitle = computed(() => showCreateForm.value ? stringsStore.getString('createnewcohort') : stringsStore.getString('editcohort'));
-const formData = reactive<Cohort>({
-  id: 0,
-  name: '',
-  idnumber: '',
-  description: '',
-  descriptionformat: 1,
-  visible: true,
-  theme: '',
-  customfields: []
-});
-
-const submitForm = async () => {
-  try {
-    if (showCreateForm.value) {
-      await createCohorts({
-        cohorts: [formData]
-      });
-    } else {
-      await updateCohorts({
-        cohorts: [formData]
-      });
-    }
-    
-    // Reset form and close modal
-    Object.assign(formData, {
-      id: 0,
-      name: '',
-      idnumber: '',
-      description: '',
-      descriptionformat: 1,
-      visible: true,
-      theme: '',
-      customfields: []
-    });
-    
-    showCreateForm.value = false;
-    showEditForm.value = false;
-    
-    // Refresh the list
-    await loadCohorts();
-  } catch (err) {
-    console.error('Error saving cohort:', err);
-    error.value = stringsStore.getString('failedtosavecohort', 'Failed to save cohort. Please try again.');
-  }
+// Navigation functions
+const navigateToEdit = (cohort: Cohort) => {
+  router.push(`/cohort/${cohort.id}/edit`);
 };
 
 </script>
@@ -176,12 +130,12 @@ const submitForm = async () => {
     <div class="header">
       <h1>{{ stringsStore.getString('cohortmanager') }}</h1>
       <div class="header-actions">
-        <button
-          @click="showCreateForm = true"
+        <router-link
+          to="/cohort/create"
           class="btn btn-primary"
         >
           <i class="icon fa fa-plus"></i> {{ stringsStore.getString('newcohort') }}
-        </button>
+        </router-link>
       </div>
     </div>
 
@@ -248,7 +202,7 @@ const submitForm = async () => {
             </div>
             <div class="cohort-table-cell cohort-actions">
               <button
-                @click="showEditForm = true; formData.id = cohort.id; formData.name = cohort.name; formData.idnumber = cohort.idnumber; formData.description = cohort.description; formData.visible = cohort.visible; formData.theme = cohort.theme || ''"
+                @click="navigateToEdit(cohort)"
                 class="btn btn-sm btn-edit"
                 :title="stringsStore.getString('edit')"
               >
@@ -297,93 +251,14 @@ const submitForm = async () => {
       <p v-if="!loading && !error">
         {{ stringsStore.getString('createyourfirstcohort') }}
       </p>
-      <button
-        @click="showCreateForm = true"
+      <router-link
+        to="/cohort/create"
         class="btn btn-primary"
       >
         {{ stringsStore.getString('createnewcohort') }}
-      </button>
+      </router-link>
     </div>
 
-    <!-- Form Modal -->
-    <div v-if="showForm" class="modal-overlay" @click="showForm = false">
-      <div class="modal-content" @click.stop>
-        <div class="modal-header">
-          <h2>{{ formTitle }}</h2>
-          <button @click="showForm = false" class="btn btn-close">
-            <i class="icon fa fa-times"></i>
-          </button>
-        </div>
-        
-        <div class="modal-body">
-          <div class="form-group">
-            <label for="name">{{ stringsStore.getString('cohortname') }} *</label>
-            <input
-              id="name"
-              v-model="formData.name"
-              type="text"
-              class="form-control"
-              :placeholder="stringsStore.getString('entercohortname')"
-            />
-          </div>
-          
-          <div class="form-group">
-            <label for="idnumber">{{ stringsStore.getString('idnumber') }} *</label>
-            <input
-              id="idnumber"
-              v-model="formData.idnumber"
-              type="text"
-              class="form-control"
-              :placeholder="stringsStore.getString('enteridnumber')"
-            />
-          </div>
-          
-          <div class="form-group">
-            <label for="description">{{ stringsStore.getString('description') }}</label>
-            <textarea
-              id="description"
-              v-model="formData.description"
-              class="form-control"
-              rows="3"
-              :placeholder="stringsStore.getString('entercohortdescription')"
-            ></textarea>
-          </div>
-          
-          <div class="form-group">
-            <label>
-              <input
-                v-model="formData.visible"
-                type="checkbox"
-                class="form-checkbox"
-              />
-              {{ stringsStore.getString('visible') }}
-            </label>
-          </div>
-          
-          <div class="form-group">
-            <label for="theme">{{ stringsStore.getString('theme') }}</label>
-            <select
-              id="theme"
-              v-model="formData.theme"
-              class="form-control"
-            >
-              <option value="">{{ stringsStore.getString('defaulttheme') }}</option>
-              <option value="boost">{{ stringsStore.getString('boost') }}</option>
-              <option value="boost-clean">{{ stringsStore.getString('boostclean') }}</option>
-            </select>
-          </div>
-        </div>
-        
-        <div class="modal-footer">
-          <button @click="showForm = false" class="btn btn-secondary">
-            {{ stringsStore.getString('cancel') }}
-          </button>
-          <button @click="submitForm" class="btn btn-primary">
-            {{ stringsStore.getString('save') }}
-          </button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -511,15 +386,6 @@ const submitForm = async () => {
 .btn-pagination:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-
-.btn-close {
-  background: none;
-  border: none;
-  font-size: 18px;
-  color: #666;
-  cursor: pointer;
-  padding: 5px;
 }
 
 .error-message {
@@ -651,87 +517,6 @@ const submitForm = async () => {
   color: #333;
 }
 
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background-color: white;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 600px;
-  max-height: 90vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-  border-bottom: 1px solid #eee;
-}
-
-.modal-header h2 {
-  margin: 0;
-  color: #333;
-}
-
-.modal-body {
-  padding: 20px;
-  overflow-y: auto;
-  flex: 1;
-}
-
-.modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  padding: 20px;
-  border-top: 1px solid #eee;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 500;
-  color: #333;
-}
-
-.form-control {
-  width: 100%;
-  padding: 10px 15px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-  box-sizing: border-box;
-}
-
-.form-control:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-}
-
-.form-checkbox {
-  margin-right: 8px;
-}
-
 /* Responsive design */
 @media (max-width: 768px) {
   .cohort-manager {
@@ -782,11 +567,6 @@ const submitForm = async () => {
   
   .cohort-actions {
     justify-content: flex-start;
-  }
-  
-  .modal-content {
-    width: 95%;
-    margin: 20px;
   }
 }
 </style>
