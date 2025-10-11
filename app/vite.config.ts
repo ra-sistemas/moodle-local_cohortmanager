@@ -21,8 +21,8 @@ export default defineConfig({
       external: [
         "core/config",
         "core/ajax",
-        "core/str",
         "core/notification",
+        "core/str",
         "core/toast",
       ],
       output: {
@@ -30,7 +30,7 @@ export default defineConfig({
         amd: {
           id: 'local_cohortmanager/app'
         },
-        entryFileNames: 'app.min.js'
+        entryFileNames: 'app.min.js',
       }
     }
   }
