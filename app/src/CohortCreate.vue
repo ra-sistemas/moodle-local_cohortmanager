@@ -1,18 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { createCohorts } from './utils/moodle';
 import { useStringsStore } from './stores/strings';
 
 // Initialize strings store
 const stringsStore = useStringsStore();
-
-// Load strings when component is mounted (using centralized system)
-onMounted(async () => {
-  await import('@/utils/strings-loader').then(({ loadComponentStrings }) => {
-    loadComponentStrings('CohortCreate');
-  });
-});
 
 // State management
 const router = useRouter();

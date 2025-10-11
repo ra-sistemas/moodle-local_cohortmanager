@@ -8,13 +8,6 @@ import type { Cohort } from './types/moodle-api';
 // Initialize strings store
 const stringsStore = useStringsStore();
 
-// Load strings when component is mounted (using centralized system)
-onMounted(async () => {
-  await import('@/utils/strings-loader').then(({ loadComponentStrings }) => {
-    loadComponentStrings('CohortDetail');
-  });
-});
-
 // Define types
 interface CohortMember {
   id: number;

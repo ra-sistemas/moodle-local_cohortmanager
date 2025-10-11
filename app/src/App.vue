@@ -8,17 +8,6 @@ import type { Cohort } from './types/moodle-api';
 // Initialize strings store
 const stringsStore = useStringsStore();
 
-// Load strings when component is mounted (using centralized system)
-// Note: App strings are already loaded in main.ts during app initialization
-onMounted(async () => {
-  // Only load if not already loaded during app initialization
-  if (!stringsStore.isComponentLoaded('App')) {
-    await import('@/utils/strings-loader').then(({ loadComponentStrings }) => {
-      loadComponentStrings('App');
-    });
-  }
-});
-
 // Define types
 
 interface Pagination {
