@@ -4,7 +4,6 @@ import './style.css'
 import App from './App.vue'
 import router from './router'
 import { loadAllStrings } from './utils/strings-loader'
-import { runStringsTests } from './utils/strings-test'
 
 const init = async (selector: string) => {
   const app = createApp(App);

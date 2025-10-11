@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, reactive, computed, watch } from 'vue';
+import { ref, onMounted, reactive, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { searchCohorts as searchCohortsApi, createCohorts, updateCohorts, deleteCohorts } from './utils/moodle';
 import { useStringsStore } from './stores/strings';

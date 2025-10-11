@@ -169,3 +169,73 @@ export const getString = (key: string, fallback?: string) => {
   const stringsStore = useStringsStore();
   return stringsStore.getStringSafely(key, fallback);
 };
+
+/**
+ * Load a single string with support for parameters
+ * This is useful for strings that need variable substitution
+ */
+export const loadSingleString = async (
+  key: string,
+  component?: string,
+  param?: object | string,
+  lang?: string
+): Promise<string> => {
+  const stringsStore = useStringsStore();
+  return stringsStore.loadSingleString(key, component, param, lang);
+};
+
+/**
+ * Pre-cache strings for better performance
+ * This can be used to preload frequently accessed strings
+ */
+export const cacheStrings = (strings: { key: string; value: string; component?: string; lang?: string }[]) => {
+  const stringsStore = useStringsStore();
+  stringsStore.cacheStrings(strings);
+};
+
+/**
+ * Check if a string is already loaded
+ */
+export const isStringLoaded = (key: string): boolean => {
+  const stringsStore = useStringsStore();
+  return stringsStore.isStringLoaded(key);
+};
+
+/**
+ * Clear all cached strings
+ */
+export const clearStringCache = () => {
+  const stringsStore = useStringsStore();
+  stringsStore.clearCache();
+};
+
+/**
+ * Load strings with parameters support
+ * This extends the basic string loading to support parameterized strings
+ */
+export const loadStringsWithParams = async (
+  stringRequests: Array<{
+    key: string;
+    component?: string;
+    param?: object | string;
+    lang?: string;
+  }>
+) => {
+  const stringsStore = useStringsStore();
+  
+  // Group by component for efficient loading
+  const componentsMap = new Map<string, Array<{key: string; param?: object | string; lang?: string}>>();
+  
+  stringRequests.forEach(({ key, component = 'local_cohortmanager', param, lang }) => {
+    if (!componentsMap.has(component)) {
+      componentsMap.set(component, []);
+    }
+    componentsMap.get(component)!.push({ key, param, lang });
+  });
+  
+  // Load strings for each component
+  for (const [component, requests] of componentsMap) {
+    const stringKeys = requests.map(({ key, param, lang }) => ({ key, component, param, lang }));
+    await stringsStore.loadStringsForComponent(component, stringKeys);
+  }
+};
