@@ -36,6 +36,8 @@ export default defineConfig({
           id: 'local_cohortmanager/app'
         },
         entryFileNames: 'app.min.js',
+        chunkFileNames: 'app.min.js',
+        assetFileNames: 'app.min.[ext]',
         globals: {
           'core/config': 'core/config',
           'core/ajax': 'core/ajax',

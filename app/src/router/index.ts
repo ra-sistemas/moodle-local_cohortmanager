@@ -1,10 +1,8 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
-
-// Import components
-const App = () => import('@/App.vue');
-const CohortDetail = () => import('@/CohortDetail.vue');
-const CohortEdit = () => import('@/CohortEdit.vue');
-const CohortCreate = () => import('@/CohortCreate.vue');
+import App from '@/App.vue';
+import CohortDetail from '@/CohortDetail.vue';
+import CohortEdit from '@/CohortEdit.vue';
+import CohortCreate from '@/CohortCreate.vue';
 
 const routes: RouteRecordRaw[] = [
   {
