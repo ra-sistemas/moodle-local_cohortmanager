@@ -1,0 +1,75 @@
+<script setup lang="ts">
+import { computed, ref, onMounted } from 'vue';
+import { useStringsStore } from '../stores/strings';
+import { getThemeList } from '../utils/moodle';
+
+// Initialize strings store
+const stringsStore = useStringsStore();
+
+// Props
+const props = defineProps<{
+  modelValue: string;
+}>();
+
+// Emits
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string): void;
+}>();
+
+// Computed properties
+const selectedTheme = computed({
+  get: () => props.modelValue,
+  set: (value: string) => emit('update:modelValue', value)
+});
+
+// Theme options
+const themeOptions = ref<Array<{ value: string, label: string }>>([]);
+const error = ref<string | null>(null);
+
+// Fetch theme options from external API
+const fetchThemeOptions = async () => {
+  try {
+    error.value = null;
+
+    // Call the external API to get theme list using Moodle AJAX
+    const data = await getThemeList();
+
+    // Transform the response to match the expected format
+    themeOptions.value = data.map((item: any) => ({
+      value: item.value,
+      label: item.label
+    }));
+
+  } catch (err) {
+    console.error('Error fetching theme options:', err);
+    error.value = 'Failed to load theme options';
+  }
+};
+
+// Load theme options when component is mounted
+onMounted(() => {
+  fetchThemeOptions();
+});
+</script>
+
+<template>
+  <div class="mb-4">
+    <label for="theme" class="form-label">{{ stringsStore.getString('theme') }}</label>
+
+    <!-- Error state -->
+    <div v-if="error" class="alert alert-warning">
+      {{ error }}
+    </div>
+
+    <!-- Select dropdown -->
+    <select v-else id="theme" v-model="selectedTheme" class="form-select">
+      <option v-for="option in themeOptions" :key="option.value" :value="option.value">
+        {{ option.label }}
+      </option>
+    </select>
+
+    <div class="form-text">{{ stringsStore.getString('themedescription') }}</div>
+  </div>
+</template>
+
+<style scoped></style>

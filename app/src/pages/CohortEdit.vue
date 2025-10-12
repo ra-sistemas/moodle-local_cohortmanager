@@ -5,6 +5,7 @@ import { getCohorts, updateCohorts } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
 import { add } from 'core/toast';
 import type { Cohort } from '../types/moodle-api';
+import ThemeSelect from '../components/ThemeSelect.vue';
 
 // Initialize strings store
 const stringsStore = useStringsStore();
@@ -202,19 +203,7 @@ onMounted(() => {
             <div class="form-text">{{ stringsStore.getString('makecohortvisible') }}</div>
           </div>
           
-          <div class="mb-3">
-            <label for="theme" class="form-label">{{ stringsStore.getString('theme') }}</label>
-            <select
-              id="theme"
-              v-model="formData.theme"
-              class="form-select"
-            >
-              <option value="">{{ stringsStore.getString('defaulttheme') }}</option>
-              <option value="boost">{{ stringsStore.getString('boost') }}</option>
-              <option value="boost-clean">{{ stringsStore.getString('boostclean') }}</option>
-            </select>
-            <div class="form-text">{{ stringsStore.getString('themedescription') }}</div>
-          </div>
+          <ThemeSelect v-model="formData.theme" />
         </div>
 
         <!-- Custom Fields Section -->

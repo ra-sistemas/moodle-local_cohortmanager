@@ -105,6 +105,13 @@ $functions = [
         'type' => 'write',
         'capabilities' => 'moodle/cohort:manage',
         'ajax' => true
+    ],
+    'local_cohortmanager_get_theme_list' => [
+        'classname'   => 'local_cohortmanager\\external\\app',
+        'methodname' => 'get_theme_list',
+        'description' => 'Returns a list of valid themes',
+        'type'       => 'read',
+        'ajax' => true
     ]
 ];
 
@@ -120,6 +127,7 @@ $services = [
             'local_cohortmanager_search_cohorts',
             'local_cohortmanager_get_cohorts',
             'local_cohortmanager_update_cohorts',
+            'local_cohortmanager_get_theme_list',
         ],
         'restrictedusers' => 0,
         'enabled' => 1,

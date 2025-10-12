@@ -250,4 +250,63 @@ class app extends external_api
             ))
         );
     }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function get_theme_list_parameters()
+    {
+        return new external_function_parameters([]);
+    }
+
+    /**
+     * Returns a list of valid themes using core get_list_of_themes method
+     *
+     * @return array
+     */
+    public static function get_theme_list()
+    {
+        global $CFG;
+
+        // Validate parameters
+        $params = self::validate_parameters(self::get_theme_list_parameters(), []);
+
+        // Get the list of themes using Moodle's core function
+        $themes = get_list_of_themes();
+        
+        // Build the choices array in the expected format
+        $choices = array();
+        $choices[] = array(
+            'value' => '',
+            'label' => get_string('default')
+        );
+        
+        foreach ($themes as $key => $theme) {
+            if (empty($theme->hidefromselector)) {
+                $choices[] = array(
+                    'value' => $key,
+                    'label' => get_string('pluginname', 'theme_'.$theme->name)
+                );
+            }
+        }
+
+        return $choices;
+    }
+
+    /**
+     * Returns description of method result value
+     *
+     * @return external_multiple_structure
+     */
+    public static function get_theme_list_returns()
+    {
+        return new external_multiple_structure(
+            new external_single_structure(array(
+                'value' => new external_value(PARAM_ALPHANUMEXT, 'Theme value'),
+                'label' => new external_value(PARAM_RAW, 'Theme label'),
+            ))
+        );
+    }
 }

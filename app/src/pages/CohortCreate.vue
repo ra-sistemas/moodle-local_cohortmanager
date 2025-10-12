@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { createCohorts } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
 import { add } from 'core/toast';
+import ThemeSelect from '../components/ThemeSelect.vue';
 
 // Initialize strings store
 const stringsStore = useStringsStore();
@@ -166,19 +167,7 @@ const goBack = () => {
           <div class="form-text">{{ stringsStore.getString('makecohortvisible') }}</div>
         </div>
         
-        <div class="mb-4">
-          <label for="theme" class="form-label">{{ stringsStore.getString('theme') }}</label>
-          <select
-            id="theme"
-            v-model="formData.theme"
-            class="form-select"
-          >
-            <option value="">{{ stringsStore.getString('defaulttheme') }}</option>
-            <option value="boost">{{ stringsStore.getString('boost') }}</option>
-            <option value="boost-clean">{{ stringsStore.getString('boostclean') }}</option>
-          </select>
-          <div class="form-text">{{ stringsStore.getString('themedescription') }}</div>
-        </div>
+        <ThemeSelect v-model="formData.theme" />
 
         <div class="mb-4">
           <label class="form-label">{{ stringsStore.getString('category') }}</label>
