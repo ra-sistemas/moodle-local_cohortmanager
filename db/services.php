@@ -31,9 +31,9 @@ $functions = [
     'local_cohortmanager_get_all_strings' => [
         'classname'   => 'local_cohortmanager\\external\\app',
         'methodname' => 'get_all_strings',
-        'classpath'  => 'local/cohortmanager/classes/external/app.php',
         'description' => 'Returns all strings for the local_cohortmanager component',
         'type'       => 'read',
+        'ajax' => true
     ],
 ];
 
