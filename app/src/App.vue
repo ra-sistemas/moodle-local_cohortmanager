@@ -3,7 +3,7 @@ import { onMounted } from 'vue';
 import { loadAllStrings } from './utils/moodle';
 import { add } from 'core/toast';
 
-// Preload all strings when the component is creatred
+// Preload all strings when the component is created
 onMounted(async () => {
   try {
     await loadAllStrings();

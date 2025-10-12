@@ -56,27 +56,27 @@ class app extends external_api {
         $currentlang = current_language();
 
         // Get all strings for the current language
-        $strings = [];
-        $langfile = $CFG->dataroot . '/lang/' . $currentlang . '/local_cohortmanager.php';
+        $lang_strings = [];
+        $langfile = $CFG->dirroot . '/local/cohortmanager/lang/' . $currentlang . '/local_cohortmanager.php';
         if (file_exists($langfile)) {
-            $langstrings = [];
+            $string = [];
             include($langfile);
-            $strings[$currentlang] = $langstrings;
+            $lang_strings[$currentlang] = $string;
         }
-
+        
         // Also get English strings as fallback
         if ($currentlang !== 'en') {
-            $enlangfile = $CFG->dataroot . '/lang/en/local_cohortmanager.php';
+            $enlangfile = $CFG->dirroot . '/local/cohortmanager/lang/en/local_cohortmanager.php';
             if (file_exists($enlangfile)) {
-                $enstrings = [];
+                $string = [];
                 include($enlangfile);
-                $strings['en'] = $enstrings;
+                $lang_strings['en'] = $string;
             }
         }
 
         // Format the result according to the expected structure
         $result = [];
-        foreach ($strings as $lang => $stringlist) {
+        foreach ($lang_strings as $lang => $stringlist) {
             $langstrings = [];
             foreach ($stringlist as $identifier => $value) {
                 $langstrings[] = [
