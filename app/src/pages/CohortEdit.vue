@@ -103,7 +103,7 @@ const submitForm = async () => {
     });
 
     // Navigate to cohort details
-    router.push(`/cohort/${props.id}`);
+    router.push(`/local/cohortmanager/cohort/${props.id}`);
   } catch (err) {
     console.error('Error updating cohort:', err);
     error.value = stringsStore.getString('failedtoupdatecohort', 'Failed to update cohort. Please try again.');
@@ -114,7 +114,7 @@ const submitForm = async () => {
 
 // Navigate back
 const goBack = () => {
-  router.push(`/cohort/${props.id}`);
+  router.push(`/local/cohortmanager/cohort/${props.id}`);
 };
 
 // Initialize the component

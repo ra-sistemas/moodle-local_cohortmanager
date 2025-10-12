@@ -107,12 +107,12 @@ const deleteCohort = async (cohort: Cohort) => {
 // View cohort details
 const viewCohort = (cohort: Cohort) => {
   // Navigate to cohort details page
-  router.push(`/cohort/${cohort.id}`);
+  router.push(`/local/cohortmanager/cohort/${cohort.id}`);
 };
 
 // Navigation functions
 const navigateToEdit = (cohort: Cohort) => {
-  router.push(`/cohort/${cohort.id}/edit`);
+  router.push(`/local/cohortmanager/cohort/${cohort.id}/edit`);
 };
 
 // Calculate pagination info
@@ -132,7 +132,7 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perPag
       <h1>{{ stringsStore.getString('cohortmanager') }}</h1>
       <div class="header-actions">
         <router-link
-          to="/cohort/create"
+          to="/local/cohortmanager/cohort/create"
           class="btn btn-primary"
         >
           <i class="icon fa fa-plus"></i> {{ stringsStore.getString('newcohort') }}

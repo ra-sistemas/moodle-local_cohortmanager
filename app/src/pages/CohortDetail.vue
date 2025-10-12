@@ -72,12 +72,12 @@ const loadMembers = async () => {
 
 // Navigate back to list
 const goBack = () => {
-  router.push('/');
+  router.push('/local/cohortmanager/');
 };
 
 // Edit cohort
 const editCohort = () => {
-  router.push(`/cohort/${props.id}/edit`);
+  router.push(`/local/cohortmanager/cohort/${props.id}/edit`);
 };
 
 // Delete cohort
