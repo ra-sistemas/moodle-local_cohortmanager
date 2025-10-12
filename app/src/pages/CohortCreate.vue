@@ -101,7 +101,7 @@ const goBack = () => {
       <h1 class="h3 mb-0">{{ stringsStore.getString('createnewcohort') }}</h1>
       <div>
         <button @click="goBack" class="btn btn-secondary">
-          <i class="icon fa fa-times"></i> {{ stringsStore.getString('cancel') }}
+          <i class="icon fa fa-times"></i>
         </button>
       </div>
     </div>

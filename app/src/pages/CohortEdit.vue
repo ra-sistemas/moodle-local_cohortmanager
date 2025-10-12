@@ -139,7 +139,7 @@ onMounted(() => {
         <h1 class="h3 mb-0">{{ stringsStore.getString('editcohort') }}</h1>
         <div>
           <button @click="goBack" class="btn btn-secondary">
-            <i class="icon fa fa-times"></i> {{ stringsStore.getString('cancel') }}
+            <i class="fa fa-times"></i>
           </button>
         </div>
       </div>
@@ -201,7 +201,7 @@ onMounted(() => {
         <!-- Form Actions -->
         <div class="card-footer d-flex justify-content-end gap-2">
           <button type="button" @click="goBack" class="btn btn-secondary" :disabled="submitting">
-            <i class="icon fa fa-times"></i> {{ stringsStore.getString('cancel') }}
+            {{ stringsStore.getString('cancel') }}
           </button>
           <button type="submit" class="btn btn-primary" :disabled="submitting">
             <i class="icon fa fa-save"></i>
