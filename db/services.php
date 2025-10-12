@@ -81,10 +81,9 @@ $functions = [
         'ajax' => true
     ],
     'local_cohortmanager_search_cohorts' => [
-        'classname' => 'core_cohort_external',
-        'methodname' => 'search_cohorts',
-        'classpath' => 'cohort/externallib.php',
-        'description' => 'Search for cohorts.',
+        'classname' => 'local_cohortmanager\\external\\app',
+        'methodname' => 'search_cohorts_with_total',
+        'description' => 'Search for cohorts with total count.',
         'type' => 'read',
         'ajax' => true,
         'capabilities' => 'moodle/cohort:view'
@@ -106,7 +105,7 @@ $functions = [
         'type' => 'write',
         'capabilities' => 'moodle/cohort:manage',
         'ajax' => true
-    ],
+    ]
 ];
 
 $services = [

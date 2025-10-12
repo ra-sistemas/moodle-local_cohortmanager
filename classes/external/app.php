@@ -20,8 +20,13 @@ use core_external\external_function_parameters;
 use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use core_external\external_value;
-use core_external\external_warnings;
+use core_external\external_format_value;
+use core_cohort_external;
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot . '/cohort/externallib.php');
+require_once($CFG->dirroot . '/cohort/lib.php');
 /**
  * External API for Cohort Manager
  *
@@ -30,14 +35,16 @@ use core_external\external_warnings;
  * @copyright  2025 REVVO <www.revvo.com.br>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class app extends external_api {
+class app extends external_api
+{
 
     /**
      * Returns description of method parameters
      *
      * @return external_function_parameters
      */
-    public static function get_all_strings_parameters() {
+    public static function get_all_strings_parameters()
+    {
         return new external_function_parameters([]);
     }
 
@@ -46,7 +53,8 @@ class app extends external_api {
      *
      * @return array
      */
-    public static function get_all_strings() {
+    public static function get_all_strings()
+    {
         global $CFG;
 
         // Validate parameters
@@ -63,7 +71,7 @@ class app extends external_api {
             include($langfile);
             $lang_strings[$currentlang] = $string;
         }
-        
+
         // Also get English strings as fallback
         if ($currentlang !== 'en') {
             $enlangfile = $CFG->dirroot . '/local/cohortmanager/lang/en/local_cohortmanager.php';
@@ -98,7 +106,8 @@ class app extends external_api {
      *
      * @return external_multiple_structure
      */
-    public static function get_all_strings_returns() {
+    public static function get_all_strings_returns()
+    {
         return new external_multiple_structure(
             new external_single_structure(
                 array(
@@ -114,6 +123,131 @@ class app extends external_api {
                     )
                 )
             )
+        );
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function search_cohorts_with_total_parameters()
+    {
+        return new external_function_parameters(array(
+            'query' => new external_value(PARAM_RAW, 'Query string'),
+            'page' => new external_value(PARAM_INT, 'page we are fetching the records from', VALUE_DEFAULT, 0),
+            'perpage' => new external_value(PARAM_INT, 'Number of records to fetch', VALUE_DEFAULT, 25)
+        ));
+    }
+
+    /**
+     * Search cohorts with total count.
+     *
+     * @param string $query
+     * @param array $context
+     * @param string $includes
+     * @param int $limitfrom
+     * @param int $limitnum
+     * @return array
+     */
+    public static function search_cohorts_with_total($query, $limitfrom = 0, $limitnum = 25)
+    {
+        global $CFG;
+
+        $params = self::validate_parameters(self::search_cohorts_with_total_parameters(), array(
+            'query' => $query,
+            'page' => $limitfrom,
+            'perpage' => $limitnum,
+        ));
+
+        $context = ["contextlevel" => 'system'];
+
+        $return = core_cohort_external::search_cohorts($params['query'], $context, 'all', $params['page'], $params['perpage']);
+
+        $total_return = core_cohort_external::search_cohorts($params['query'], $context, 'all', 0, 0);
+        $return['total'] = count($total_return['cohorts']);
+
+        return $return;
+    }
+
+    /**
+     * Returns description of method result value
+     *
+     * @return external_single_structure
+     */
+    public static function search_cohorts_with_total_returns()
+    {
+        return new external_single_structure(array(
+            'cohorts' => new external_multiple_structure(
+                new external_single_structure(array(
+                    'id' => new external_value(PARAM_INT, 'ID of the cohort'),
+                    'name' => new external_value(PARAM_RAW, 'cohort name'),
+                    'idnumber' => new external_value(PARAM_RAW, 'cohort idnumber'),
+                    'description' => new external_value(PARAM_RAW, 'cohort description'),
+                    'descriptionformat' => new external_format_value('description'),
+                    'visible' => new external_value(PARAM_BOOL, 'cohort visible'),
+                    'theme' => new external_value(PARAM_THEME, 'cohort theme', VALUE_OPTIONAL),
+                    'customfields' => self::build_custom_fields_returns_structure(),
+                ))
+            ),
+            'total' => new external_value(PARAM_INT, 'Total number of cohorts matching the query')
+        ));
+    }
+
+    /**
+     * Get custom fields data for cohorts
+     *
+     * @param array $cohortids
+     * @return array
+     */
+    protected static function get_custom_fields_data($cohortids)
+    {
+        global $DB;
+
+        $customfieldsdata = array();
+
+        if (empty($cohortids)) {
+            return $customfieldsdata;
+        }
+
+        // Get custom field data for cohorts
+        $sql = "SELECT cfi.id, cfi.shortname, cfv.value, cfv.instanceid
+                  FROM {customfield_field} cfi
+                  JOIN {customfield_category} cfc ON cfi.categoryid = cfc.id
+                  JOIN {customfield_field} cf ON cf.id = cfi.id
+                  JOIN {customfield_data} cfv ON cfv.fieldid = cfi.id
+                 WHERE cfc.component = 'core_cohort'
+                   AND cfv.instanceid IN (" . implode(',', $cohortids) . ")";
+
+        $records = $DB->get_records_sql($sql);
+
+        foreach ($records as $record) {
+            if (!isset($customfieldsdata[$record->instanceid])) {
+                $customfieldsdata[$record->instanceid] = array();
+            }
+            $customfieldsdata[$record->instanceid][] = array(
+                'id' => $record->id,
+                'shortname' => $record->shortname,
+                'value' => $record->value
+            );
+        }
+
+        return $customfieldsdata;
+    }
+
+    /**
+     * Build custom fields return structure
+     *
+     * @return external_multiple_structure
+     */
+    protected static function build_custom_fields_returns_structure()
+    {
+        return new external_multiple_structure(
+            new external_single_structure(array(
+                'id' => new external_value(PARAM_INT, 'Custom field id'),
+                'shortname' => new external_value(PARAM_ALPHANUMEXT, 'Custom field shortname'),
+                'value' => new external_value(PARAM_RAW, 'Custom field value'),
+            ))
         );
     }
 }

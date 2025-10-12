@@ -13,7 +13,7 @@ const stringsStore = useStringsStore();
 
 interface Pagination {
   page: number;
-  perPage: number;
+  perpage: number;
   total: number;
 }
 
@@ -24,7 +24,7 @@ const loading = ref(false);
 const searchQuery = ref('');
 const pagination = reactive<Pagination>({
   page: 1,
-  perPage: 10,
+  perpage: 5,
   total: 0
 });
 
@@ -40,13 +40,10 @@ const loadCohorts = async () => {
   try {
     const cohortsResponse = await searchCohortsApi({
       query: searchQuery.value,
-      context: {
-        contextlevel: 'system'
-      },
-      includes: 'all',
-      limitfrom: (pagination.page - 1) * pagination.perPage,
-      limitnum: pagination.perPage
+      page: (pagination.page - 1),
+      perpage: pagination.perpage
     });
+    console.debug(cohortsResponse);
     cohorts.value = cohortsResponse?.cohorts || [];
     pagination.total = cohortsResponse?.total || 0;
   } catch (err) {
@@ -76,7 +73,7 @@ const prevPage = () => {
 };
 
 const nextPage = () => {
-  const totalPages = Math.ceil(pagination.total / pagination.perPage);
+  const totalPages = Math.ceil(pagination.total / pagination.perpage);
   if (pagination.page < totalPages) {
     goToPage(pagination.page + 1);
   }
@@ -114,12 +111,12 @@ const navigateToEdit = (cohort: Cohort) => {
 
 // Calculate pagination info
 const paginationInfo = computed(() => {
-  const start = (pagination.page - 1) * pagination.perPage + 1;
-  const end = Math.min(pagination.page * pagination.perPage, pagination.total);
+  const start = (pagination.page - 1) * pagination.perpage + 1;
+  const end = Math.min(pagination.page * pagination.perpage, pagination.total);
   return `${start}-${end} of ${pagination.total}`;
 });
 
-const totalPages = computed(() => Math.ceil(pagination.total / pagination.perPage));
+const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpage));
 </script>
 
 <template>
