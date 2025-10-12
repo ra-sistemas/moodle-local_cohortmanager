@@ -86,7 +86,7 @@ const nextPage = () => {
 
 // Delete cohort
 const deleteCohort = async (cohort: Cohort) => {
-  const confirmationMessage = stringsStore.getString('deleteconfirmation', `Are you sure you want to delete "${cohort.name}"?`);
+  const confirmationMessage = stringsStore.getString('deleteconfirmation');
   if (!confirm(confirmationMessage)) {
     return;
   }
@@ -100,7 +100,7 @@ const deleteCohort = async (cohort: Cohort) => {
     await loadCohorts();
   } catch (err) {
     console.error('Error deleting cohort:', err);
-    error.value = stringsStore.getString('failedtodeletecohort', 'Failed to delete cohort. Please try again.');
+    error.value = stringsStore.getString('failedtodeletecohort');
   }
 };
 
@@ -179,11 +179,11 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perPag
         <table class="table table-striped table-hover">
           <thead class="thead-light">
             <tr>
-              <th>{{ stringsStore.getString('name', 'Name') }}</th>
-              <th>{{ stringsStore.getString('id', 'ID') }}</th>
-              <th>{{ stringsStore.getString('description', 'Description') }}</th>
-              <th>{{ stringsStore.getString('members', 'Members') }}</th>
-              <th>{{ stringsStore.getString('actions', 'Actions') }}</th>
+              <th>{{ stringsStore.getString('name') }}</th>
+              <th>{{ stringsStore.getString('id') }}</th>
+              <th>{{ stringsStore.getString('description') }}</th>
+              <th>{{ stringsStore.getString('members') }}</th>
+              <th>{{ stringsStore.getString('actions') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -208,14 +208,14 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perPag
                 <button
                   class="btn btn-sm btn-outline-primary"
                   @click="navigateToEdit(cohort)"
-                  :title="stringsStore.getString('editcohort', 'Edit cohort')"
+                  :title="stringsStore.getString('editcohort')"
                 >
                   <i class="icon fa fa-edit"></i>
                 </button>
                 <button
                   class="btn btn-sm btn-outline-danger"
                   @click="deleteCohort(cohort)"
-                  :title="stringsStore.getString('deletecohort', 'Delete cohort')"
+                  :title="stringsStore.getString('deletecohort')"
                 >
                   <i class="icon fa fa-trash"></i>
                 </button>
