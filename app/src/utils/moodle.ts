@@ -1,6 +1,7 @@
 import Ajax from "core/ajax";
 import * as Config from "core/config";
 import Notification from "core/notification";
+import { useStringsStore } from '../stores/strings';
 import {
   extractSearchResponse,
   extractCreateResponse,
@@ -119,6 +120,15 @@ const requestWithFiles = async (request: object, files: File[]): Promise<object>
   }
 };
 
+/**
+ * Load all strings for the application from the external service
+ * This replaces the need to declare all string keys manually
+ */
+const loadAllStrings = async () => {
+  const stringsStore = useStringsStore();
+  await stringsStore.loadAllStringsFromExternal();
+};
+
 export {
   ajax,
   requestWithFiles,
@@ -128,5 +138,6 @@ export {
   deleteCohorts,
   getCohorts,
   getCohortMembers,
-  getAllStrings
+  getAllStrings,
+  loadAllStrings
 };

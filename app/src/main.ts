@@ -3,7 +3,7 @@ import { createPinia } from 'pinia'
 import './style.css'
 import App from './App.vue'
 import router from './router'
-import { loadAllStrings } from './utils/strings-loader'
+import { loadAllStrings } from './utils/moodle'
 
 const init = async (selector: string) => {
   const app = createApp(App);
