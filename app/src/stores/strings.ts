@@ -1,11 +1,22 @@
 import { defineStore } from 'pinia';
 import { get_strings } from 'core/str';
+import { getAllStrings } from '../utils/moodle';
 
 interface StringKey {
   key: string;
   component: string;
   param?: object | string;
   lang?: string;
+}
+
+interface ExternalStringData {
+  identifier: string;
+  value: string;
+}
+
+interface LanguageData {
+  language: string;
+  strings: ExternalStringData[];
 }
 
 interface StringsState {
@@ -96,6 +107,33 @@ export const useStringsStore = defineStore('strings', {
       for (const component of uniqueComponents) {
         const componentKeys = stringKeys.filter((item) => item.component === component);
         await this.loadStringsForComponent(component, componentKeys);
+      }
+    },
+
+    async loadAllStringsFromExternal() {
+      this.loading = true;
+      this.error = null;
+
+      try {
+        const response = await getAllStrings();
+        
+        // Process the response from external service
+        if (response && Array.isArray(response)) {
+          response.forEach((langData: LanguageData) => {
+            if (langData.strings && Array.isArray(langData.strings)) {
+              langData.strings.forEach((stringData: ExternalStringData) => {
+                if (stringData.identifier && stringData.value) {
+                  this.strings[stringData.identifier] = stringData.value;
+                }
+              });
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load strings from external service:', error);
+        this.error = 'Failed to load strings from external service';
+      } finally {
+        this.loading = false;
       }
     }
   },

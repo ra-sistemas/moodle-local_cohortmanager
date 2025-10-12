@@ -91,6 +91,14 @@ const getCohortMembers = async (args: Object): Promise<Record<number, any[]>> =>
 };
 
 /**
+ * Get all strings for the local_cohortmanager component from external service
+ */
+const getAllStrings = async (): Promise<any> => {
+  const response = await ajax('local_cohortmanager_get_all_strings', {});
+  return response;
+};
+
+/**
  * Perform an AJAX call to a Moodle web service with file uploads.
  *
  * @param {Object} request - The request object to pass to the web service.
@@ -119,5 +127,6 @@ export {
   updateCohorts,
   deleteCohorts,
   getCohorts,
-  getCohortMembers
+  getCohortMembers,
+  getAllStrings
 };
