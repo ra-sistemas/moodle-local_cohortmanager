@@ -7,8 +7,7 @@ import { useAppStore } from '../stores/app';
 interface ContextOption {
   type: string;
   value: string;
-  label?: string;
-  name?: string;
+  label: string;
 }
 
 // Initialize store
@@ -44,16 +43,6 @@ const contextType = computed({
   }
 });
 
-const contextValue = computed({
-  get: () => props.modelValue.value,
-  set: (value: string) => {
-    emit('update:modelValue', {
-      type: props.modelValue.type,
-      value: value
-    });
-  }
-});
-
 // Get context list from store
 const contextList = computed<ContextOption[]>(() => {
   return appStore.getContextList() as ContextOption[];
@@ -75,13 +64,17 @@ const filteredContextList = computed<ContextOption[]>(() => {
 // Handle option selection
 const selectOption = (option: ContextOption) => {
   selectedOption.value = {
-    type: option.type || 'id',
-    value: option.value || '',
-    label: option.label || option.name || ''
+    type: option.type,
+    value: option.value,
+    label: option.label
   };
   
-  contextType.value = option.type || 'id';
-  contextValue.value = option.value || '';
+  // Directly emit the update event
+  emit('update:modelValue', {
+    type: option.type || 'id',
+    value: option.value || ''
+  });
+  
   isDropdownOpen.value = false;
   searchQuery.value = '';
 };
@@ -129,7 +122,7 @@ watch(() => props.modelValue, (newValue) => {
       selectedOption.value = {
         type: foundOption.type,
         value: foundOption.value,
-        label: foundOption.label || foundOption.name || ''
+        label: foundOption.label || ''
       };
     }
   }

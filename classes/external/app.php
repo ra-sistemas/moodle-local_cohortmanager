@@ -354,15 +354,14 @@ class app extends external_api
         if (has_capability('moodle/cohort:manage', $syscontext)) {
             $options[] = [
                 'type' => 'system',
-                'value' => $syscontext->id,
+                'value' => '',
                 'label' => $syscontext->get_context_name()
             ];
         }
         foreach ($displaylist as $cid => $name) {
-            $context = context_coursecat::instance($cid);
             $options[] = [
                 'type' => 'id',
-                'value' => $context->id,
+                'value' => $cid,
                 'label' => $name
             ];
         }
