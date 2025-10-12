@@ -6,6 +6,7 @@ import { useStringsStore } from '../stores/strings';
 import { useAppStore } from '../stores/app';
 import { add } from 'core/toast';
 import ThemeSelect from '../components/ThemeSelect.vue';
+import ContextSelect from '../components/ContextSelect.vue';
 import Notification from 'core/notification';
 
 // Initialize stores
@@ -170,57 +171,7 @@ const goBack = () => {
         </div>
         
         <ThemeSelect v-if="appStore.isAllowCohortThemesEnabled()" v-model="formData.theme" />
-
-        <div class="mb-4">
-          <label class="form-label">{{ stringsStore.getString('category') }}</label>
-          <div class="mb-3">
-            <div class="form-check">
-              <input
-                v-model="formData.categorytype.type"
-                type="radio"
-                value="system"
-                class="form-check-input"
-                id="category-system"
-              />
-              <label class="form-check-label" for="category-system">
-                {{ stringsStore.getString('systemcategory') }}
-              </label>
-            </div>
-            <div class="form-check">
-              <input
-                v-model="formData.categorytype.type"
-                type="radio"
-                value="idnumber"
-                class="form-check-input"
-                id="category-idnumber"
-              />
-              <label class="form-check-label" for="category-idnumber">
-                {{ stringsStore.getString('coursecategorybyidnumber') }}
-              </label>
-            </div>
-            <div class="form-check">
-              <input
-                v-model="formData.categorytype.type"
-                type="radio"
-                value="id"
-                class="form-check-input"
-                id="category-id"
-              />
-              <label class="form-check-label" for="category-id">
-                {{ stringsStore.getString('coursecategorybyid') }}
-              </label>
-            </div>
-          </div>
-          <div v-if="formData.categorytype.type !== 'system'" class="form-text">
-            {{ stringsStore.getString(formData.categorytype.type === 'idnumber' ? 'entercoursecategoryidnumber' : 'entercoursecategoryid') }}
-            <input
-              v-model="formData.categorytype.value"
-              type="text"
-              class="form-control"
-              :placeholder="stringsStore.getString(formData.categorytype.type === 'idnumber' ? 'entercoursecategoryidnumber' : 'entercoursecategoryid')"
-            />
-          </div>
-        </div>
+        <ContextSelect v-model="formData.categorytype" />
       </div>
 
       <!-- Form Actions -->

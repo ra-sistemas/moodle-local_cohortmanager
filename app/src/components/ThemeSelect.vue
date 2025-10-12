@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue';
 import { useStringsStore } from '../stores/strings';
-import { getThemeList } from '../utils/moodle';
+import { useAppStore } from '../stores/app';
 import Notification from 'core/notification';
 
-// Initialize strings store
+// Initialize stores
 const stringsStore = useStringsStore();
+const appStore = useAppStore();
 
 // Props
 const props = defineProps<{
@@ -33,7 +34,7 @@ const fetchThemeOptions = async () => {
     error.value = null;
 
     // Call the external API to get theme list using Moodle AJAX
-    const data = await getThemeList();
+    const data = appStore.getThemeList();
 
     // Transform the response to match the expected format
     themeOptions.value = data.map((item: any) => ({

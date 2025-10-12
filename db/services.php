@@ -106,13 +106,6 @@ $functions = [
         'capabilities' => 'moodle/cohort:manage',
         'ajax' => true
     ],
-    'local_cohortmanager_get_theme_list' => [
-        'classname'   => 'local_cohortmanager\\external\\app',
-        'methodname' => 'get_theme_list',
-        'description' => 'Returns a list of valid themes',
-        'type'       => 'read',
-        'ajax' => true
-    ],
     'local_cohortmanager_get_app_config' => [
         'classname'   => 'local_cohortmanager\\external\\app',
         'methodname' => 'get_app_config',

@@ -93,14 +93,6 @@ const getCohortMembers = async (args: Object): Promise<Record<number, any[]>> =>
 };
 
 /**
- * Get theme list from external service
- */
-const getThemeList = async (): Promise<any> => {
-  const response = await ajax('local_cohortmanager_get_theme_list', {});
-  return response;
-};
-
-/**
  * Get all strings for the local_cohortmanager component from external service
  */
 const getAllStrings = async (): Promise<any> => {
@@ -164,7 +156,6 @@ export {
   deleteCohorts,
   getCohorts,
   getCohortMembers,
-  getThemeList,
   getAllStrings,
   getAppConfig,
   loadAllStrings,

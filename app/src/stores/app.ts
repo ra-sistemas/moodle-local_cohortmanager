@@ -1,53 +1,65 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
 import { getAppConfig } from '../utils/moodle';
 import Notification from 'core/notification';
-/**
- * App Store for managing global application settings
- */
-export const useAppStore = defineStore('app', () => {
-    // State
-    const appConfig = ref<any>(null);
-    const isLoading = ref(false);
 
-    // Actions
-    const fetchAppConfig = async () => {
-        try {
-            isLoading.value = true;
-            const result = await getAppConfig();
-            appConfig.value = result;
-        } catch (err) {
-            Notification.exception(err);
-            appConfig.value = null;
-        } finally {
-            isLoading.value = false;
-        }
-    };
+interface AppConfig {
+  allowcohortthemes?: boolean;
+  themelist?: Array<Object>;
+  contextlist?: Array<Object>;
+  // Add other config properties as needed
+}
 
-    const setAppConfig = (config: any) => {
-        appConfig.value = config;
-    };
+interface AppState {
+  appConfig: AppConfig | null;
+  error: string | null;
+}
 
-    // Getters
-    const getAllowCohortThemes = (): boolean | null => {
-        return appConfig.value?.allowcohortthemes || null;
-    };
-    
-    const isAllowCohortThemesEnabled = (): boolean => {
-        return getAllowCohortThemes() === true;
-    };
+export const useAppStore = defineStore('app', {
+  state: (): AppState => ({
+    appConfig: null,
+    error: null,
+  }),
 
-    return {
-        // State
-        appConfig,
-        isLoading,
-        
-        // Actions
-        fetchAppConfig,
-        setAppConfig,
-        
-        // Getters
-        getAllowCohortThemes,
-        isAllowCohortThemesEnabled,
-    };
+  getters: {
+    getAllowCohortThemes: (state: AppState) => (): boolean | null => {
+      return state.appConfig?.allowcohortthemes || null;
+    },
+
+    getThemeList: (state: AppState) => (): Array<Object> => {
+      return state.appConfig?.themelist || [];
+    },
+
+    getContextList: (state: AppState) => (): Array<Object> => {
+      return state.appConfig?.contextlist || [];
+    },
+
+    isAllowCohortThemesEnabled: (state: AppState) => (): boolean => {
+      return state.appConfig?.allowcohortthemes === true;
+    },
+
+    hasError: (state: AppState) => state.error !== null,
+  },
+
+  actions: {
+    async fetchAppConfig() {
+      this.error = null;
+
+      try {
+        const result = await getAppConfig();
+        this.appConfig = result;
+      } catch (err) {
+        Notification.exception(err);
+        this.appConfig = null;
+        this.error = 'Failed to fetch app configuration';
+      }
+    },
+
+    setAppConfig(config: AppConfig) {
+      this.appConfig = config;
+    },
+
+    clearError() {
+      this.error = null;
+    },
+  },
 });

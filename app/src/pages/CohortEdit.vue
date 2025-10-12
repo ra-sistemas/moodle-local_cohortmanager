@@ -7,6 +7,7 @@ import { useAppStore } from '../stores/app';
 import { add } from 'core/toast';
 import type { Cohort } from '../types/moodle-api';
 import ThemeSelect from '../components/ThemeSelect.vue';
+import ContextSelect from '../components/ContextSelect.vue';
 import Notification from 'core/notification';
 
 // Initialize stores
@@ -183,6 +184,7 @@ onMounted(() => {
           </div>
 
           <ThemeSelect v-if="appStore.isAllowCohortThemesEnabled()" v-model="formData.theme" />
+          <ContextSelect v-model="formData.categorytype" />
         </div>
 
         <!-- Custom Fields Section -->

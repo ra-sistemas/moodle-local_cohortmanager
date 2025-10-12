@@ -22,11 +22,17 @@ use core_external\external_single_structure;
 use core_external\external_value;
 use core_external\external_format_value;
 use core_cohort_external;
+use core_course_category;
+use context_system;
+use context_coursecat;
+use context;
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/cohort/externallib.php');
 require_once($CFG->dirroot . '/cohort/lib.php');
+require_once($CFG->dirroot . '/course/classes/category.php');
+
 /**
  * External API for Cohort Manager
  *
@@ -252,13 +258,63 @@ class app extends external_api
     }
 
     /**
+     * Returns description of method result value
+     *
+     * @return external_multiple_structure
+     */
+    public static function get_theme_list_returns()
+    {
+        return;
+    }
+
+    /**
      * Returns description of method parameters
      *
      * @return external_function_parameters
      */
-    public static function get_theme_list_parameters()
+    public static function get_app_config_parameters()
     {
         return new external_function_parameters([]);
+    }
+
+    /**
+     * Returns the value of allowcohortthemes configuration setting
+     *
+     * @return array
+     */
+    public static function get_app_config()
+    {
+        $configs = get_config('local_cohortmanager');
+        $configs->allowcohortthemes = get_config('core', 'allowcohortthemes');
+        $configs->themelist = self::get_theme_list();
+        $configs->contextlist = self::get_context_list(context_system::instance());
+
+        return $configs;
+    }
+
+    /**
+     * Returns description of method result value
+     *
+     * @return external_single_structure
+     */
+    public static function get_app_config_returns()
+    {
+        return new external_single_structure(array(
+            'allowcohortthemes' => new external_value(PARAM_BOOL, 'Whether cohort themes are allowed'),
+            'themelist' => new external_multiple_structure(
+                new external_single_structure(array(
+                    'value' => new external_value(PARAM_ALPHANUMEXT, 'Theme value'),
+                    'label' => new external_value(PARAM_RAW, 'Theme label'),
+                ))
+            ),
+            'contextlist' => new external_multiple_structure(
+                new external_single_structure(array(
+                    'type' => new external_value(PARAM_ALPHANUMEXT, 'Context type'),
+                    'value' => new external_value(PARAM_ALPHANUMEXT, 'Context value'),
+                    'label' => new external_value(PARAM_RAW, 'Context label'),
+                ))
+            ),
+        ));
     }
 
     /**
@@ -266,13 +322,8 @@ class app extends external_api
      *
      * @return array
      */
-    public static function get_theme_list()
+    protected static function get_theme_list()
     {
-        global $CFG;
-
-        // Validate parameters
-        $params = self::validate_parameters(self::get_theme_list_parameters(), []);
-
         // Get the list of themes using Moodle's core function
         $themes = get_list_of_themes();
 
@@ -295,52 +346,26 @@ class app extends external_api
         return $choices;
     }
 
-    /**
-     * Returns description of method result value
-     *
-     * @return external_multiple_structure
-     */
-    public static function get_theme_list_returns()
+    protected static function get_context_list()
     {
-        return new external_multiple_structure(
-            new external_single_structure(array(
-                'value' => new external_value(PARAM_ALPHANUMEXT, 'Theme value'),
-                'label' => new external_value(PARAM_RAW, 'Theme label'),
-            ))
-        );
-    }
-
-    /**
-     * Returns description of method parameters
-     *
-     * @return external_function_parameters
-     */
-    public static function get_app_config_parameters()
-    {
-        return new external_function_parameters([]);
-    }
-
-    /**
-     * Returns the value of allowcohortthemes configuration setting
-     *
-     * @return array
-     */
-    public static function get_app_config()
-    {
-        $configs = get_config('local_cohortmanager');
-        $configs->allowcohortthemes = get_config('core', 'allowcohortthemes');
-        return $configs;
-    }
-
-    /**
-     * Returns description of method result value
-     *
-     * @return external_single_structure
-     */
-    public static function get_app_config_returns()
-    {
-        return new external_single_structure(array(
-            'allowcohortthemes' => new external_value(PARAM_BOOL, 'Whether cohort themes are allowed'),
-        ));
+        $displaylist = core_course_category::make_categories_list('moodle/cohort:manage');
+        $options = array();
+        $syscontext = context_system::instance();
+        if (has_capability('moodle/cohort:manage', $syscontext)) {
+            $options[] = [
+                'type' => 'system',
+                'value' => $syscontext->id,
+                'label' => $syscontext->get_context_name()
+            ];
+        }
+        foreach ($displaylist as $cid => $name) {
+            $context = context_coursecat::instance($cid);
+            $options[] = [
+                'type' => 'id',
+                'value' => $context->id,
+                'label' => $name
+            ];
+        }
+        return $options;
     }
 }
