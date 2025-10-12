@@ -35,12 +35,92 @@ $functions = [
         'type'       => 'read',
         'ajax' => true
     ],
+    'local_cohortmanager_add_cohort_members' => [
+        'classname' => 'core_cohort_external',
+        'methodname' => 'add_cohort_members',
+        'classpath' => 'cohort/externallib.php',
+        'description' => 'Adds cohort members.',
+        'type' => 'write',
+        'capabilities' => 'moodle/cohort:assign',
+        'ajax' => true
+    ],
+    'local_cohortmanager_create_cohorts' => [
+        'classname' => 'core_cohort_external',
+        'methodname' => 'create_cohorts',
+        'classpath' => 'cohort/externallib.php',
+        'description' => 'Creates new cohorts.',
+        'type' => 'write',
+        'capabilities' => 'moodle/cohort:manage',
+        'ajax' => true
+    ],
+    'local_cohortmanager_delete_cohort_members' => [
+        'classname' => 'core_cohort_external',
+        'methodname' => 'delete_cohort_members',
+        'classpath' => 'cohort/externallib.php',
+        'description' => 'Deletes cohort members.',
+        'type' => 'write',
+        'capabilities' => 'moodle/cohort:assign',
+        'ajax' => true
+    ],
+    'local_cohortmanager_delete_cohorts' => [
+        'classname' => 'core_cohort_external',
+        'methodname' => 'delete_cohorts',
+        'classpath' => 'cohort/externallib.php',
+        'description' => 'Deletes all specified cohorts.',
+        'type' => 'write',
+        'capabilities' => 'moodle/cohort:manage',
+        'ajax' => true
+    ],
+    'local_cohortmanager_get_cohort_members' => [
+        'classname' => 'core_cohort_external',
+        'methodname' => 'get_cohort_members',
+        'classpath' => 'cohort/externallib.php',
+        'description' => 'Returns cohort members.',
+        'type' => 'read',
+        'capabilities' => 'moodle/cohort:view',
+        'ajax' => true
+    ],
+    'local_cohortmanager_search_cohorts' => [
+        'classname' => 'core_cohort_external',
+        'methodname' => 'search_cohorts',
+        'classpath' => 'cohort/externallib.php',
+        'description' => 'Search for cohorts.',
+        'type' => 'read',
+        'ajax' => true,
+        'capabilities' => 'moodle/cohort:view'
+    ],
+    'local_cohortmanager_get_cohorts' => [
+        'classname' => 'core_cohort_external',
+        'methodname' => 'get_cohorts',
+        'classpath' => 'cohort/externallib.php',
+        'description' => 'Returns cohort details.',
+        'type' => 'read',
+        'capabilities' => 'moodle/cohort:view',
+        'ajax' => true
+    ],
+    'local_cohortmanager_update_cohorts' => [
+        'classname' => 'core_cohort_external',
+        'methodname' => 'update_cohorts',
+        'classpath' => 'cohort/externallib.php',
+        'description' => 'Updates existing cohorts.',
+        'type' => 'write',
+        'capabilities' => 'moodle/cohort:manage',
+        'ajax' => true
+    ],
 ];
 
 $services = [
     'local_cohortmanager' => [
         'functions' => [
             'local_cohortmanager_get_all_strings',
+            'local_cohortmanager_add_cohort_members',
+            'local_cohortmanager_create_cohorts',
+            'local_cohortmanager_delete_cohort_members',
+            'local_cohortmanager_delete_cohorts',
+            'local_cohortmanager_get_cohort_members',
+            'local_cohortmanager_search_cohorts',
+            'local_cohortmanager_get_cohorts',
+            'local_cohortmanager_update_cohorts',
         ],
         'restrictedusers' => 0,
         'enabled' => 1,

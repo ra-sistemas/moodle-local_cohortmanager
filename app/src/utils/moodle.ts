@@ -46,7 +46,7 @@ const ajax = async (method: string, args: Object): Promise<object> => {
  * Buscar cohorts com tratamento de resposta tipado
  */
 const searchCohorts = async (args: Object): Promise<any> => {
-  const response = await ajax('core_cohort_search_cohorts', args);
+  const response = await ajax('local_cohortmanager_search_cohorts', args);
   return extractSearchResponse(response);
 };
 
@@ -54,7 +54,7 @@ const searchCohorts = async (args: Object): Promise<any> => {
  * Criar cohorts com tratamento de resposta tipado
  */
 const createCohorts = async (args: Object): Promise<any[]> => {
-  const response = await ajax('core_cohort_create_cohorts', args);
+  const response = await ajax('local_cohortmanager_create_cohorts', args);
   return extractCreateResponse(response).cohorts;
 };
 
@@ -62,7 +62,7 @@ const createCohorts = async (args: Object): Promise<any[]> => {
  * Atualizar cohorts com tratamento de resposta tipado
  */
 const updateCohorts = async (args: Object): Promise<any[]> => {
-  const response = await ajax('core_cohort_update_cohorts', args);
+  const response = await ajax('local_cohortmanager_update_cohorts', args);
   return extractUpdateResponse(response).cohorts;
 };
 
@@ -70,7 +70,7 @@ const updateCohorts = async (args: Object): Promise<any[]> => {
  * Deletar cohorts com tratamento de resposta tipado
  */
 const deleteCohorts = async (args: Object): Promise<any[]> => {
-  const response = await ajax('core_cohort_delete_cohorts', args);
+  const response = await ajax('local_cohortmanager_delete_cohorts', args);
   return extractDeleteResponse(response).cohorts;
 };
 
@@ -78,7 +78,7 @@ const deleteCohorts = async (args: Object): Promise<any[]> => {
  * Obter detalhes de cohorts com tratamento de resposta tipado
  */
 const getCohorts = async (args: Object): Promise<any[]> => {
-  const response = await ajax('core_cohort_get_cohorts', args);
+  const response = await ajax('local_cohortmanager_get_cohorts', args);
   return extractGetCohortsResponse(response);
 };
 
@@ -86,7 +86,7 @@ const getCohorts = async (args: Object): Promise<any[]> => {
  * Obter membros de cohorts com tratamento de resposta tipado
  */
 const getCohortMembers = async (args: Object): Promise<Record<number, any[]>> => {
-  const response = await ajax('core_cohort_get_cohort_members', args);
+  const response = await ajax('local_cohortmanager_get_cohort_members', args);
   return extractGetCohortMembersResponse(response);
 };
 
