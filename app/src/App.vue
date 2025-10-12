@@ -1,4 +1,16 @@
 <script setup lang="ts">
+import { onMounted } from 'vue';
+import { loadAllStrings } from './utils/moodle';
+
+// Preload all strings when the component is creatred
+onMounted(async () => {
+  try {
+    await loadAllStrings();
+    console.log('All strings loaded successfully');
+  } catch (error) {
+    console.warn('Failed to preload some strings:', error);
+  }
+});
 </script>
 
 <template>
