@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, reactive, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { searchCohorts as searchCohortsApi, deleteCohorts } from '../utils/moodle';
+import { searchCohorts as searchCohortsApi } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
 import { add } from 'core/toast';
-import { deleteCancel } from 'core/notification';
+import CohortDelete from '../components/CohortDelete.vue';
 import type { Cohort } from '../types/moodle-api';
 
 // Initialize strings store
@@ -81,33 +81,10 @@ const nextPage = () => {
 };
 
 // Delete cohort
-const deleteCohort = async (cohort: Cohort) => {
-  const confirmationMessage = stringsStore.getString('deleteconfirmation', cohort.name);
-  const deleteButtonText = stringsStore.getString('delete');
-  const modalTitle = stringsStore.getString('deletethiscohort');
-
+const deleteCohort = async () => {
   try {
-    await deleteCancel(
-      modalTitle,
-      confirmationMessage,
-      deleteButtonText,
-      async () => {
-        try {
-          await deleteCohorts({
-            cohortids: [cohort.id]
-          });
-          
-          // Refresh the list
-          await loadCohorts();
-          add(stringsStore.getString('cohortdeletedsuccessfully'), 'success');
-        } catch (err) {
-          add(stringsStore.getString('failedtodeletecohort'), 'error');
-        }
-      },
-      () => {
-        // User cancelled - do nothing
-      }
-    );
+    await loadCohorts();
+    add(stringsStore.getString('cohortdeletedsuccessfully'), 'success');
   } catch (err) {
     add(stringsStore.getString('failedtodeletecohort'), 'error');
   }
@@ -221,13 +198,10 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
                   >
                     <i class="icon fa fa-edit"></i>
                   </button>
-                  <button
-                    class="btn btn-outline-danger"
-                    @click="deleteCohort(cohort)"
-                    :title="stringsStore.getString('deletecohort')"
-                  >
-                    <i class="icon fa fa-trash"></i>
-                  </button>
+                  <CohortDelete
+                    :cohort="cohort"
+                    @click="deleteCohort()"
+                  />
                 </div>
               </td>
             </tr>

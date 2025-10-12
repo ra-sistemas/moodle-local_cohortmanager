@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { getCohorts, getCohortMembers, deleteCohorts } from '../utils/moodle';
+import { getCohorts, getCohortMembers } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
 import { add } from 'core/toast';
+import CohortDelete from '../components/CohortDelete.vue';
 import type { Cohort } from '../types/moodle-api';
 
 // Initialize strings store
@@ -83,17 +84,7 @@ const editCohort = () => {
 const deleteCohort = async () => {
   if (!cohort.value) return;
   
-  if (!confirm(`Are you sure you want to delete "${cohort.value.name}"?`)) {
-    return;
-  }
-
   try {
-    await deleteCohorts({
-      cohortids: [props.id]
-    });
-    
-    // Show success toast and navigate back to list
-    add(stringsStore.getString('cohortdeletedsuccessfully'), 'success');
     router.push('/');
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : stringsStore.getString('failedtodeletecohort');
@@ -125,9 +116,7 @@ onMounted(() => {
           <button @click="editCohort" class="btn btn-primary">
             <i class="icon fa fa-edit"></i> {{ stringsStore.getString('edit') }}
           </button>
-          <button @click="deleteCohort" class="btn btn-danger">
-            <i class="icon fa fa-trash"></i> {{ stringsStore.getString('delete') }}
-          </button>
+          <CohortDelete :cohort="cohort!" @click="deleteCohort" />
         </div>
       </div>
 
