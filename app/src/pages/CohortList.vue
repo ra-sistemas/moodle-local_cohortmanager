@@ -128,9 +128,9 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perPag
 <template>
   <div class="container-fluid p-4">
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
-      <h1 class="h2 mb-0">{{ stringsStore.getString('cohortmanager') }}</h1>
-      <div class="d-flex gap-2">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 pb-3 border-bottom">
+      <h1 class="h2 mb-2 mb-md-0">{{ stringsStore.getString('cohortmanager') }}</h1>
+      <div class="d-flex gap-2 mt-2 mt-md-0">
         <router-link
           to="/local/cohortmanager/cohort/create"
           class="btn btn-primary"
@@ -142,17 +142,21 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perPag
 
     <!-- Search bar -->
     <div class="mb-4">
-      <div class="d-flex gap-2" style="max-width: 500px;">
-        <input
-          v-model="searchQuery"
-          type="text"
-          class="form-control"
-          :placeholder="stringsStore.getString('searchcohorts')"
-          @keyup.enter="searchCohorts"
-        />
-        <button class="btn btn-secondary" @click="searchCohorts">
-          <i class="icon fa fa-search"></i> {{ stringsStore.getString('search') }}
-        </button>
+      <div class="row">
+        <div class="col-md-8 col-lg-6">
+          <div class="input-group">
+            <input
+              v-model="searchQuery"
+              type="text"
+              class="form-control"
+              :placeholder="stringsStore.getString('searchcohorts')"
+              @keyup.enter="searchCohorts"
+            />
+            <button class="btn btn-secondary" @click="searchCohorts">
+              <i class="icon fa fa-search"></i> {{ stringsStore.getString('search') }}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -179,10 +183,10 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perPag
         <table class="table table-striped table-hover">
           <thead class="thead-light">
             <tr>
-              <th>{{ stringsStore.getString('name') }}</th>
-              <th>{{ stringsStore.getString('id') }}</th>
-              <th>{{ stringsStore.getString('description') }}</th>
-              <th>{{ stringsStore.getString('actions') }}</th>
+              <th class="w-50">{{ stringsStore.getString('name') }}</th>
+              <th class="w-10">{{ stringsStore.getString('id') }}</th>
+              <th class="w-30">{{ stringsStore.getString('description') }}</th>
+              <th class="w-10 text-center">{{ stringsStore.getString('actions') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -199,25 +203,27 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perPag
                   <strong>{{ cohort.name }}</strong>
                 </a>
               </td>
-              <td>{{ cohort.id }}</td>
+              <td class="text-center">{{ cohort.id }}</td>
               <td class="text-muted small">
                 {{ cohort.description || stringsStore.getString('nodescription') }}
               </td>
-              <td class="d-flex gap-1 justify-content-start">
-                <button
-                  class="btn btn-sm btn-outline-primary"
-                  @click="navigateToEdit(cohort)"
-                  :title="stringsStore.getString('editcohort')"
-                >
-                  <i class="icon fa fa-edit"></i>
-                </button>
-                <button
-                  class="btn btn-sm btn-outline-danger"
-                  @click="deleteCohort(cohort)"
-                  :title="stringsStore.getString('deletecohort')"
-                >
-                  <i class="icon fa fa-trash"></i>
-                </button>
+              <td class="text-center">
+                <div class="btn-group btn-group-sm" role="group">
+                  <button
+                    class="btn btn-outline-primary"
+                    @click="navigateToEdit(cohort)"
+                    :title="stringsStore.getString('editcohort')"
+                  >
+                    <i class="icon fa fa-edit"></i>
+                  </button>
+                  <button
+                    class="btn btn-outline-danger"
+                    @click="deleteCohort(cohort)"
+                    :title="stringsStore.getString('deletecohort')"
+                  >
+                    <i class="icon fa fa-trash"></i>
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -228,7 +234,7 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perPag
     <!-- Pagination -->
     <div v-if="totalPages > 1" class="mt-4">
       <nav aria-label="Cohort pagination">
-        <ul class="pagination justify-content-center">
+        <ul class="pagination justify-content-center justify-content-md-start">
           <li class="page-item" :class="{ 'disabled': pagination.page === 1 }">
             <button
               class="page-link"

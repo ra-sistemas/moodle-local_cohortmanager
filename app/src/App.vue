@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <div class="app-container">
+  <div class="container-fluid">
     <!-- Router view to render current route component -->
     <router-view v-slot="{ Component }">
       <transition name="fade" mode="out-in">
@@ -13,10 +13,6 @@
 </template>
 
 <style scoped>
-.app-container {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-}
-
 /* Fade transition for router view */
 .fade-enter-active,
 .fade-leave-active {
