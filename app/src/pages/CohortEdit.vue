@@ -64,7 +64,7 @@ const loadCohort = async () => {
     }
   } catch (err) {
     console.error('Error loading cohort:', err);
-    error.value = stringsStore.getString('failedtoloadcohortdata', 'Failed to load cohort data. Please try again.');
+    error.value = stringsStore.getString('failedtoloadcohortdata');
   } finally {
     loading.value = false;
   }
