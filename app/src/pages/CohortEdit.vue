@@ -92,7 +92,7 @@ const submitForm = async () => {
       name: formData.value.name,
       idnumber: formData.value.idnumber,
       description: formData.value.description,
-      descriptionformat: 1, // FORMAT_HTML
+      descriptionformat: 1,
       visible: formData.value.visible,
       theme: formData.value.theme || undefined
     };

@@ -33,7 +33,7 @@ export interface CohortCreateResponse {
 
 // Resposta da API core_cohort_update_cohorts
 export interface CohortUpdateResponse {
-  cohorts: Cohort[];
+  success: Boolean;
 }
 
 // Resposta da API core_cohort_delete_cohorts

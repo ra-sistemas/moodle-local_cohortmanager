@@ -63,9 +63,9 @@ const createCohorts = async (args: Object): Promise<any[]> => {
 /**
  * Atualizar cohorts com tratamento de resposta tipado
  */
-const updateCohorts = async (args: Object): Promise<any[]> => {
-  const response = await ajax('local_cohortmanager_update_cohorts', args);
-  return extractUpdateResponse(response).cohorts;
+const updateCohorts = async (args: Object): Promise<Object> => {
+  await ajax('local_cohortmanager_update_cohorts', args);
+  return extractUpdateResponse();
 };
 
 /**

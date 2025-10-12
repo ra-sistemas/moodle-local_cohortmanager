@@ -37,9 +37,9 @@ export const extractCreateResponse = (response: AjaxResponse): CohortCreateRespo
 /**
  * Função segura para extrair dados da resposta da API core_cohort_update_cohorts
  */
-export const extractUpdateResponse = (response: AjaxResponse): CohortUpdateResponse => {
+export const extractUpdateResponse = (): CohortUpdateResponse => {
   return {
-    cohorts: Array.isArray(response.cohorts) ? response.cohorts : []
+    success: true
   };
 };
 
@@ -47,7 +47,6 @@ export const extractUpdateResponse = (response: AjaxResponse): CohortUpdateRespo
  * Função segura para extrair dados da resposta da API core_cohort_delete_cohorts
  */
 export const extractDeleteResponse = (): CohortDeleteResponse => {
-
   return {
     success: true
   };
