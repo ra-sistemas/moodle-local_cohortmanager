@@ -5,7 +5,7 @@ import type {
   CohortDeleteResponse,
   AjaxResponse
 } from '../types/moodle-api';
-import { add } from 'core/toast';
+import Notification from 'core/notification';
 
 /**
  * Função segura para extrair dados da resposta da API core_cohort_search_cohorts
@@ -73,9 +73,8 @@ export const extractGetCohortMembersResponse = (response: AjaxResponse): Record<
 export const safeExtractResponse = <T>(response: AjaxResponse, extractor: (response: AjaxResponse) => T, defaultValue: T): T => {
   try {
     return extractor(response);
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Error extracting response';
-    add(errorMessage, 'warning');
+  } catch (err) {
+    Notification.exception(err);
     return defaultValue;
   }
 };

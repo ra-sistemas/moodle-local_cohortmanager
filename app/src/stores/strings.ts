@@ -1,14 +1,6 @@
 import { defineStore } from 'pinia';
-import { get_strings } from 'core/str';
 import { getAllStrings } from '../utils/moodle';
-import { add } from 'core/toast';
-
-interface StringKey {
-  key: string;
-  component: string;
-  param?: object | string;
-  lang?: string;
-}
+import Notification from 'core/notification';
 
 interface ExternalStringData {
   identifier: string;
@@ -50,66 +42,6 @@ export const useStringsStore = defineStore('strings', {
   },
 
   actions: {
-    async loadStringsForComponent(this: any, component: string, stringKeys: StringKey[]) {
-      if (this.loadedComponents.has(component)) {
-        return;
-      }
-
-      this.loading = true;
-
-      try {
-        // Filter out strings that are already loaded
-        const keysToLoad = stringKeys.filter(({ key }) => !this.strings[key]);
-        
-        if (keysToLoad.length === 0) {
-          this.loadedComponents.add(component);
-          return;
-        }
-        // Prepare requests for get_strings
-        const requests = keysToLoad.map(({ key, param }) => ({
-          key,
-          component: 'local_cohortmanager',
-          param
-        }));
-
-        // Use get_strings for batch loading
-        const results = await get_strings(requests);
-        
-        // Update the store with loaded strings
-        results.forEach((translation, index) => {
-          const stringRequest = keysToLoad[index];
-          if (stringRequest && stringRequest.key) {
-            const originalKey = stringRequest.key;
-            if (translation) {
-              this.strings[originalKey] = translation;
-            } else {
-              // Fallback to the key itself if translation is null/undefined
-              this.strings[originalKey] = originalKey;
-            }
-          }
-        });
-
-        this.loadedComponents.add(component);
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : `Failed to load strings for component "${component}"`;
-        add(errorMessage, 'error');
-        
-        // Even on error, mark component as loaded to prevent repeated attempts
-        this.loadedComponents.add(component);
-      } finally {
-        this.loading = false;
-      }
-    },
-
-    async loadAllStrings(stringKeys: StringKey[]) {
-      const uniqueComponents = [...new Set(stringKeys.map(({ component }) => component))];
-      
-      for (const component of uniqueComponents) {
-        const componentKeys = stringKeys.filter((item) => item.component === component);
-        await this.loadStringsForComponent(component, componentKeys);
-      }
-    },
-
     async loadAllStringsFromExternal() {
       this.loading = true;
 
@@ -128,9 +60,8 @@ export const useStringsStore = defineStore('strings', {
             }
           });
         }
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Failed to load strings from external service';
-        add(errorMessage, 'error');
+      } catch (err) {
+        Notification.exception(err);
       } finally {
         this.loading = false;
       }

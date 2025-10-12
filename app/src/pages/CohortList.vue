@@ -3,7 +3,7 @@ import { ref, onMounted, reactive, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { searchCohorts as searchCohortsApi } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
-import { add } from 'core/toast';
+import Notification from 'core/notification';
 import CohortDelete from '../components/CohortDelete.vue';
 import type { Cohort } from '../types/moodle-api';
 
@@ -37,7 +37,7 @@ onMounted(async () => {
 // Load cohorts with pagination
 const loadCohorts = async () => {
   loading.value = true;
-  
+
   try {
     const cohortsResponse = await searchCohortsApi({
       query: searchQuery.value,
@@ -47,8 +47,7 @@ const loadCohorts = async () => {
     cohorts.value = cohortsResponse?.cohorts || [];
     pagination.total = cohortsResponse?.total || 0;
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : stringsStore.getString('failedtoloadcohortdata');
-    add(errorMessage, 'error');
+    Notification.exception(err);
   } finally {
     loading.value = false;
   }
@@ -111,10 +110,7 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 pb-3 border-bottom">
       <h1 class="h2 mb-2 mb-md-0">{{ stringsStore.getString('cohortmanager') }}</h1>
       <div class="d-flex gap-2 mt-2 mt-md-0">
-        <router-link
-          to="/local/cohortmanager/cohort/create"
-          class="btn btn-primary"
-        >
+        <router-link to="/local/cohortmanager/cohort/create" class="btn btn-primary">
           <i class="icon fa fa-plus"></i> {{ stringsStore.getString('newcohort') }}
         </router-link>
       </div>
@@ -125,13 +121,8 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
       <div class="row">
         <div class="col-md-8 col-lg-6">
           <div class="input-group">
-            <input
-              v-model="searchQuery"
-              type="text"
-              class="form-control"
-              :placeholder="stringsStore.getString('searchcohorts')"
-              @keyup.enter="searchCohorts"
-            />
+            <input v-model="searchQuery" type="text" class="form-control"
+              :placeholder="stringsStore.getString('searchcohorts')" @keyup.enter="searchCohorts" />
             <button class="btn btn-secondary" @click="searchCohorts">
               <i class="icon fa fa-search"></i> {{ stringsStore.getString('search') }}
             </button>
@@ -166,16 +157,9 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="cohort in cohorts"
-              :key="cohort.id"
-            >
+            <tr v-for="cohort in cohorts" :key="cohort.id">
               <td>
-                <a
-                  href="#"
-                  class="text-decoration-none"
-                  @click.prevent="viewCohort(cohort)"
-                >
+                <a href="#" class="text-decoration-none" @click.prevent="viewCohort(cohort)">
                   <strong>{{ cohort.name }}</strong>
                 </a>
               </td>
@@ -185,17 +169,11 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
               </td>
               <td class="text-center">
                 <div class="btn-group btn-group-sm" role="group">
-                  <button
-                    class="btn btn-outline-primary"
-                    @click="navigateToEdit(cohort)"
-                    :title="stringsStore.getString('editcohort')"
-                  >
+                  <button class="btn btn-outline-primary" @click="navigateToEdit(cohort)"
+                    :title="stringsStore.getString('editcohort')">
                     <i class="icon fa fa-edit"></i>
                   </button>
-                  <CohortDelete
-                    :cohort="cohort"
-                    @success="handleDeleteSuccess"
-                  />
+                  <CohortDelete :cohort="cohort" @success="handleDeleteSuccess" />
                 </div>
               </td>
             </tr>
@@ -209,27 +187,19 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
       <nav aria-label="Cohort pagination">
         <ul class="pagination justify-content-center justify-content-md-start">
           <li class="page-item" :class="{ 'disabled': pagination.page === 1 }">
-            <button
-              class="page-link"
-              @click="prevPage"
-              :disabled="pagination.page === 1"
-            >
+            <button class="page-link" @click="prevPage" :disabled="pagination.page === 1">
               <i class="icon fa fa-chevron-left"></i>
             </button>
           </li>
-          
+
           <li class="page-item active">
             <span class="page-link">
               {{ paginationInfo }}
             </span>
           </li>
-          
+
           <li class="page-item" :class="{ 'disabled': pagination.page === totalPages }">
-            <button
-              class="page-link"
-              @click="nextPage"
-              :disabled="pagination.page === totalPages"
-            >
+            <button class="page-link" @click="nextPage" :disabled="pagination.page === totalPages">
               <i class="icon fa fa-chevron-right"></i>
             </button>
           </li>
@@ -239,5 +209,4 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

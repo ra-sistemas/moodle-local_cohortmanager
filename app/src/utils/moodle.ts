@@ -2,6 +2,7 @@ import Ajax from "core/ajax";
 import * as Config from "core/config";
 import Notification from "core/notification";
 import { useStringsStore } from '../stores/strings';
+import { useAppStore } from '../stores/app';
 import {
   extractSearchResponse,
   extractCreateResponse,
@@ -108,6 +109,14 @@ const getAllStrings = async (): Promise<any> => {
 };
 
 /**
+ * Get app configuration from external service
+ */
+const getAppConfig = async (): Promise<any> => {
+  const response = await ajax('local_cohortmanager_get_app_config', {});
+  return response;
+};
+
+/**
  * Perform an AJAX call to a Moodle web service with file uploads.
  *
  * @param {Object} request - The request object to pass to the web service.
@@ -137,6 +146,15 @@ const loadAllStrings = async () => {
   await stringsStore.loadAllStringsFromExternal();
 };
 
+/**
+ * Load all App configs
+ * This replaces the need to declare all string keys manually
+ */
+const loadAppConfigs = async () => {
+  const appStore = useAppStore();
+  await appStore.fetchAppConfig();
+};
+
 export {
   ajax,
   requestWithFiles,
@@ -148,5 +166,7 @@ export {
   getCohortMembers,
   getThemeList,
   getAllStrings,
-  loadAllStrings
+  getAppConfig,
+  loadAllStrings,
+  loadAppConfigs
 };

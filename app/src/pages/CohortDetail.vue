@@ -6,6 +6,7 @@ import { useStringsStore } from '../stores/strings';
 import { add } from 'core/toast';
 import CohortDelete from '../components/CohortDelete.vue';
 import type { Cohort } from '../types/moodle-api';
+import Notification from 'core/notification';
 
 // Initialize strings store
 const stringsStore = useStringsStore();
@@ -47,8 +48,7 @@ const loadCohort = async () => {
       add(stringsStore.getString('cohortnotfound'), 'warning');
     }
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : stringsStore.getString('failedtoloadcohortdata');
-    add(errorMessage, 'error');
+    Notification.exception(err);
   } finally {
     loading.value = false;
   }
@@ -65,8 +65,7 @@ const loadMembers = async () => {
       members.value = membersResponse[props.id] || [];
     }
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : stringsStore.getString('failedtoloadcohortmembers');
-    add(errorMessage, 'error');
+    Notification.exception(err);
   }
 };
 

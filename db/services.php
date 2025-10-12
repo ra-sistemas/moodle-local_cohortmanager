@@ -112,6 +112,13 @@ $functions = [
         'description' => 'Returns a list of valid themes',
         'type'       => 'read',
         'ajax' => true
+    ],
+    'local_cohortmanager_get_app_config' => [
+        'classname'   => 'local_cohortmanager\\external\\app',
+        'methodname' => 'get_app_config',
+        'description' => 'Returns application configuration settings',
+        'type'       => 'read',
+        'ajax' => true
     ]
 ];
 
@@ -128,6 +135,7 @@ $services = [
             'local_cohortmanager_get_cohorts',
             'local_cohortmanager_update_cohorts',
             'local_cohortmanager_get_theme_list',
+            'local_cohortmanager_get_app_config',
         ],
         'restrictedusers' => 0,
         'enabled' => 1,

@@ -3,12 +3,15 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { getCohorts, updateCohorts } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
+import { useAppStore } from '../stores/app';
 import { add } from 'core/toast';
 import type { Cohort } from '../types/moodle-api';
 import ThemeSelect from '../components/ThemeSelect.vue';
+import Notification from 'core/notification';
 
-// Initialize strings store
+// Initialize stores
 const stringsStore = useStringsStore();
+const appStore = useAppStore();
 
 // Define types
 
@@ -39,12 +42,12 @@ const formData = ref({
 // Load cohort data
 const loadCohort = async () => {
   loading.value = true;
-  
+
   try {
     const cohortsList = await getCohorts({
       cohortids: [props.id]
     });
-    
+
     if (cohortsList && cohortsList.length > 0) {
       cohort.value = cohortsList[0];
       // Populate form data
@@ -63,8 +66,7 @@ const loadCohort = async () => {
       add(stringsStore.getString('cohortnotfound'), 'warning');
     }
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : stringsStore.getString('failedtoloadcohortdata');
-    add(errorMessage, 'error');
+    Notification.exception(err);
   } finally {
     loading.value = false;
   }
@@ -83,7 +85,7 @@ const submitForm = async () => {
   }
 
   submitting.value = true;
-  
+
   try {
     const cohortData = {
       categorytype: formData.value.categorytype,
@@ -106,8 +108,7 @@ const submitForm = async () => {
     add(stringsStore.getString('cohortupdatedsuccessfully'), 'success');
     router.push(`/local/cohortmanager/cohort/${props.id}`);
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : stringsStore.getString('failedtoupdatecohort');
-    add(errorMessage, 'error');
+    Notification.exception(err);
   } finally {
     submitting.value = false;
   }
@@ -147,101 +148,62 @@ onMounted(() => {
       <form @submit.prevent="submitForm" class="card-body">
         <div class="form-section">
           <h2 class="h4">{{ stringsStore.getString('basicinformation') }}</h2>
-          
+
           <div class="mb-3">
             <label for="name" class="form-label">{{ stringsStore.getString('cohortname') }} *</label>
-            <input
-              id="name"
-              v-model="formData.name"
-              type="text"
-              class="form-control"
-              :placeholder="stringsStore.getString('entercohortname')"
-              required
-            />
+            <input id="name" v-model="formData.name" type="text" class="form-control"
+              :placeholder="stringsStore.getString('entercohortname')" required />
             <div class="form-text">{{ stringsStore.getString('cohortnamedescription') }}</div>
           </div>
-          
+
           <div class="mb-3">
             <label for="idnumber" class="form-label">{{ stringsStore.getString('idnumber') }} *</label>
-            <input
-              id="idnumber"
-              v-model="formData.idnumber"
-              type="text"
-              class="form-control"
-              :placeholder="stringsStore.getString('enteridnumber')"
-              required
-            />
+            <input id="idnumber" v-model="formData.idnumber" type="text" class="form-control"
+              :placeholder="stringsStore.getString('enteridnumber')" required />
             <div class="form-text">{{ stringsStore.getString('idnumberdescription') }}</div>
           </div>
-          
+
           <div class="mb-3">
             <label for="description" class="form-label">{{ stringsStore.getString('description') }}</label>
-            <textarea
-              id="description"
-              v-model="formData.description"
-              class="form-control"
-              rows="4"
-              :placeholder="stringsStore.getString('entercohortdescription')"
-            ></textarea>
+            <textarea id="description" v-model="formData.description" class="form-control" rows="4"
+              :placeholder="stringsStore.getString('entercohortdescription')"></textarea>
             <div class="form-text">{{ stringsStore.getString('cohortdescription') }}</div>
           </div>
         </div>
 
         <div class="border-top pt-3">
           <h2 class="h4">{{ stringsStore.getString('settings') }}</h2>
-          
+
           <div class="mb-3">
             <div class="form-check">
-              <input
-                v-model="formData.visible"
-                type="checkbox"
-                class="form-check-input"
-                id="visible"
-              />
+              <input v-model="formData.visible" type="checkbox" class="form-check-input" id="visible" />
               <label class="form-check-label" for="visible">{{ stringsStore.getString('visible') }}</label>
             </div>
             <div class="form-text">{{ stringsStore.getString('makecohortvisible') }}</div>
           </div>
-          
-          <ThemeSelect v-model="formData.theme" />
+
+          <ThemeSelect v-if="appStore.isAllowCohortThemesEnabled()" v-model="formData.theme" />
         </div>
 
         <!-- Custom Fields Section -->
         <div v-if="cohort.customfields && cohort.customfields.length > 0" class="border-top pt-3">
           <h2 class="h4">{{ stringsStore.getString('customfields') }}</h2>
-          
-          <div
-            v-for="field in cohort.customfields"
-            :key="field.shortname"
-            class="mb-3"
-          >
+
+          <div v-for="field in cohort.customfields" :key="field.shortname" class="mb-3">
             <label :for="`custom-${field.shortname}`" class="form-label">{{ field.name }}</label>
-            <input
-              :id="`custom-${field.shortname}`"
-              v-model="field.value"
-              :type="field.type === 'text' ? 'text' : 'text'"
-              class="form-control"
-              :placeholder="`Enter ${field.name}`"
-            />
+            <input :id="`custom-${field.shortname}`" v-model="field.value"
+              :type="field.type === 'text' ? 'text' : 'text'" class="form-control"
+              :placeholder="`Enter ${field.name}`" />
             <div class="form-text">{{ field.name }}</div>
           </div>
         </div>
 
         <!-- Form Actions -->
         <div class="card-footer d-flex justify-content-end gap-2">
-          <button
-            type="button"
-            @click="goBack"
-            class="btn btn-secondary"
-            :disabled="submitting"
-          >
+          <button type="button" @click="goBack" class="btn btn-secondary" :disabled="submitting">
             <i class="icon fa fa-times"></i> {{ stringsStore.getString('cancel') }}
           </button>
-          <button
-            type="submit"
-            class="btn btn-primary"
-            :disabled="submitting"
-          >
+          <button type="submit" class="btn btn-primary" :disabled="submitting">
             <i class="icon fa fa-save"></i>
             {{ submitting ? stringsStore.getString('saving') : stringsStore.getString('savechanges') }}
           </button>

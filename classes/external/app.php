@@ -275,19 +275,19 @@ class app extends external_api
 
         // Get the list of themes using Moodle's core function
         $themes = get_list_of_themes();
-        
+
         // Build the choices array in the expected format
         $choices = array();
         $choices[] = array(
             'value' => '',
             'label' => get_string('default')
         );
-        
+
         foreach ($themes as $key => $theme) {
             if (empty($theme->hidefromselector)) {
                 $choices[] = array(
                     'value' => $key,
-                    'label' => get_string('pluginname', 'theme_'.$theme->name)
+                    'label' => get_string('pluginname', 'theme_' . $theme->name)
                 );
             }
         }
@@ -308,5 +308,39 @@ class app extends external_api
                 'label' => new external_value(PARAM_RAW, 'Theme label'),
             ))
         );
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function get_app_config_parameters()
+    {
+        return new external_function_parameters([]);
+    }
+
+    /**
+     * Returns the value of allowcohortthemes configuration setting
+     *
+     * @return array
+     */
+    public static function get_app_config()
+    {
+        $configs = get_config('local_cohortmanager');
+        $configs->allowcohortthemes = get_config('core', 'allowcohortthemes');
+        return $configs;
+    }
+
+    /**
+     * Returns description of method result value
+     *
+     * @return external_single_structure
+     */
+    public static function get_app_config_returns()
+    {
+        return new external_single_structure(array(
+            'allowcohortthemes' => new external_value(PARAM_BOOL, 'Whether cohort themes are allowed'),
+        ));
     }
 }

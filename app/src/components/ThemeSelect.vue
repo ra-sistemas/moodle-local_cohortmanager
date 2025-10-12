@@ -2,6 +2,7 @@
 import { computed, ref, onMounted } from 'vue';
 import { useStringsStore } from '../stores/strings';
 import { getThemeList } from '../utils/moodle';
+import Notification from 'core/notification';
 
 // Initialize strings store
 const stringsStore = useStringsStore();
@@ -41,8 +42,7 @@ const fetchThemeOptions = async () => {
     }));
 
   } catch (err) {
-    console.error('Error fetching theme options:', err);
-    error.value = 'Failed to load theme options';
+    Notification.exception(err);
   }
 };
 

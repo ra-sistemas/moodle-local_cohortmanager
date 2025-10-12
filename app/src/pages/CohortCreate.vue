@@ -3,11 +3,14 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { createCohorts } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
+import { useAppStore } from '../stores/app';
 import { add } from 'core/toast';
 import ThemeSelect from '../components/ThemeSelect.vue';
+import Notification from 'core/notification';
 
-// Initialize strings store
+// Initialize stores
 const stringsStore = useStringsStore();
+const appStore = useAppStore();
 
 // State management
 const router = useRouter();
@@ -64,8 +67,7 @@ const submitForm = async () => {
       router.push(`/local/cohortmanager/cohort/${newCohortId}`);
     }
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : stringsStore.getString('failedtoupdatecohort');
-    add(errorMessage, 'error');
+    Notification.exception(err);
   } finally {
     submitting.value = false;
   }
@@ -167,7 +169,7 @@ const goBack = () => {
           <div class="form-text">{{ stringsStore.getString('makecohortvisible') }}</div>
         </div>
         
-        <ThemeSelect v-model="formData.theme" />
+        <ThemeSelect v-if="appStore.isAllowCohortThemesEnabled()" v-model="formData.theme" />
 
         <div class="mb-4">
           <label class="form-label">{{ stringsStore.getString('category') }}</label>

@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { loadAllStrings } from './utils/moodle';
-import { add } from 'core/toast';
+import { loadAllStrings, loadAppConfigs } from './utils/moodle';
+import Notification from 'core/notification';
 
-// Preload all strings when the component is created
+// Preload all strings and app config when the component is created
 onMounted(async () => {
   try {
-    await loadAllStrings();
-  } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : 'Failed to preload some strings';
-    add(errorMessage, 'error');
+    await Promise.all([
+      loadAllStrings(),
+      loadAppConfigs()
+    ]);
+  } catch (err: any) {
+    Notification.exception(err);
   }
 });
 </script>

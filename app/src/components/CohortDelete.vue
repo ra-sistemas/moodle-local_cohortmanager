@@ -5,18 +5,19 @@ import { useStringsStore } from '../stores/strings';
 import { add } from 'core/toast';
 import { deleteCancel } from 'core/notification';
 import type { Cohort } from '../types/moodle-api';
+import Notification from 'core/notification';
 
 // Props
 interface Props {
   cohort: Cohort;
   onSuccess?: () => void;
-  onError?: (error: string) => void;
+  onError?: (err: any) => void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   onSuccess: () => {},
-  onError: (error: string) => {
-    add(error, 'error');
+  onError: (err: any) => {
+    Notification.exception(err);
   }
 });
 
@@ -48,8 +49,7 @@ const deleteCohort = async () => {
           // Call success callback
           props.onSuccess();
         } catch (err) {
-          const errorMessage = err instanceof Error ? err.message : stringsStore.getString('failedtodeletecohort');
-          props.onError(errorMessage);
+          props.onError(err);
         } finally {
           loading.value = false;
         }
@@ -59,8 +59,7 @@ const deleteCohort = async () => {
       }
     );
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : stringsStore.getString('failedtodeletecohort');
-    props.onError(errorMessage);
+    props.onError(err);
   }
 };
 
