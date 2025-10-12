@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { getCohorts, getCohortMembers, deleteCohorts } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
+import { add } from 'core/toast';
 import type { Cohort } from '../types/moodle-api';
 
 // Initialize strings store
@@ -27,13 +28,11 @@ const router = useRouter();
 const cohort = ref<Cohort | null>(null);
 const members = ref<CohortMember[]>([]);
 const loading = ref(false);
-const error = ref('');
 const activeTab = ref('details');
 
 // Load cohort details
 const loadCohort = async () => {
   loading.value = true;
-  error.value = '';
   
   try {
     const cohortsList = await getCohorts({
@@ -44,11 +43,11 @@ const loadCohort = async () => {
       cohort.value = cohortsList[0];
       await loadMembers();
     } else {
-      error.value = stringsStore.getString('cohortnotfound');
+      add(stringsStore.getString('cohortnotfound'), 'warning');
     }
   } catch (err) {
-    console.error('Error loading cohort:', err);
-    error.value = stringsStore.getString('failedtoloadcohortdetails');
+    const errorMessage = err instanceof Error ? err.message : stringsStore.getString('failedtoloadcohortdata');
+    add(errorMessage, 'error');
   } finally {
     loading.value = false;
   }
@@ -93,11 +92,12 @@ const deleteCohort = async () => {
       cohortids: [props.id]
     });
     
-    // Navigate back to list
+    // Show success toast and navigate back to list
+    add(stringsStore.getString('cohortdeletedsuccessfully'), 'success');
     router.push('/');
   } catch (err) {
     console.error('Error deleting cohort:', err);
-    error.value = stringsStore.getString('failedtodeletecohort');
+    add(stringsStore.getString('failedtodeletecohort'), 'error');
   }
 };
 
@@ -112,14 +112,6 @@ onMounted(() => {
     <!-- Loading State -->
     <div v-if="loading" class="text-center py-4">
       <i class="icon fa fa-spinner fa-spin"></i> {{ stringsStore.getString('loadingcohortdetails') }}
-    </div>
-
-    <!-- Error State -->
-    <div v-else-if="error" class="alert alert-danger d-flex justify-content-between align-items-center">
-      {{ error }}
-      <button @click="loadCohort" class="btn btn-outline-primary">
-        <i class="icon fa fa-refresh"></i> {{ stringsStore.getString('retry') }}
-      </button>
     </div>
 
     <!-- Content -->

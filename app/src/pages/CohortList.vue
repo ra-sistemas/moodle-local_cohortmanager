@@ -3,6 +3,7 @@ import { ref, onMounted, reactive, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { searchCohorts as searchCohortsApi, deleteCohorts } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
+import { add } from 'core/toast';
 import type { Cohort } from '../types/moodle-api';
 
 // Initialize strings store
@@ -20,7 +21,6 @@ interface Pagination {
 const router = useRouter();
 const cohorts = ref<Cohort[]>([]);
 const loading = ref(false);
-const error = ref('');
 const searchQuery = ref('');
 const pagination = reactive<Pagination>({
   page: 1,
@@ -36,7 +36,6 @@ onMounted(async () => {
 // Load cohorts with pagination
 const loadCohorts = async () => {
   loading.value = true;
-  error.value = '';
   
   try {
     const cohortsResponse = await searchCohortsApi({
@@ -51,9 +50,8 @@ const loadCohorts = async () => {
     cohorts.value = cohortsResponse?.cohorts || [];
     pagination.total = cohortsResponse?.total || 0;
   } catch (err) {
-    console.error('Error loading cohorts:', err);
-    console.error('Error details:', err);
-    error.value = stringsStore.getString('failedtoloadcohorts');
+    const errorMessage = err instanceof Error ? err.message : stringsStore.getString('failedtoloadcohortdata');
+    add(errorMessage, 'error');
   } finally {
     loading.value = false;
   }
@@ -99,8 +97,7 @@ const deleteCohort = async (cohort: Cohort) => {
     // Refresh the list
     await loadCohorts();
   } catch (err) {
-    console.error('Error deleting cohort:', err);
-    error.value = stringsStore.getString('failedtodeletecohort');
+    addToast(stringsStore.getString('failedtodeletecohort'), 'error');
   }
 };
 
@@ -160,10 +157,6 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perPag
       </div>
     </div>
 
-    <!-- Error message -->
-    <div v-if="error" class="alert alert-danger">
-      {{ error }}
-    </div>
 
     <!-- Loading state -->
     <div v-if="loading" class="text-center p-4">

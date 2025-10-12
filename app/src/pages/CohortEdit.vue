@@ -20,7 +20,6 @@ const props = defineProps<{
 const router = useRouter();
 const cohort = ref<Cohort | null>(null);
 const loading = ref(false);
-const error = ref('');
 const submitting = ref(false);
 
 // Form data
@@ -39,7 +38,6 @@ const formData = ref({
 // Load cohort data
 const loadCohort = async () => {
   loading.value = true;
-  error.value = '';
   
   try {
     const cohortsList = await getCohorts({
