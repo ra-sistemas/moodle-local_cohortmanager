@@ -182,7 +182,6 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perPag
               <th>{{ stringsStore.getString('name') }}</th>
               <th>{{ stringsStore.getString('id') }}</th>
               <th>{{ stringsStore.getString('description') }}</th>
-              <th>{{ stringsStore.getString('members') }}</th>
               <th>{{ stringsStore.getString('actions') }}</th>
             </tr>
           </thead>
