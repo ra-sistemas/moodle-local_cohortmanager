@@ -26,6 +26,7 @@ use core_course_category;
 use context_system;
 use context_coursecat;
 use context;
+use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -287,7 +288,7 @@ class app extends external_api
         $configs = get_config('local_cohortmanager');
         $configs->allowcohortthemes = get_config('core', 'allowcohortthemes');
         $configs->themelist = self::get_theme_list();
-        $configs->contextlist = self::get_context_list(context_system::instance());
+        $configs->contextlist = self::get_context_list(\context_system::instance());
 
         return $configs;
     }
@@ -366,5 +367,76 @@ class app extends external_api
             ];
         }
         return $options;
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function get_cohort_context_info_parameters()
+    {
+        return new external_function_parameters(array(
+            'cohortid' => new external_value(PARAM_INT, 'ID of the cohort')
+        ));
+    }
+
+    /**
+     * Get cohort context information based on contextid
+     *
+     * @param int $cohortid ID of the cohort
+     * @return array Object with type and value keys
+     */
+    public static function get_cohort_context_info($cohortid)
+    {
+        global $DB;
+
+        // Validate parameters
+        $params = self::validate_parameters(self::get_cohort_context_info_parameters(), array(
+            'cohortid' => $cohortid
+        ));
+
+        // Get cohort context
+        $cohort_contextid = $DB->get_field(
+            'cohort',
+            'contextid',
+            array('id' => $params['cohortid']),
+        );
+
+        if (!$cohort_contextid) {
+            throw new moodle_exception('bulknocohort', 'cohort');
+        }
+
+        $context = context::instance_by_id($cohort_contextid);
+
+        // Determine type and value based on contextid
+        if ($context->contextid == 1) {
+            // System context
+            $result = array(
+                'type' => 'system',
+                'value' => ''
+            );
+        } else {
+            // Course category context
+            $result = array(
+                'type' => 'id',
+                'value' => $context->instanceid
+            );
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns description of method result value
+     *
+     * @return external_single_structure
+     */
+    public static function get_cohort_context_info_returns()
+    {
+        return new external_single_structure(array(
+            'type' => new external_value(PARAM_ALPHANUMEXT, 'Type of context (system or id)'),
+            'value' => new external_value(PARAM_RAW, 'Value based on context type')
+        ));
     }
 }

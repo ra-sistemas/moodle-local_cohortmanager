@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { getCohorts, updateCohorts } from '../utils/moodle';
+import { getCohorts, updateCohorts, getCohortContextInfo } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
 import { useAppStore } from '../stores/app';
 import { add } from 'core/toast';
@@ -34,7 +34,7 @@ const formData = ref({
   description: '',
   visible: true,
   theme: '',
-  categorytype: {
+  contextinfo: {
     type: 'system',
     value: ''
   }
@@ -51,6 +51,19 @@ const loadCohort = async () => {
 
     if (cohortsList && cohortsList.length > 0) {
       cohort.value = cohortsList[0];
+
+      let contextInfo = {
+        type: 'system',
+        value: ''
+      };
+      try {
+        contextInfo = await getCohortContextInfo({
+          cohortid: props.id
+        });
+      } catch (contextErr) {
+        console.warn('Failed to fetch cohort context info, using defaults:', contextErr);
+      }
+
       // Populate form data
       formData.value = {
         name: cohort.value!.name,
@@ -58,10 +71,7 @@ const loadCohort = async () => {
         description: cohort.value!.description,
         visible: cohort.value!.visible,
         theme: cohort.value!.theme || '',
-        categorytype: {
-          type: 'system',
-          value: ''
-        }
+        contextinfo: contextInfo
       };
     } else {
       add(stringsStore.getString('cohortnotfound'), 'warning');
@@ -89,7 +99,7 @@ const submitForm = async () => {
 
   try {
     const cohortData = {
-      categorytype: formData.value.categorytype,
+      categorytype: formData.value.contextinfo,
       name: formData.value.name,
       idnumber: formData.value.idnumber,
       description: formData.value.description,
@@ -184,7 +194,7 @@ onMounted(() => {
           </div>
 
           <ThemeSelect v-if="appStore.isAllowCohortThemesEnabled()" v-model="formData.theme" />
-          <ContextSelect v-model="formData.categorytype" />
+          <ContextSelect v-model="formData.contextinfo" />
         </div>
 
         <!-- Custom Fields Section -->

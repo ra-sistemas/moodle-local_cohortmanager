@@ -93,6 +93,14 @@ const getCohortMembers = async (args: Object): Promise<Record<number, any[]>> =>
 };
 
 /**
+ * Get cohort context information with treatment
+ */
+const getCohortContextInfo = async (args: Object): Promise<any> => {
+  const response = await ajax('local_cohortmanager_get_cohort_context_info', args);
+  return response;
+};
+
+/**
  * Get all strings for the local_cohortmanager component from external service
  */
 const getAllStrings = async (): Promise<any> => {
@@ -156,6 +164,7 @@ export {
   deleteCohorts,
   getCohorts,
   getCohortMembers,
+  getCohortContextInfo,
   getAllStrings,
   getAppConfig,
   loadAllStrings,

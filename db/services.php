@@ -112,6 +112,13 @@ $functions = [
         'description' => 'Returns application configuration settings',
         'type'       => 'read',
         'ajax' => true
+    ],
+    'local_cohortmanager_get_cohort_context_info' => [
+        'classname'   => 'local_cohortmanager\\external\\app',
+        'methodname' => 'get_cohort_context_info',
+        'description' => 'Returns cohort context information based on contextid',
+        'type'       => 'read',
+        'ajax' => true
     ]
 ];
 
@@ -129,6 +136,7 @@ $services = [
             'local_cohortmanager_update_cohorts',
             'local_cohortmanager_get_theme_list',
             'local_cohortmanager_get_app_config',
+            'local_cohortmanager_get_cohort_context_info',
         ],
         'restrictedusers' => 0,
         'enabled' => 1,
