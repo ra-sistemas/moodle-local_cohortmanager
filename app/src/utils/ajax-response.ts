@@ -30,7 +30,7 @@ export const extractSearchResponse = (response: AjaxResponse): CohortSearchRespo
  */
 export const extractCreateResponse = (response: AjaxResponse): CohortCreateResponse => {
   return {
-    cohorts: Array.isArray(response.cohorts) ? response.cohorts : []
+    cohorts: Array.isArray(response) ? response : []
   };
 };
 
