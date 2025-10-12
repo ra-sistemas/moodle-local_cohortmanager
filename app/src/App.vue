@@ -6,7 +6,6 @@ import { loadAllStrings } from './utils/moodle';
 onMounted(async () => {
   try {
     await loadAllStrings();
-    console.log('All strings loaded successfully');
   } catch (error) {
     console.warn('Failed to preload some strings:', error);
   }

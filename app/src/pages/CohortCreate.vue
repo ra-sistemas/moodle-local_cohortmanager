@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { createCohorts } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
+import {add as addToast} from 'core/toast';
 
 // Initialize strings store
 const stringsStore = useStringsStore();
@@ -10,7 +11,6 @@ const stringsStore = useStringsStore();
 // State management
 const router = useRouter();
 const submitting = ref(false);
-const error = ref('');
 
 // Form data
 const formData = ref({
@@ -28,12 +28,12 @@ const formData = ref({
 // Submit form
 const submitForm = async () => {
   if (!formData.value.name.trim()) {
-    alert('Please enter a cohort name');
+    addToast(stringsStore.getString('pleaseentercohortname'), 'error');
     return;
   }
 
   if (!formData.value.idnumber.trim()) {
-    alert('Please enter an ID number');
+    addToast(stringsStore.getString('pleaseenteridnumber'), 'error');
     return;
   }
 
@@ -54,14 +54,17 @@ const submitForm = async () => {
       cohorts: [cohortData]
     });
 
+    // Show success toast
+    addToast(stringsStore.getString('cohortcreatedsuccessfully'), 'success');
+    
     // Navigate to the newly created cohort details
     if (createdCohorts && createdCohorts.length > 0) {
       const newCohortId = createdCohorts[0].id;
       router.push(`/local/cohortmanager/cohort/${newCohortId}`);
     }
   } catch (err) {
-    console.error('Error creating cohort:', err);
-    error.value = stringsStore.getString('failedtocreatecohort');
+    // Use toast for error notification instead of console.error and error.value
+    addToast(stringsStore.getString('failedtocreatecohort'), 'error');
   } finally {
     submitting.value = false;
   }
@@ -80,7 +83,6 @@ const resetForm = () => {
       value: ''
     }
   };
-  error.value = '';
 };
 
 // Navigate back
@@ -101,13 +103,6 @@ const goBack = () => {
       </div>
     </div>
 
-    <!-- Error Message -->
-    <div v-if="error" class="alert alert-danger d-flex justify-content-between align-items-center">
-      {{ error }}
-      <button @click="resetForm" class="btn btn-outline-secondary">
-        <i class="icon fa fa-refresh"></i> {{ stringsStore.getString('resetform') }}
-      </button>
-    </div>
 
     <!-- Form -->
     <form @submit.prevent="submitForm" class="card">
