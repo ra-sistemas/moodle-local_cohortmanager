@@ -53,7 +53,7 @@ const loadCohorts = async () => {
   } catch (err) {
     console.error('Error loading cohorts:', err);
     console.error('Error details:', err);
-    error.value = stringsStore.getString('failedtoloadcohorts', `Failed to load cohorts. Error: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    error.value = stringsStore.getString('failedtoloadcohorts');
   } finally {
     loading.value = false;
   }
@@ -147,11 +147,11 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perPag
           v-model="searchQuery"
           type="text"
           class="search-input"
-          :placeholder="stringsStore.getString('searchcohorts', 'Search cohorts...')"
+          :placeholder="stringsStore.getString('searchcohorts')"
           @keyup.enter="searchCohorts"
         />
         <button class="btn btn-search" @click="searchCohorts">
-          <i class="icon fa fa-search"></i> {{ stringsStore.getString('search', 'Search') }}
+          <i class="icon fa fa-search"></i> {{ stringsStore.getString('search') }}
         </button>
       </div>
     </div>
@@ -163,14 +163,14 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perPag
 
     <!-- Loading state -->
     <div v-if="loading" class="loading">
-      {{ stringsStore.getString('loading', 'Loading...') }}
+      {{ stringsStore.getString('loading') }}
     </div>
 
     <!-- Empty state -->
     <div v-else-if="cohorts.length === 0" class="empty-state">
       <i class="icon fa fa-users"></i>
-      <h3>{{ stringsStore.getString('nocoortsfound', 'No cohorts found') }}</h3>
-      <p>{{ stringsStore.getString('nocoortsfounddesc', 'Create your first cohort to get started.') }}</p>
+      <h3>{{ stringsStore.getString('nocoortsfound') }}</h3>
+      <p>{{ stringsStore.getString('nocoortsfounddesc') }}</p>
     </div>
 
     <!-- Cohort table -->
@@ -200,7 +200,7 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perPag
           </div>
           <div class="cohort-table-cell">{{ cohort.id }}</div>
           <div class="cohort-table-cell cohort-description">
-            {{ cohort.description || stringsStore.getString('nodescription', 'No description') }}
+            {{ cohort.description || stringsStore.getString('nodescription') }}
           </div>
           <div class="cohort-table-cell cohort-actions">
             <button

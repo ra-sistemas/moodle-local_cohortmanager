@@ -61,7 +61,7 @@ const submitForm = async () => {
     }
   } catch (err) {
     console.error('Error creating cohort:', err);
-    error.value = stringsStore.getString('failedtocreatecohort', 'Failed to create cohort. Please try again.');
+    error.value = stringsStore.getString('failedtocreatecohort');
   } finally {
     submitting.value = false;
   }

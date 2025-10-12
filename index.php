@@ -26,7 +26,7 @@ require('../../config.php');
 
 require_login();
 
-$url = new moodle_url('/local/cohortmanager/index.php', []);
+$url = new moodle_url('/local/cohortmanager/', []);
 $PAGE->set_url($url);
 $PAGE->set_context(context_system::instance());
 

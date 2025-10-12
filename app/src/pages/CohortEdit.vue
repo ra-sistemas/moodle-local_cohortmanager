@@ -60,7 +60,7 @@ const loadCohort = async () => {
         }
       };
     } else {
-      error.value = stringsStore.getString('cohortnotfound', 'Cohort not found');
+      error.value = stringsStore.getString('cohortnotfound');
     }
   } catch (err) {
     console.error('Error loading cohort:', err);
@@ -106,7 +106,7 @@ const submitForm = async () => {
     router.push(`/local/cohortmanager/cohort/${props.id}`);
   } catch (err) {
     console.error('Error updating cohort:', err);
-    error.value = stringsStore.getString('failedtoupdatecohort', 'Failed to update cohort. Please try again.');
+    error.value = stringsStore.getString('failedtoupdatecohort');
   } finally {
     submitting.value = false;
   }

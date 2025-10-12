@@ -44,11 +44,11 @@ const loadCohort = async () => {
       cohort.value = cohortsList[0];
       await loadMembers();
     } else {
-      error.value = stringsStore.getString('cohortnotfound', 'Cohort not found');
+      error.value = stringsStore.getString('cohortnotfound');
     }
   } catch (err) {
     console.error('Error loading cohort:', err);
-    error.value = stringsStore.getString('failedtoloadcohortdetails', 'Failed to load cohort details. Please try again.');
+    error.value = stringsStore.getString('failedtoloadcohortdetails');
   } finally {
     loading.value = false;
   }
@@ -97,7 +97,7 @@ const deleteCohort = async () => {
     router.push('/');
   } catch (err) {
     console.error('Error deleting cohort:', err);
-    error.value = stringsStore.getString('failedtodeletecohort', 'Failed to delete cohort. Please try again.');
+    error.value = stringsStore.getString('failedtodeletecohort');
   }
 };
 
@@ -251,7 +251,7 @@ onMounted(() => {
     <div v-else class="not-found">
       <i class="icon fa fa-exclamation-triangle"></i>
       <h3>{{ stringsStore.getString('cohortnotfound') }}</h3>
-      <p>{{ stringsStore.getString('cohortnotfound') + ' details.' }}</p>
+      <p>{{ stringsStore.getString('cohortnotfounddetails') }}</p>
       <button @click="goBack" class="btn btn-primary">
         {{ stringsStore.getString('backtocohortlist') }}
       </button>
