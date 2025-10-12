@@ -64,8 +64,8 @@ const loadMembers = async () => {
       members.value = membersResponse[props.id] || [];
     }
   } catch (err) {
-    console.error('Error loading cohort members:', err);
-    // Don't show error for members as it's not critical
+    const errorMessage = err instanceof Error ? err.message : stringsStore.getString('failedtoloadcohortmembers');
+    add(errorMessage, 'error');
   }
 };
 
@@ -96,8 +96,8 @@ const deleteCohort = async () => {
     add(stringsStore.getString('cohortdeletedsuccessfully'), 'success');
     router.push('/');
   } catch (err) {
-    console.error('Error deleting cohort:', err);
-    add(stringsStore.getString('failedtodeletecohort'), 'error');
+    const errorMessage = err instanceof Error ? err.message : stringsStore.getString('failedtodeletecohort');
+    add(errorMessage, 'error');
   }
 };
 

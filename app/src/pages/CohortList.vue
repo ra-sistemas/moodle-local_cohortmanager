@@ -97,7 +97,7 @@ const deleteCohort = async (cohort: Cohort) => {
     // Refresh the list
     await loadCohorts();
   } catch (err) {
-    addToast(stringsStore.getString('failedtodeletecohort'), 'error');
+    add(stringsStore.getString('failedtodeletecohort'), 'error');
   }
 };
 

@@ -1,10 +1,11 @@
-import type { 
-  CohortSearchResponse, 
-  CohortCreateResponse, 
-  CohortUpdateResponse, 
+import type {
+  CohortSearchResponse,
+  CohortCreateResponse,
+  CohortUpdateResponse,
   CohortDeleteResponse,
-  AjaxResponse 
+  AjaxResponse
 } from '../types/moodle-api';
+import { add } from 'core/toast';
 
 /**
  * Função segura para extrair dados da resposta da API core_cohort_search_cohorts
@@ -72,7 +73,8 @@ export const safeExtractResponse = <T>(response: AjaxResponse, extractor: (respo
   try {
     return extractor(response);
   } catch (error) {
-    console.warn('Error extracting response:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Error extracting response';
+    add(errorMessage, 'warning');
     return defaultValue;
   }
 };

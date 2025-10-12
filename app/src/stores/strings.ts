@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { get_strings } from 'core/str';
 import { getAllStrings } from '../utils/moodle';
+import { add } from 'core/toast';
 
 interface StringKey {
   key: string;
@@ -55,7 +56,6 @@ export const useStringsStore = defineStore('strings', {
       }
 
       this.loading = true;
-      this.error = null;
 
       try {
         // Filter out strings that are already loaded
@@ -91,8 +91,8 @@ export const useStringsStore = defineStore('strings', {
 
         this.loadedComponents.add(component);
       } catch (error) {
-        console.error(`Failed to load strings for component "${component}":`, error);
-        this.error = `Failed to load strings for ${component}`;
+        const errorMessage = error instanceof Error ? error.message : `Failed to load strings for component "${component}"`;
+        add(errorMessage, 'error');
         
         // Even on error, mark component as loaded to prevent repeated attempts
         this.loadedComponents.add(component);
@@ -112,7 +112,6 @@ export const useStringsStore = defineStore('strings', {
 
     async loadAllStringsFromExternal() {
       this.loading = true;
-      this.error = null;
 
       try {
         const response = await getAllStrings();
@@ -130,8 +129,8 @@ export const useStringsStore = defineStore('strings', {
           });
         }
       } catch (error) {
-        console.error('Failed to load strings from external service:', error);
-        this.error = 'Failed to load strings from external service';
+        const errorMessage = error instanceof Error ? error.message : 'Failed to load strings from external service';
+        add(errorMessage, 'error');
       } finally {
         this.loading = false;
       }
