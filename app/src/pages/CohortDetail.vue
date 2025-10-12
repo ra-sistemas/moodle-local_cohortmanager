@@ -80,16 +80,9 @@ const editCohort = () => {
   router.push(`/local/cohortmanager/cohort/${props.id}/edit`);
 };
 
-// Delete cohort
-const deleteCohort = async () => {
-  if (!cohort.value) return;
-  
-  try {
-    router.push('/');
-  } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : stringsStore.getString('failedtodeletecohort');
-    add(errorMessage, 'error');
-  }
+// Handle cohort deletion success
+const handleDeleteSuccess = () => {
+  goBack();
 };
 
 // Initialize the component
@@ -116,7 +109,7 @@ onMounted(() => {
           <button @click="editCohort" class="btn btn-primary">
             <i class="icon fa fa-edit"></i> {{ stringsStore.getString('edit') }}
           </button>
-          <CohortDelete :cohort="cohort!" @click="deleteCohort" />
+          <CohortDelete :cohort="cohort" @success="handleDeleteSuccess"/>
         </div>
       </div>
 

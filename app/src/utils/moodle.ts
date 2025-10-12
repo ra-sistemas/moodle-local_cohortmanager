@@ -70,9 +70,9 @@ const updateCohorts = async (args: Object): Promise<any[]> => {
 /**
  * Deletar cohorts com tratamento de resposta tipado
  */
-const deleteCohorts = async (args: Object): Promise<any[]> => {
-  const response = await ajax('local_cohortmanager_delete_cohorts', args);
-  return extractDeleteResponse(response).cohorts;
+const deleteCohorts = async (args: Object): Promise<Object> => {
+  await ajax('local_cohortmanager_delete_cohorts', args);
+  return extractDeleteResponse();
 };
 
 /**

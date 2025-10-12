@@ -46,9 +46,10 @@ export const extractUpdateResponse = (response: AjaxResponse): CohortUpdateRespo
 /**
  * Função segura para extrair dados da resposta da API core_cohort_delete_cohorts
  */
-export const extractDeleteResponse = (response: AjaxResponse): CohortDeleteResponse => {
+export const extractDeleteResponse = (): CohortDeleteResponse => {
+
   return {
-    cohorts: Array.isArray(response.cohorts) ? response.cohorts : []
+    success: true
   };
 };
 

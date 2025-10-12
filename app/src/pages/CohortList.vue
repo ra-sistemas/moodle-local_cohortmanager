@@ -44,7 +44,6 @@ const loadCohorts = async () => {
       page: (pagination.page - 1),
       perpage: pagination.perpage
     });
-    console.debug(cohortsResponse);
     cohorts.value = cohortsResponse?.cohorts || [];
     pagination.total = cohortsResponse?.total || 0;
   } catch (err) {
@@ -80,14 +79,9 @@ const nextPage = () => {
   }
 };
 
-// Delete cohort
-const deleteCohort = async () => {
-  try {
-    await loadCohorts();
-    add(stringsStore.getString('cohortdeletedsuccessfully'), 'success');
-  } catch (err) {
-    add(stringsStore.getString('failedtodeletecohort'), 'error');
-  }
+// Handle cohort deletion success
+const handleDeleteSuccess = () => {
+  loadCohorts();
 };
 
 // View cohort details
@@ -200,7 +194,7 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
                   </button>
                   <CohortDelete
                     :cohort="cohort"
-                    @click="deleteCohort()"
+                    @success="handleDeleteSuccess"
                   />
                 </div>
               </td>

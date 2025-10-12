@@ -38,7 +38,7 @@ export interface CohortUpdateResponse {
 
 // Resposta da API core_cohort_delete_cohorts
 export interface CohortDeleteResponse {
-  cohorts: Cohort[];
+  success: Boolean;
 }
 
 // Resposta genérica da API Ajax
