@@ -52,6 +52,8 @@ $string['failedtoloadcohorts'] = 'Failed to load cohorts. Please try again.';
 $string['failedtodeletecohort'] = 'Failed to delete cohort. Please try again.';
 $string['failedtosavecohort'] = 'Failed to save cohort. Please try again.';
 $string['deleteconfirmation'] = 'Are you sure you want to delete "%s"?';
+$string['deletethiscohort'] = 'Delete this cohort';
+$string['cohortdeletedsuccessfully'] = 'Cohort deleted successfully';
 
 // CohortCreate component strings
 $string['basicinformation'] = 'Basic Information';
