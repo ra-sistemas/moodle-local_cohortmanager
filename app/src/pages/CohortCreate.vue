@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { createCohorts } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
-import {add as addToast} from 'core/toast';
+import { add } from 'core/toast';
 
 // Initialize strings store
 const stringsStore = useStringsStore();
@@ -28,12 +28,12 @@ const formData = ref({
 // Submit form
 const submitForm = async () => {
   if (!formData.value.name.trim()) {
-    addToast(stringsStore.getString('pleaseentercohortname'), 'error');
+    add(stringsStore.getString('pleaseentercohortname'), 'error');
     return;
   }
 
   if (!formData.value.idnumber.trim()) {
-    addToast(stringsStore.getString('pleaseenteridnumber'), 'error');
+    add(stringsStore.getString('pleaseenteridnumber'), 'error');
     return;
   }
 
@@ -55,7 +55,7 @@ const submitForm = async () => {
     });
 
     // Show success toast
-    addToast(stringsStore.getString('cohortcreatedsuccessfully'), 'success');
+    add(stringsStore.getString('cohortcreatedsuccessfully'), 'success');
     
     // Navigate to the newly created cohort details
     if (createdCohorts && createdCohorts.length > 0) {
@@ -63,8 +63,8 @@ const submitForm = async () => {
       router.push(`/local/cohortmanager/cohort/${newCohortId}`);
     }
   } catch (err) {
-    // Use toast for error notification instead of console.error and error.value
-    addToast(stringsStore.getString('failedtocreatecohort'), 'error');
+    const errorMessage = err instanceof Error ? err.message : stringsStore.getString('failedtoupdatecohort');
+    add(errorMessage, 'error');
   } finally {
     submitting.value = false;
   }

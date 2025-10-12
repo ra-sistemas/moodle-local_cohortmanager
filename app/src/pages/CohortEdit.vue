@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { getCohorts, updateCohorts } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
+import { add } from 'core/toast';
 import type { Cohort } from '../types/moodle-api';
 
 // Initialize strings store
@@ -60,11 +61,11 @@ const loadCohort = async () => {
         }
       };
     } else {
-      error.value = stringsStore.getString('cohortnotfound');
+      add(stringsStore.getString('cohortnotfound'), 'warning');
     }
   } catch (err) {
-    console.error('Error loading cohort:', err);
-    error.value = stringsStore.getString('failedtoloadcohortdata');
+    const errorMessage = err instanceof Error ? err.message : stringsStore.getString('failedtoloadcohortdata');
+    add(errorMessage, 'error');
   } finally {
     loading.value = false;
   }
@@ -73,12 +74,12 @@ const loadCohort = async () => {
 // Submit form
 const submitForm = async () => {
   if (!formData.value.name.trim()) {
-    alert('Please enter a cohort name');
+    add('Please enter a cohort name', 'warning');
     return;
   }
 
   if (!formData.value.idnumber.trim()) {
-    alert('Please enter an ID number');
+    add('Please enter an ID number', 'warning');
     return;
   }
 
@@ -103,10 +104,11 @@ const submitForm = async () => {
     });
 
     // Navigate to cohort details
+    add(stringsStore.getString('cohortupdatedsuccessfully'), 'success');
     router.push(`/local/cohortmanager/cohort/${props.id}`);
   } catch (err) {
-    console.error('Error updating cohort:', err);
-    error.value = stringsStore.getString('failedtoupdatecohort');
+    const errorMessage = err instanceof Error ? err.message : stringsStore.getString('failedtoupdatecohort');
+    add(errorMessage, 'error');
   } finally {
     submitting.value = false;
   }
@@ -128,14 +130,6 @@ onMounted(() => {
     <!-- Loading State -->
     <div v-if="loading" class="text-center py-4">
       <i class="icon fa fa-spinner fa-spin"></i> {{ stringsStore.getString('loadingcohortdata') }}
-    </div>
-
-    <!-- Error State -->
-    <div v-else-if="error" class="alert alert-danger d-flex justify-content-between align-items-center">
-      {{ error }}
-      <button @click="loadCohort" class="btn btn-outline-secondary">
-        <i class="icon fa fa-refresh"></i> {{ stringsStore.getString('retry') }}
-      </button>
     </div>
 
     <!-- Form -->
