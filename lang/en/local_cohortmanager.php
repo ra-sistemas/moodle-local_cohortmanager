@@ -128,3 +128,34 @@ $string['search'] = 'Search';
 
 // CohortDelete component strings
 $string['deletecohort'] = 'Delete cohort';
+
+// Custom Fields Management component strings
+$string['customfieldsmanagement'] = 'Custom Fields Management';
+$string['loadingcustomfields'] = 'Loading custom fields...';
+$string['nocustomfields'] = 'No custom fields found';
+$string['addcustomfielddesc'] = 'Add custom fields to store additional information about your cohorts.';
+$string['shortname'] = 'Short Name';
+$string['shortnamedesc'] = 'A unique identifier for the custom field (no spaces or special characters)';
+$string['name'] = 'Name';
+$string['enterfieldname'] = 'Enter field name';
+$string['type'] = 'Type';
+$string['text'] = 'Text';
+$string['select'] = 'Select';
+$string['checkbox'] = 'Checkbox';
+$string['date'] = 'Date';
+$string['textarea'] = 'Textarea';
+$string['description'] = 'Description';
+$string['enterdescription'] = 'Enter description';
+$string['required'] = 'Required';
+$string['requiredfield'] = 'Required Field';
+$string['yes'] = 'Yes';
+$string['no'] = 'No';
+$string['actions'] = 'Actions';
+$string['delete'] = 'Delete';
+$string['addcustomfield'] = 'Add Custom Field';
+$string['adding'] = 'Adding...';
+$string['defaultvalue'] = 'Default Value';
+$string['enterdefaultvalue'] = 'Enter default value';
+$string['selectoptions'] = 'Select Options';
+$string['enterselectoptions'] = 'Enter options (comma separated)';
+$string['selectoptionsdesc'] = 'Enter options separated by commas (e.g., Option 1,Option 2,Option 3)';

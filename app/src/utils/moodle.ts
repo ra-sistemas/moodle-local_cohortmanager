@@ -1,6 +1,7 @@
 import Ajax from "core/ajax";
 import * as Config from "core/config";
 import Notification from "core/notification";
+import Templates from "core/templates";
 import { useStringsStore } from '../stores/strings';
 import { useAppStore } from '../stores/app';
 import {
@@ -11,6 +12,11 @@ import {
   extractGetCohortsResponse,
   extractGetCohortMembersResponse
 } from './ajax-response';
+
+interface Template {
+  html: string;
+  js: string;
+}
 
 const isDebugEnabled = Config.developerdebug;
 
@@ -117,6 +123,34 @@ const getAppConfig = async (): Promise<any> => {
 };
 
 /**
+ * 
+ */
+const getCustomfieldTemplateConfig = async (component: string, area: string, itemid: number): Promise<any> => {
+  const response = await ajax('core_customfield_reload_template', {
+    component: component,
+    area: area,
+    itemid: itemid
+  });
+
+  return response;
+};
+
+/**
+ * 
+ */
+const getCustomfieldlist = async (): Promise<Template> => {
+
+  let data = await getCustomfieldTemplateConfig(
+    'core_cohort',
+    'cohort',
+    0
+  );
+
+  const { html, js } = await Templates.renderForPromise('core_customfield/list', data);
+  return { html, js };
+};
+
+/**
  * Perform an AJAX call to a Moodle web service with file uploads.
  *
  * @param {Object} request - The request object to pass to the web service.
@@ -168,5 +202,7 @@ export {
   getAllStrings,
   getAppConfig,
   loadAllStrings,
-  loadAppConfigs
+  loadAppConfigs,
+  getCustomfieldTemplateConfig,
+  getCustomfieldlist
 };

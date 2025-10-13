@@ -29,6 +29,7 @@ export default defineConfig({
         "core/notification",
         "core/str",
         "core/toast",
+        "core/templates",
       ],
       output: {
         format: 'amd',
@@ -44,6 +45,7 @@ export default defineConfig({
           'core/notification': 'core/notification',
           'core/str': 'core/str',
           'core/toast': 'core/toast',
+          "core/templates": "core/templates",
         }
       }
     }

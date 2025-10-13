@@ -113,6 +113,9 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
         <router-link to="cohort/create" class="btn btn-primary">
           <i class="fa fa-plus"></i> {{ stringsStore.getString('newcohort') }}
         </router-link>
+        <router-link to="custom-fields" class="btn btn-secondary">
+          <i class="fa fa-cogs"></i> {{ stringsStore.getString('customfieldsmanagement') }}
+        </router-link>
       </div>
     </div>
 

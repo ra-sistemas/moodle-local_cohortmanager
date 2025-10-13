@@ -433,6 +433,11 @@ class app extends external_api
         return json_encode(convert_to_array($config));
     }
 
+    protected static function get_customfield_list_context()
+    {
+        $management = new \core_customfield\output\management;
+    }
+
     /**
      * Returns description of method parameters
      *
