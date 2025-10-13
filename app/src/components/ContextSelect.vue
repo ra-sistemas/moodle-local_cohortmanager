@@ -158,7 +158,7 @@ onMounted(() => {
         <span v-else class="text-muted">
           {{ stringsStore.getString('selectcontext') }}
         </span>
-        <i class="icon fa fa-chevron-down ms-2"></i>
+        <i class="fa fa-chevron-down ms-2"></i>
       </div>
       
       <!-- Dropdown Menu -->
@@ -184,7 +184,7 @@ onMounted(() => {
               class="dropdown-item cursor-pointer"
               @click="selectOption(context)"
             >
-              <i class="icon fa me-2" :class="context.type != 'system' ? 'fa-book' : 'fa-desktop'"></i>
+              <i class="fa me-2" :class="context.type != 'system' ? 'fa-book' : 'fa-desktop'"></i>
               {{ context.label }}
             </div>
           </template>

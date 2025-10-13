@@ -86,12 +86,12 @@ const handleDeleteSuccess = () => {
 // View cohort details
 const viewCohort = (cohort: Cohort) => {
   // Navigate to cohort details page
-  router.push(`/local/cohortmanager/cohort/${cohort.id}`);
+  router.push(`cohort/${cohort.id}`);
 };
 
 // Navigation functions
 const navigateToEdit = (cohort: Cohort) => {
-  router.push(`/local/cohortmanager/cohort/${cohort.id}/edit`);
+  router.push(`cohort/${cohort.id}/edit`);
 };
 
 // Calculate pagination info
@@ -110,8 +110,8 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 pb-3 border-bottom">
       <h1 class="h2 mb-2 mb-md-0">{{ stringsStore.getString('cohortmanager') }}</h1>
       <div class="d-flex gap-2 mt-2 mt-md-0">
-        <router-link to="/local/cohortmanager/cohort/create" class="btn btn-primary">
-          <i class="icon fa fa-plus"></i> {{ stringsStore.getString('newcohort') }}
+        <router-link to="cohort/create" class="btn btn-primary">
+          <i class="fa fa-plus"></i> {{ stringsStore.getString('newcohort') }}
         </router-link>
       </div>
     </div>
@@ -124,7 +124,7 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
             <input v-model="searchQuery" type="text" class="form-control"
               :placeholder="stringsStore.getString('searchcohorts')" @keyup.enter="searchCohorts" />
             <button class="btn btn-secondary" @click="searchCohorts">
-              <i class="icon fa fa-search"></i> {{ stringsStore.getString('search') }}
+              <i class="fa fa-search"></i> {{ stringsStore.getString('search') }}
             </button>
           </div>
         </div>
@@ -139,7 +139,7 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
 
     <!-- Empty state -->
     <div v-else-if="cohorts.length === 0" class="text-center py-5 text-muted">
-      <i class="icon fa fa-users fa-3x mb-3"></i>
+      <i class="fa fa-users fa-3x mb-3"></i>
       <h3 class="mb-2">{{ stringsStore.getString('nocoortsfound') }}</h3>
       <p>{{ stringsStore.getString('nocoortsfounddesc') }}</p>
     </div>
@@ -171,7 +171,7 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
                 <div class="btn-group btn-group-sm" role="group">
                   <button class="btn btn-outline-primary" @click="navigateToEdit(cohort)"
                     :title="stringsStore.getString('editcohort')">
-                    <i class="icon fa fa-edit"></i>
+                    <i class="fa fa-edit"></i>
                   </button>
                   <CohortDelete :cohort="cohort" @success="handleDeleteSuccess" />
                 </div>
@@ -188,7 +188,7 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
         <ul class="pagination justify-content-center justify-content-md-start">
           <li class="page-item" :class="{ 'disabled': pagination.page === 1 }">
             <button class="page-link" @click="prevPage" :disabled="pagination.page === 1">
-              <i class="icon fa fa-chevron-left"></i>
+              <i class="fa fa-chevron-left"></i>
             </button>
           </li>
 
@@ -200,7 +200,7 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
 
           <li class="page-item" :class="{ 'disabled': pagination.page === totalPages }">
             <button class="page-link" @click="nextPage" :disabled="pagination.page === totalPages">
-              <i class="icon fa fa-chevron-right"></i>
+              <i class="fa fa-chevron-right"></i>
             </button>
           </li>
         </ul>

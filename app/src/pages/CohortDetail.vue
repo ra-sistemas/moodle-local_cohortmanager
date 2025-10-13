@@ -71,12 +71,12 @@ const loadMembers = async () => {
 
 // Navigate back to list
 const goBack = () => {
-  router.push('/local/cohortmanager/');
+  router.push('');
 };
 
 // Edit cohort
 const editCohort = () => {
-  router.push(`/local/cohortmanager/cohort/${props.id}/edit`);
+  router.push(`cohort/${props.id}/edit`);
 };
 
 // Handle cohort deletion success
@@ -94,7 +94,7 @@ onMounted(() => {
   <div class="container">
     <!-- Loading State -->
     <div v-if="loading" class="text-center py-4">
-      <i class="icon fa fa-spinner fa-spin"></i> {{ stringsStore.getString('loadingcohortdetails') }}
+      <i class="fa fa-spinner fa-spin"></i> {{ stringsStore.getString('loadingcohortdetails') }}
     </div>
 
     <!-- Content -->
@@ -103,10 +103,10 @@ onMounted(() => {
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex gap-2">
           <button @click="goBack" class="btn btn-secondary">
-            <i class="icon fa fa-arrow-left"></i> {{ stringsStore.getString('backtolist') }}
+            <i class="fa fa-arrow-left"></i> {{ stringsStore.getString('backtolist') }}
           </button>
           <button @click="editCohort" class="btn btn-primary">
-            <i class="icon fa fa-edit"></i> {{ stringsStore.getString('edit') }}
+            <i class="fa fa-edit"></i> {{ stringsStore.getString('edit') }}
           </button>
           <CohortDelete :cohort="cohort" @success="handleDeleteSuccess"/>
         </div>
@@ -225,7 +225,7 @@ onMounted(() => {
           </div>
 
           <div v-else class="text-center py-4">
-            <i class="icon fa fa-users fa-3x text-muted mb-3"></i>
+            <i class="fa fa-users fa-3x text-muted mb-3"></i>
             <p class="text-muted">{{ stringsStore.getString('nomembersfound') }}</p>
           </div>
         </div>
@@ -234,7 +234,7 @@ onMounted(() => {
 
     <!-- Not Found State -->
     <div v-else class="text-center py-4">
-      <i class="icon fa fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+      <i class="fa fa-exclamation-triangle fa-3x text-warning mb-3"></i>
       <h3>{{ stringsStore.getString('cohortnotfound') }}</h3>
       <p class="text-muted">{{ stringsStore.getString('cohortnotfounddetails') }}</p>
       <button @click="goBack" class="btn btn-primary">

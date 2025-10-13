@@ -8,6 +8,10 @@ import { add } from 'core/toast';
 import type { Cohort } from '../types/moodle-api';
 import ThemeSelect from '../components/ThemeSelect.vue';
 import ContextSelect from '../components/ContextSelect.vue';
+import CohortNameInput from '../components/CohortNameInput.vue';
+import CohortIdNumberInput from '../components/CohortIdNumberInput.vue';
+import CohortDescriptionInput from '../components/CohortDescriptionInput.vue';
+import CohortVisibleInput from '../components/CohortVisibleInput.vue';
 import Notification from 'core/notification';
 
 // Initialize stores
@@ -117,7 +121,7 @@ const submitForm = async () => {
 
     // Navigate to cohort details
     add(stringsStore.getString('cohortupdatedsuccessfully'), 'success');
-    router.push(`/local/cohortmanager/cohort/${props.id}`);
+    router.push(`cohort/${props.id}`);
   } catch (err) {
     Notification.exception(err);
   } finally {
@@ -127,7 +131,7 @@ const submitForm = async () => {
 
 // Navigate back
 const goBack = () => {
-  router.push(`/local/cohortmanager/cohort/${props.id}`);
+  router.push(`cohort/${props.id}`);
 };
 
 // Initialize the component
@@ -140,7 +144,7 @@ onMounted(() => {
   <div class="container">
     <!-- Loading State -->
     <div v-if="loading" class="text-center py-4">
-      <i class="icon fa fa-spinner fa-spin"></i> {{ stringsStore.getString('loadingcohortdata') }}
+      <i class="fa fa-spinner fa-spin"></i> {{ stringsStore.getString('loadingcohortdata') }}
     </div>
 
     <!-- Form -->
@@ -160,39 +164,15 @@ onMounted(() => {
         <div class="form-section">
           <h2 class="h4">{{ stringsStore.getString('basicinformation') }}</h2>
 
-          <div class="mb-3">
-            <label for="name" class="form-label">{{ stringsStore.getString('cohortname') }} *</label>
-            <input id="name" v-model="formData.name" type="text" class="form-control"
-              :placeholder="stringsStore.getString('entercohortname')" required />
-            <div class="form-text">{{ stringsStore.getString('cohortnamedescription') }}</div>
-          </div>
-
-          <div class="mb-3">
-            <label for="idnumber" class="form-label">{{ stringsStore.getString('idnumber') }} *</label>
-            <input id="idnumber" v-model="formData.idnumber" type="text" class="form-control"
-              :placeholder="stringsStore.getString('enteridnumber')" required />
-            <div class="form-text">{{ stringsStore.getString('idnumberdescription') }}</div>
-          </div>
-
-          <div class="mb-3">
-            <label for="description" class="form-label">{{ stringsStore.getString('description') }}</label>
-            <textarea id="description" v-model="formData.description" class="form-control" rows="4"
-              :placeholder="stringsStore.getString('entercohortdescription')"></textarea>
-            <div class="form-text">{{ stringsStore.getString('cohortdescription') }}</div>
-          </div>
+          <CohortNameInput v-model="formData.name" />
+          <CohortIdNumberInput v-model="formData.idnumber" />
+          <CohortDescriptionInput v-model="formData.description" />
         </div>
 
         <div class="border-top pt-3">
           <h2 class="h4">{{ stringsStore.getString('settings') }}</h2>
 
-          <div class="mb-3">
-            <div class="form-check">
-              <input v-model="formData.visible" type="checkbox" class="form-check-input" id="visible" />
-              <label class="form-check-label" for="visible">{{ stringsStore.getString('visible') }}</label>
-            </div>
-            <div class="form-text">{{ stringsStore.getString('makecohortvisible') }}</div>
-          </div>
-
+          <CohortVisibleInput v-model="formData.visible" />
           <ThemeSelect v-if="appStore.isAllowCohortThemesEnabled()" v-model="formData.theme" />
           <ContextSelect v-model="formData.contextinfo" />
         </div>
@@ -216,7 +196,7 @@ onMounted(() => {
             {{ stringsStore.getString('cancel') }}
           </button>
           <button type="submit" class="btn btn-primary" :disabled="submitting">
-            <i class="icon fa fa-save"></i>
+            <i class="fa fa-save"></i>
             {{ submitting ? stringsStore.getString('saving') : stringsStore.getString('savechanges') }}
           </button>
         </div>
@@ -225,7 +205,7 @@ onMounted(() => {
 
     <!-- Not Found State -->
     <div v-else class="text-center py-4">
-      <i class="icon fa fa-exclamation-triangle text-warning" style="font-size: 48px;"></i>
+      <i class="fa fa-exclamation-triangle text-warning" style="font-size: 48px;"></i>
       <h3 class="mt-3">{{ stringsStore.getString('cohortnotfound') }}</h3>
       <p>{{ stringsStore.getString('cohortnotfound') + ' data.' }}</p>
       <button @click="goBack" class="btn btn-primary">

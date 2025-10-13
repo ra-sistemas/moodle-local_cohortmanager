@@ -7,6 +7,10 @@ import { useAppStore } from '../stores/app';
 import { add } from 'core/toast';
 import ThemeSelect from '../components/ThemeSelect.vue';
 import ContextSelect from '../components/ContextSelect.vue';
+import CohortNameInput from '../components/CohortNameInput.vue';
+import CohortIdNumberInput from '../components/CohortIdNumberInput.vue';
+import CohortDescriptionInput from '../components/CohortDescriptionInput.vue';
+import CohortVisibleInput from '../components/CohortVisibleInput.vue';
 import Notification from 'core/notification';
 
 // Initialize stores
@@ -65,7 +69,7 @@ const submitForm = async () => {
     // Navigate to the newly created cohort details
     if (createdCohorts && createdCohorts.length > 0) {
       const newCohortId = createdCohorts[0].id;
-      router.push(`/local/cohortmanager/cohort/${newCohortId}`);
+      router.push(`cohort/${newCohortId}`);
     }
   } catch (err) {
     Notification.exception(err);
@@ -91,7 +95,7 @@ const resetForm = () => {
 
 // Navigate back
 const goBack = () => {
-  router.push('/local/cohortmanager/');
+  router.push('');
 };
 </script>
 
@@ -102,7 +106,7 @@ const goBack = () => {
       <h1 class="h3 mb-0">{{ stringsStore.getString('createnewcohort') }}</h1>
       <div>
         <button @click="goBack" class="btn btn-secondary">
-          <i class="icon fa fa-times"></i>
+          <i class="fa fa-times"></i>
         </button>
       </div>
     </div>
@@ -113,63 +117,15 @@ const goBack = () => {
       <div class="card-body">
         <h2 class="h5 mb-4">{{ stringsStore.getString('basicinformation') }}</h2>
         
-        <div class="mb-4">
-          <label for="name" class="form-label">{{ stringsStore.getString('cohortname') }} *</label>
-          <input
-            id="name"
-            v-model="formData.name"
-            type="text"
-            class="form-control"
-            :placeholder="stringsStore.getString('entercohortname')"
-            required
-          />
-          <div class="form-text">{{ stringsStore.getString('cohortnamedescription') }}</div>
-        </div>
-        
-        <div class="mb-4">
-          <label for="idnumber" class="form-label">{{ stringsStore.getString('idnumber') }} *</label>
-          <input
-            id="idnumber"
-            v-model="formData.idnumber"
-            type="text"
-            class="form-control"
-            :placeholder="stringsStore.getString('enteridnumber')"
-            required
-          />
-          <div class="form-text">{{ stringsStore.getString('idnumberdescription') }}</div>
-        </div>
-        
-        <div class="mb-4">
-          <label for="description" class="form-label">{{ stringsStore.getString('description') }}</label>
-          <textarea
-            id="description"
-            v-model="formData.description"
-            class="form-control"
-            rows="4"
-            :placeholder="stringsStore.getString('entercohortdescription')"
-          ></textarea>
-          <div class="form-text">{{ stringsStore.getString('cohortdescription') }}</div>
-        </div>
+        <CohortNameInput v-model="formData.name" />
+        <CohortIdNumberInput v-model="formData.idnumber" />
+        <CohortDescriptionInput v-model="formData.description" />
       </div>
 
       <div class="card-body">
         <h2 class="h5 mb-4">{{ stringsStore.getString('settings') }}</h2>
         
-        <div class="mb-4">
-          <div class="form-check">
-            <input
-              v-model="formData.visible"
-              type="checkbox"
-              class="form-check-input"
-              id="visible"
-            />
-            <label class="form-check-label" for="visible">
-              {{ stringsStore.getString('visible') }}
-            </label>
-          </div>
-          <div class="form-text">{{ stringsStore.getString('makecohortvisible') }}</div>
-        </div>
-        
+        <CohortVisibleInput v-model="formData.visible" />
         <ThemeSelect v-if="appStore.isAllowCohortThemesEnabled()" v-model="formData.theme" />
         <ContextSelect v-model="formData.categorytype" />
       </div>
@@ -182,14 +138,14 @@ const goBack = () => {
           class="btn btn-secondary"
           :disabled="submitting"
         >
-          <i class="icon fa fa-undo"></i> {{ stringsStore.getString('reset') }}
+          <i class="fa fa-undo"></i> {{ stringsStore.getString('reset') }}
         </button>
         <button
           type="submit"
           class="btn btn-primary"
           :disabled="submitting"
         >
-          <i class="icon fa fa-plus"></i>
+          <i class="fa fa-plus"></i>
           {{ submitting ? stringsStore.getString('creating') : stringsStore.getString('createcohort') }}
         </button>
       </div>

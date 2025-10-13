@@ -76,8 +76,8 @@ defineExpose({
     :disabled="loading"
     :title="stringsStore.getString('deletecohort')"
   >
-    <i v-if="!loading" class="icon fa fa-trash"></i>
-    <i v-else class="icon fa fa-spinner fa-spin"></i>
+    <i v-if="!loading" class="fa fa-trash"></i>
+    <i v-else class="fa fa-spinner fa-spin"></i>
     <span v-if="$slots.default" class="ms-2">
       <slot></slot>
     </span>

@@ -6,7 +6,7 @@ import CohortCreate from '@/pages/CohortCreate.vue';
 
 const routes: RouteRecordRaw[] = [
   {
-    path: '/local/cohortmanager/',
+    path: '/',
     name: 'CohortList',
     component: CohortList,
     meta: {
@@ -14,7 +14,7 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
-    path: '/local/cohortmanager/cohort/:id',
+    path: '/cohort/:id',
     name: 'CohortDetail',
     component: CohortDetail,
     meta: {
@@ -23,7 +23,7 @@ const routes: RouteRecordRaw[] = [
     props: true
   },
   {
-    path: '/local/cohortmanager/cohort/:id/edit',
+    path: '/cohort/:id/edit',
     name: 'CohortEdit',
     component: CohortEdit,
     meta: {
@@ -32,7 +32,7 @@ const routes: RouteRecordRaw[] = [
     props: true
   },
   {
-    path: '/local/cohortmanager/cohort/create',
+    path: '/cohort/create',
     name: 'CohortCreate',
     component: CohortCreate,
     meta: {
@@ -42,7 +42,7 @@ const routes: RouteRecordRaw[] = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory('/local/cohortmanager/'),
   routes
 });
 
