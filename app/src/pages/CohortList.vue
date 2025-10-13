@@ -164,9 +164,7 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
                 </a>
               </td>
               <td class="text-center">{{ cohort.id }}</td>
-              <td class="text-muted small">
-                {{ cohort.description || stringsStore.getString('nodescription') }}
-              </td>
+              <td class="text-muted small" v-html="cohort.description || stringsStore.getString('nodescription')"></td>
               <td class="text-center">
                 <div class="btn-group btn-group-sm" role="group">
                   <button class="btn btn-outline-primary" @click="navigateToEdit(cohort)"

@@ -243,18 +243,23 @@ class app extends external_api
     }
 
     /**
-     * Build custom fields return structure
+     * Builds a structure for custom fields returns.
      *
-     * @return external_multiple_structure
+     * @return \core_external\external_multiple_structure
      */
-    protected static function build_custom_fields_returns_structure()
-    {
+    protected static function build_custom_fields_returns_structure(): external_multiple_structure {
         return new external_multiple_structure(
-            new external_single_structure(array(
-                'id' => new external_value(PARAM_INT, 'Custom field id'),
-                'shortname' => new external_value(PARAM_ALPHANUMEXT, 'Custom field shortname'),
-                'value' => new external_value(PARAM_RAW, 'Custom field value'),
-            ))
+            new external_single_structure(
+                array(
+                    'name' => new external_value(PARAM_RAW, 'The name of the custom field'),
+                    'shortname' => new external_value(PARAM_RAW,
+                        'The shortname of the custom field - to be able to build the field class in the code'),
+                    'type' => new external_value(PARAM_ALPHANUMEXT,
+                        'The type of the custom field - text field, checkbox...'),
+                    'valueraw' => new external_value(PARAM_RAW, 'The raw value of the custom field'),
+                    'value' => new external_value(PARAM_RAW, 'The value of the custom field'),
+                )
+            ), 'Custom fields', VALUE_OPTIONAL
         );
     }
 
