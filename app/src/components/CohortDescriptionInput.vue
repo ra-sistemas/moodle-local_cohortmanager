@@ -26,33 +26,32 @@ const {
 
 // Method to set up TinyMCE event listeners
 const setupEditorEventListeners = () => {
-  const editor = getTinyMceEditor('description');
-  
-  // Listen for TinyMCE change events
-  editor.on('change', () => {
-    const content = getContent();
-    emit('update:modelValue', content);
-  });
+  // Set up TinyMCE change event listener after initialization
+  const intervalId = setInterval(() => {
+    const editor = getTinyMceEditor('description');
+    if (editorInitialized.value && editor) {
 
-  // Also listen for input events as a fallback
-  editor.on('input', () => {
-    const content = getContent();
-    emit('update:modelValue', content);
-  });
+      // Listen for TinyMCE change events
+      editor.on('change', () => {
+        const content = getContent();
+        emit('update:modelValue', content);
+      });
+
+      // Also listen for input events as a fallback
+      editor.on('input', () => {
+        const content = getContent();
+        emit('update:modelValue', content);
+      });
+      clearInterval(intervalId);
+    }
+  }, 500);
 };
 
 // Initialize editor when component is mounted
 onMounted(async () => {
   await initEditor();
   setContent(props.modelValue);
-  
-  // Set up TinyMCE change event listener after initialization
-  const intervalId = setInterval(() => {
-    if (editorInitialized.value) {
-      setupEditorEventListeners();
-      clearInterval(intervalId);
-    }
-  }, 500);
+  setupEditorEventListeners();
 });
 
 // Cleanup when component is unmounted

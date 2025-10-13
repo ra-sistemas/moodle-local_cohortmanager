@@ -24,9 +24,9 @@ use core_external\external_format_value;
 use core_cohort_external;
 use core_course_category;
 use context_system;
-use context_coursecat;
 use context;
 use moodle_exception;
+use editor_tiny\manager;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -285,10 +285,16 @@ class app extends external_api
      */
     public static function get_app_config()
     {
+        global $PAGE;
+
+        
+        $context = context_system::instance();
+        $PAGE->set_context($context);
         $configs = get_config('local_cohortmanager');
         $configs->allowcohortthemes = get_config('core', 'allowcohortthemes');
         $configs->themelist = self::get_theme_list();
-        $configs->contextlist = self::get_context_list(\context_system::instance());
+        $configs->contextlist = self::get_context_list($context);
+        $configs->tinymceconfig = self::get_tinymce_config($context);
 
         return $configs;
     }
@@ -315,6 +321,7 @@ class app extends external_api
                     'label' => new external_value(PARAM_RAW, 'Context label'),
                 ))
             ),
+            'tinymceconfig' => new external_value(PARAM_RAW, 'Json string with TinyMCE configs')
         ));
     }
 
@@ -367,6 +374,58 @@ class app extends external_api
             ];
         }
         return $options;
+    }
+
+    protected static function get_tinymce_config(context $context)
+    {
+        global $PAGE;
+        // Generate the configuration fosr this editor.
+        $editormanager = new manager;
+        $siteconfig = get_config('editor_tiny');
+        $config = (object) [
+            // The URL to the CSS file for the editor.
+            'css' => $PAGE->theme->editor_css_url()->out(false),
+
+            // The current context for this page or editor.
+            'context' => $context->id,
+
+            // File picker options.
+            'filepicker' => (object) [],
+
+            // Default draft item ID.
+            'draftitemid' => 0,
+
+            'currentLanguage' => current_language(),
+
+            'branding' => property_exists($siteconfig, 'branding') ? !empty($siteconfig->branding) : true,
+            'extended_valid_elements' => $siteconfig->extended_valid_elements ?? 'script[*],p[*],i[*]',
+
+            // Language options.
+            'language' => [
+                'currentlang' => current_language(),
+                'installed' => get_string_manager()->get_list_of_translations(true),
+                'available' => get_string_manager()->get_list_of_languages()
+            ],
+
+            // Placeholder selectors.
+            // Some contents (Example: placeholder elements) are only shown in the editor, and not to users. It is unrelated to the
+            // real display. We created a list of placeholder selectors, so we can decide to or not to apply rules, styles... to
+            // these elements.
+            // The default of this list will be empty.
+            // Other plugins can register their placeholder elements to placeholderSelectors list by calling
+            // editor_tiny/options::registerPlaceholderSelectors.
+            'placeholderSelectors' => [],
+
+            // Plugin configuration.
+            'plugins' => $editormanager->get_plugin_configuration($context),
+        ];
+
+        if (defined('BEHAT_SITE_RUNNING') && BEHAT_SITE_RUNNING) {
+            // Add sample selectors for Behat test.
+            $config->placeholderSelectors = ['.behat-tinymce-placeholder'];
+        }
+
+        return json_encode(convert_to_array($config));
     }
 
     /**

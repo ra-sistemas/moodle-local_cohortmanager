@@ -6,6 +6,7 @@ interface AppConfig {
   allowcohortthemes?: boolean;
   themelist?: Array<Object>;
   contextlist?: Array<Object>;
+  tinymceconfig?: string
   // Add other config properties as needed
 }
 
@@ -31,6 +32,10 @@ export const useAppStore = defineStore('app', {
 
     getContextList: (state: AppState) => (): Array<Object> => {
       return state.appConfig?.contextlist || [];
+    },
+
+    getTinyMCEConfig: (state: AppState) => (): Object => {
+      return JSON.parse(state.appConfig?.tinymceconfig || '') || {};
     },
 
     isAllowCohortThemesEnabled: (state: AppState) => (): boolean => {

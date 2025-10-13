@@ -6,6 +6,7 @@
  */
 
 import { ref } from 'vue';
+import { useAppStore } from '../stores/app';
 
 // Type declaration for TinyMCE editor
 declare global {
@@ -42,6 +43,12 @@ export interface TinyMceOptions {
  */
 export const initializeTinyMceEditor = async (elementId: string, options: TinyMceOptions = {}): Promise<void> => {
   try {
+    // Get the app store to access TinyMCE configuration
+    const appStore = useAppStore();
+    
+    // Get the default TinyMCE config from app store
+    const defaultConfig = appStore.getTinyMCEConfig();
+
     // Use Moodle's AMD require to load the editor_tiny/editor module
     await new Promise<void>((resolve, reject) => {
       // @ts-ignore - Moodle's global require function
@@ -49,15 +56,7 @@ export const initializeTinyMceEditor = async (elementId: string, options: TinyMc
         editor.setupForElementId({
           elementId,
           options: {
-            context: 0, // Default context
-            draftitemid: 0, // No draft item
-            filepicker: {}, // No file picker
-            language: {}, // Default language
-            currentLanguage: 'en',
-            branding: true,
-            css: [], // No custom CSS
-            extended_valid_elements: '', // No extended valid elements
-            plugins: {}, // No additional plugins
+            ...defaultConfig, // Override with default options
             ...options // Override with provided options
           }
         });
