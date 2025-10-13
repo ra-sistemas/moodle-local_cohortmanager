@@ -91,7 +91,7 @@ const viewCohort = (cohort: Cohort) => {
 
 // Navigation functions
 const navigateToEdit = (cohort: Cohort) => {
-  router.push(`cohort/${cohort.id}/edit`);
+  router.push(`/cohort/${cohort.id}/edit`);
 };
 
 // Calculate pagination info

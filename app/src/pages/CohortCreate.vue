@@ -69,7 +69,7 @@ const submitForm = async () => {
     // Navigate to the newly created cohort details
     if (createdCohorts && createdCohorts.length > 0) {
       const newCohortId = createdCohorts[0].id;
-      router.push(`cohort/${newCohortId}`);
+      router.push(`/cohort/${newCohortId}`);
     }
   } catch (err) {
     Notification.exception(err);
@@ -95,7 +95,7 @@ const resetForm = () => {
 
 // Navigate back
 const goBack = () => {
-  router.push('');
+  router.push('/');
 };
 </script>
 

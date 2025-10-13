@@ -121,7 +121,7 @@ const submitForm = async () => {
 
     // Navigate to cohort details
     add(stringsStore.getString('cohortupdatedsuccessfully'), 'success');
-    router.push(`cohort/${props.id}`);
+    router.push(`/cohort/${props.id}`);
   } catch (err) {
     Notification.exception(err);
   } finally {
@@ -131,7 +131,7 @@ const submitForm = async () => {
 
 // Navigate back
 const goBack = () => {
-  router.push(`cohort/${props.id}`);
+  router.push(`/cohort/${props.id}`);
 };
 
 // Initialize the component

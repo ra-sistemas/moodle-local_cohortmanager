@@ -1,13 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useStringsStore } from '../stores/strings';
-
-// Type declaration for Moodle's require function
-declare global {
-  interface Window {
-    require: (modules: string[], callback: (...args: any[]) => void, error?: (error: any) => void) => void;
-  }
-}
+import { useTinyMceEditor } from '../utils/tinyMceEditor';
 
 const props = defineProps<{
   modelValue: string;
@@ -18,65 +12,28 @@ const emit = defineEmits<{
 }>();
 
 const stringsStore = useStringsStore();
-const editorInitialized = ref(false);
-
-// Reference to the textarea element
 const textareaRef = ref<HTMLTextAreaElement | null>(null);
 
-// Initialize TinyMCE editor
-const initEditor = async () => {
-  if (!textareaRef.value || editorInitialized.value) return;
-  
-  try {
-    // Use Moodle's AMD require to load the editor_tiny/editor module
-    await new Promise<void>((resolve, reject) => {
-      // @ts-ignore - Moodle's global require function
-      require(['editor_tiny/editor'], (editor: any) => {
-        editor.setupForElementId({
-          elementId: 'description',
-          options: {
-            context: 0, // Default context
-            draftitemid: 0, // No draft item
-            filepicker: {}, // No file picker
-            language: {}, // Default language
-            currentLanguage: 'en',
-            branding: true,
-            css: [], // No custom CSS
-            extended_valid_elements: '', // No extended valid elements
-            plugins: {} // No additional plugins
-          }
-        });
-        editorInitialized.value = true;
-        resolve();
-      }, (error: any) => {
-        console.error('Failed to load editor_tiny/editor module:', error);
-        reject(error);
-      });
-    });
-  } catch (error) {
-    console.error('Failed to initialize TinyMCE editor:', error);
-  }
-};
+// Use the TinyMCE editor composable
+const {
+  editorInitialized,
+  initEditor,
+  setContent,
+  getContent,
+  removeEditor
+} = useTinyMceEditor('description');
 
 // Update editor content when modelValue changes
 const updateEditorContent = () => {
-  if (!textareaRef.value || !editorInitialized.value) return;
-  
-  const editor = (window as any).tinyMCE?.get('description');
-  if (editor) {
-    editor.setContent(props.modelValue);
-  }
+  if (!editorInitialized.value) return;
+  setContent(props.modelValue);
 };
 
 // Handle editor content changes
 const handleEditorChange = () => {
-  if (!textareaRef.value || !editorInitialized.value) return;
-  
-  const editor = (window as any).tinyMCE?.get('description');
-  if (editor) {
-    const content = editor.getContent();
-    emit('update:modelValue', content);
-  }
+  if (!editorInitialized.value) return;
+  const content = getContent();
+  emit('update:modelValue', content);
 };
 
 // Watch for modelValue changes
@@ -91,13 +48,7 @@ onMounted(() => {
 
 // Cleanup when component is unmounted
 onBeforeUnmount(() => {
-  if (textareaRef.value && editorInitialized.value) {
-    const editor = (window as any).tinyMCE?.get('description');
-    if (editor) {
-      editor.remove();
-      editorInitialized.value = false;
-    }
-  }
+  removeEditor();
 });
 </script>
 
