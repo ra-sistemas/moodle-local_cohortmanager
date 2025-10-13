@@ -12,6 +12,7 @@ import CohortNameInput from '../components/CohortNameInput.vue';
 import CohortIdNumberInput from '../components/CohortIdNumberInput.vue';
 import CohortDescriptionInput from '../components/CohortDescriptionInput.vue';
 import CohortVisibleInput from '../components/CohortVisibleInput.vue';
+import CohortCustomFields from '../components/CohortCustomFields.vue';
 import Notification from 'core/notification';
 
 // Initialize stores
@@ -178,17 +179,11 @@ onMounted(() => {
         </div>
 
         <!-- Custom Fields Section -->
-        <div v-if="cohort.customfields && cohort.customfields.length > 0" class="border-top pt-3">
-          <h2 class="h4">{{ stringsStore.getString('customfields') }}</h2>
-
-          <div v-for="field in cohort.customfields" :key="field.shortname" class="mb-3">
-            <label :for="`custom-${field.shortname}`" class="form-label">{{ field.name }}</label>
-            <input :id="`custom-${field.shortname}`" v-model="field.value"
-              :type="field.type === 'text' ? 'text' : 'text'" class="form-control"
-              :placeholder="`Enter ${field.name}`" />
-            <div class="form-text">{{ field.name }}</div>
-          </div>
-        </div>
+        <CohortCustomFields
+          v-if="cohort && cohort.customfields && cohort.customfields.length > 0"
+          :custom-fields="cohort!.customfields"
+          @update:custom-fields="(updatedFields) => cohort!.customfields = updatedFields"
+        />
 
         <!-- Form Actions -->
         <div class="card-footer d-flex justify-content-end gap-2">
