@@ -110,7 +110,6 @@ export const useTinyMceEditor = (elementId: string, options: TinyMceOptions = {}
    */
   const initEditor = async (): Promise<void> => {
     if (editorInitialized.value) return;
-    
     try {
       await initializeTinyMceEditor(elementId, options);
       editorInitialized.value = true;
@@ -157,6 +156,7 @@ export const useTinyMceEditor = (elementId: string, options: TinyMceOptions = {}
   };
 
   return {
+    getTinyMceEditor,
     editorInitialized,
     initEditor,
     setContent,
