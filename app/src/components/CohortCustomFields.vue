@@ -82,8 +82,6 @@ const extractFieldData = (): CustomField[] => {
         value = inputElement.value;
       }
 
-
-
       // Handle complex fields like date selectors
       if (name.includes('[')) {
         const fieldParts = name.split('[');
@@ -110,7 +108,7 @@ const extractFieldData = (): CustomField[] => {
           if (!formContainer.value) return;
 
           const enabledCheckbox = formContainer.value.querySelector(`input[name="${fieldNameRaw}[enabled]"]`) as HTMLInputElement;
-          if (enabledCheckbox.checked) {
+          if (enabledCheckbox && enabledCheckbox.checked) {
             const daySelect = formContainer.value.querySelector(`select[name="${fieldNameRaw}[day]"]`) as HTMLSelectElement;
             const monthSelect = formContainer.value.querySelector(`select[name="${fieldNameRaw}[month]"]`) as HTMLSelectElement;
             const yearSelect = formContainer.value.querySelector(`select[name="${fieldNameRaw}[year]"]`) as HTMLSelectElement;

@@ -193,7 +193,8 @@ onMounted(() => {
         <CohortCustomFields
           v-if="cohort && cohort.customfields && cohort.customfields.length > 0"
           :cohortid="cohort.id"
-          :customfields="cohort.customfields"
+          :customfields="formData.customfields"
+          v-model:customFields="formData.customfields"
         />
 
         <!-- Form Actions -->
