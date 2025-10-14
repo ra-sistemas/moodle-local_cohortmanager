@@ -32,7 +32,7 @@ const cohort = ref<Cohort | null>(null);
 const loading = ref(false);
 const submitting = ref(false);
 
-// Form data
+// Form data with proper typing and default values
 const formData = ref({
   name: '',
   idnumber: '',
@@ -42,7 +42,14 @@ const formData = ref({
   contextinfo: {
     type: 'system',
     value: ''
-  }
+  },
+  customfields: [] as Array<{
+    name: string;
+    shortname: string;
+    type: string;
+    valueraw: string;
+    value: string;
+  }>
 });
 
 // Load cohort data
@@ -69,14 +76,15 @@ const loadCohort = async () => {
         console.warn('Failed to fetch cohort context info, using defaults:', contextErr);
       }
 
-      // Populate form data
+      // Populate form data with null checks and fallbacks
       formData.value = {
-        name: cohort.value!.name,
-        idnumber: cohort.value!.idnumber,
-        description: cohort.value!.description,
-        visible: cohort.value!.visible,
+        name: cohort.value!.name || '',
+        idnumber: cohort.value!.idnumber || '',
+        description: cohort.value!.description || '',
+        visible: Boolean(cohort.value!.visible),
         theme: cohort.value!.theme || '',
-        contextinfo: contextInfo
+        contextinfo: contextInfo,
+        customfields: cohort.value!.customfields ?? []
       };
     } else {
       add(stringsStore.getString('cohortnotfound'), 'warning');
@@ -102,6 +110,13 @@ const submitForm = async () => {
 
   submitting.value = true;
 
+  const customfields = formData.value.customfields.map((input) => {
+    return {
+      shortname: input.shortname,
+      value: input.valueraw
+    }
+  });
+
   try {
     const cohortData = {
       categorytype: formData.value.contextinfo,
@@ -110,7 +125,8 @@ const submitForm = async () => {
       description: formData.value.description,
       descriptionformat: 1,
       visible: formData.value.visible,
-      theme: formData.value.theme || undefined
+      theme: formData.value.theme,
+      customfields: customfields
     };
 
     await updateCohorts({
@@ -132,7 +148,7 @@ const submitForm = async () => {
 
 // Navigate back
 const goBack = () => {
-  router.push(`/cohort/${props.id}`);
+  router.push('/');
 };
 
 // Initialize the component
