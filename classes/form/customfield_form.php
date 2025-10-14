@@ -25,6 +25,7 @@ use moodle_url;
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/lib/formslib.php');
+require_once($CFG->dirroot . '/cohort/lib.php');
 /**
  * Cohort related management functions, this file needs to be included manually.
  *
@@ -41,6 +42,9 @@ class customfield_form extends dynamic_form
     {
         $mform = $this->_form;
         $cohortid = $this->optional_param('id', 0, PARAM_INT);
+
+        $mform->addElement('hidden', 'id');
+        $mform->setType('id', PARAM_INT);
 
         $handler = cohort_handler::create();
         $handler->instance_form_definition($mform, $cohortid);
@@ -98,7 +102,20 @@ class customfield_form extends dynamic_form
      *
      * @return mixed
      */
-    public function process_dynamic_submission() {}
+    public function process_dynamic_submission()
+    {
+        $cohortid = $this->optional_param('id', 0, PARAM_INT);
+        $data = $this->get_data();
+        $data->id = $cohortid;
+        if ($cohortid && !empty($data)) {
+            $handler = cohort_handler::create();
+            $handler->instance_form_save($data, $cohortid);
+
+            return true;
+        }
+
+        return false;
+    }
 
     /**
      * Load in existing data as form defaults

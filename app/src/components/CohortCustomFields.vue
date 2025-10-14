@@ -4,21 +4,13 @@ import { useStringsStore } from '../stores/strings';
 import { getCustomfieldDynamicForm } from '../utils/moodle';
 import Notification from 'core/notification';
 
-interface CustomField {
-  shortname: string;
-  name: string;
-  type: string;
-  value: string;
-  valueraw: string;
-}
-
 const props = defineProps<{
   cohortid: number;
-  customfields: CustomField[]
+  submitting: boolean
 }>();
 
 const emit = defineEmits<{
-  'update:customFields': [value: CustomField[]];
+  'submit:customFields:result': [success: boolean, message: string];
 }>();
 
 const stringsStore = useStringsStore();
@@ -39,9 +31,24 @@ const loadCustomFieldForm = async () => {
     form.value.load({
       id: props.cohortid
     });
+
+    form.value.addEventListener(form.value.events.FORM_SUBMITTED, (event: Event) => {
+      event.preventDefault();
+      emit('submit:customFields:result', true, stringsStore.getString('formprocessedsuccessfully'));
+    });
+
+    form.value.addEventListener(form.value.events.CLIENT_VALIDATION_ERROR, (event: Event) => {
+      event.preventDefault();
+      emit('submit:customFields:result', false, stringsStore.getString('formnotsubmitted'));
+    });
+
+    form.value.addEventListener(form.value.events.SERVER_VALIDATION_ERROR, (event: Event) => {
+      event.preventDefault();
+      emit('submit:customFields:result', false, stringsStore.getString('formnotsubmitted'));
+    });
+
     await nextTick();
     formContainer.value = document.querySelector('#custom-field-form form');
-    setupFormListeners();
   } catch (error) {
     Notification.exception(error);
   } finally {
@@ -49,125 +56,22 @@ const loadCustomFieldForm = async () => {
   }
 };
 
-// Extract field data from the rendered form
-const extractFieldData = (): CustomField[] => {
-  const fields: CustomField[] = [];
-  form.value.validateElements();
-  if (!formContainer.value) return fields;
-
-  // Find all form elements with customfield_ prefix
-  const formElements = formContainer.value.querySelectorAll('input, select, textarea');
-
-  formElements.forEach(element => {
-    const inputElement = element as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
-    const name = inputElement.name;
-
-    if (name && name.startsWith('customfield_')) {
-      // Extract shortname from the name (remove customfield_ prefix)
-      const shortname = name.replace('customfield_', '').split('[')[0];
-
-      // Find the corresponding field definition
-      const fieldDef = props.customfields.find(field => field.shortname === shortname);
-      if (!fieldDef) return;
-
-      let value = '';
-
-      // Handle different input types
-      if (inputElement.type === 'checkbox') {
-        value = (inputElement as HTMLInputElement).checked ? '1' : '0';
-      } else if (inputElement.tagName === 'SELECT') {
-        const selectElement = inputElement as HTMLSelectElement;
-        value = selectElement.value;
-      } else {
-        value = inputElement.value;
-      }
-
-      // Handle complex fields like date selectors
-      if (name.includes('[')) {
-        const fieldParts = name.split('[');
-        const fieldNameRaw = fieldParts[0];
-        const fieldName = fieldNameRaw ? fieldNameRaw.replace('customfield_', '') : '';
-        const subField = fieldParts[1]?.replace(']', '');
-
-        if (!fieldName || !subField) return;
-
-        // Find if we already have this field
-        let existingField = fields.find(f => f.shortname === fieldName);
-        if (!existingField) {
-          existingField = {
-            shortname: fieldName,
-            name: fieldDef.name,
-            type: fieldDef.type,
-            value: '',
-            valueraw: ''
-          };
-          fields.push(existingField);
-        }
-
-        if (document.querySelector(`[data-groupname="${fieldNameRaw}"] fieldset[data-fieldtype="date"]`)) {
-          if (!formContainer.value) return;
-
-          const enabledCheckbox = formContainer.value.querySelector(`input[name="${fieldNameRaw}[enabled]"]`) as HTMLInputElement;
-          if (enabledCheckbox && enabledCheckbox.checked) {
-            const daySelect = formContainer.value.querySelector(`select[name="${fieldNameRaw}[day]"]`) as HTMLSelectElement;
-            const monthSelect = formContainer.value.querySelector(`select[name="${fieldNameRaw}[month]"]`) as HTMLSelectElement;
-            const yearSelect = formContainer.value.querySelector(`select[name="${fieldNameRaw}[year]"]`) as HTMLSelectElement;
-
-            if (daySelect && monthSelect && yearSelect) {
-              const day = daySelect.value;
-              const month = monthSelect.value;
-              const year = yearSelect.value;
-              const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-              existingField.valueraw = Math.floor(date.getTime() / 1000).toString();
-              existingField.value = date.toLocaleDateString();
-            }
-          }
-          else {
-            existingField.valueraw = '0';
-            existingField.value = '0';
-          }
-        }
-      } else {
-        // Simple field
-        fields.push({
-          shortname: shortname || '',
-          name: fieldDef.name,
-          type: fieldDef.type,
-          value: value,
-          valueraw: value
-        });
-      }
-    }
-  });
-
-  return fields;
-};
-
-// Setup event listeners for form changes
-const setupFormListeners = () => {
-
-  if (!formContainer.value) return;
-
-  // Remove existing listeners to avoid duplicates
-  const formElements = formContainer.value.querySelectorAll('input, select, textarea');
-  formElements.forEach(element => {
-    element.removeEventListener('change', handleFormChange);
-    element.removeEventListener('input', handleFormChange);
-    element.addEventListener('change', handleFormChange);
-    element.addEventListener('input', handleFormChange);
-  });
-};
-
-// Handle form changes
-const handleFormChange = () => {
-  const updatedFields = extractFieldData();
-  emit('update:customFields', updatedFields);
-};
-
 // Load form on component mount
 onMounted(() => {
   if (props.cohortid) {
     loadCustomFieldForm();
+  }
+});
+
+// Watch for submitting prop changes
+watch(() => props.submitting, async (newSubmitting) => {
+  if (newSubmitting && form.value) {
+    try {
+      await form.value.submitFormAjax();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      emit('submit:customFields:result', false, stringsStore.getString('errorprocessingform') + ': ' + errorMessage);
+    }
   }
 });
 

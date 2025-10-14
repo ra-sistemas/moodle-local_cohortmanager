@@ -45,7 +45,9 @@ const loadCohort = async () => {
       cohort.value = cohortsList[0];
       await loadMembers();
     } else {
-      add(stringsStore.getString('cohortnotfound'), 'warning');
+      add(stringsStore.getString('cohortnotfound'), {
+        type: 'danger'
+      });
     }
   } catch (err) {
     Notification.exception(err);

@@ -42,14 +42,7 @@ const formData = ref({
   contextinfo: {
     type: 'system',
     value: ''
-  },
-  customfields: [] as Array<{
-    name: string;
-    shortname: string;
-    type: string;
-    valueraw: string;
-    value: string;
-  }>
+  }
 });
 
 // Load cohort data
@@ -68,13 +61,10 @@ const loadCohort = async () => {
         type: 'system',
         value: ''
       };
-      try {
-        contextInfo = await getCohortContextInfo({
-          cohortid: props.id
-        });
-      } catch (contextErr) {
-        console.warn('Failed to fetch cohort context info, using defaults:', contextErr);
-      }
+
+      contextInfo = await getCohortContextInfo({
+        cohortid: props.id
+      });
 
       // Populate form data with null checks and fallbacks
       formData.value = {
@@ -83,11 +73,12 @@ const loadCohort = async () => {
         description: cohort.value!.description || '',
         visible: Boolean(cohort.value!.visible),
         theme: cohort.value!.theme || '',
-        contextinfo: contextInfo,
-        customfields: cohort.value!.customfields ?? []
+        contextinfo: contextInfo
       };
     } else {
-      add(stringsStore.getString('cohortnotfound'), 'warning');
+      add(stringsStore.getString('cohortnotfound'), {
+        type: 'danger'
+      });
     }
   } catch (err) {
     Notification.exception(err);
@@ -99,46 +90,56 @@ const loadCohort = async () => {
 // Submit form
 const submitForm = async () => {
   if (!formData.value.name.trim()) {
-    add('Please enter a cohort name', 'warning');
+    add('Please enter a cohort name', {
+      type: 'danger'
+    });
     return;
   }
 
   if (!formData.value.idnumber.trim()) {
-    add('Please enter an ID number', 'warning');
+    add('Please enter an ID number', {
+      type: 'danger'
+    });
     return;
   }
 
   submitting.value = true;
+};
 
-  const customfields = formData.value.customfields.map((input) => {
-    return {
-      shortname: input.shortname,
-      value: input.valueraw
-    }
-  });
-
+// Handle custom fields submission result
+const handleCustomFieldsResult = async (success: boolean, message: string) => {
   try {
-    const cohortData = {
-      categorytype: formData.value.contextinfo,
-      name: formData.value.name,
-      idnumber: formData.value.idnumber,
-      description: formData.value.description,
-      descriptionformat: 1,
-      visible: formData.value.visible,
-      theme: formData.value.theme,
-      customfields: customfields
-    };
+    if (success) {
+      add(message, {
+        type: 'success'
+      });
+      // Trigger custom fields submission first
+      const cohortData = {
+        categorytype: formData.value.contextinfo,
+        name: formData.value.name,
+        idnumber: formData.value.idnumber,
+        description: formData.value.description,
+        descriptionformat: 1,
+        visible: formData.value.visible,
+        theme: formData.value.theme
+      };
 
-    await updateCohorts({
-      cohorts: [{
-        ...cohortData,
-        id: props.id
-      }]
-    });
+      await updateCohorts({
+        cohorts: [{
+          ...cohortData,
+          id: props.id
+        }]
+      });
 
-    // Navigate to cohort details
-    add(stringsStore.getString('cohortupdatedsuccessfully'), 'success');
-    router.push(`/cohort/${props.id}`);
+      add(stringsStore.getString('cohortupdatedsuccessfully'), {
+        type: 'success'
+      });
+      router.push(`/cohort/${props.id}`);
+    } else {
+      add(message, {
+        type: 'danger'
+      });
+    }
   } catch (err) {
     Notification.exception(err);
   } finally {
@@ -190,12 +191,8 @@ onMounted(() => {
         </div>
 
         <!-- Custom Fields Section -->
-        <CohortCustomFields
-          v-if="cohort && cohort.customfields && cohort.customfields.length > 0"
-          :cohortid="cohort.id"
-          :customfields="formData.customfields"
-          v-model:customFields="formData.customfields"
-        />
+        <CohortCustomFields v-if="cohort && cohort.customfields && cohort.customfields.length > 0" :cohortid="cohort.id"
+          :submitting="submitting" @submit:customFields:result="handleCustomFieldsResult" />
 
         <!-- Form Actions -->
         <div class="card-footer d-flex justify-content-end gap-2">

@@ -15,7 +15,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  onSuccess: () => {},
+  onSuccess: () => { },
   onError: (err: any) => {
     Notification.exception(err);
   }
@@ -42,10 +42,12 @@ const deleteCohort = async () => {
           await deleteCohorts({
             cohortids: [props.cohort.id]
           });
-          
+
           // Show success toast
-          add(stringsStore.getString('cohortdeletedsuccessfully'), 'success');
-          
+          add(stringsStore.getString('cohortdeletedsuccessfully'), {
+            type: 'success'
+          });
+
           // Call success callback
           props.onSuccess();
         } catch (err) {
@@ -70,12 +72,8 @@ defineExpose({
 </script>
 
 <template>
-  <button
-    class="btn btn-danger"
-    @click="deleteCohort"
-    :disabled="loading"
-    :title="stringsStore.getString('deletecohort')"
-  >
+  <button class="btn btn-danger" @click="deleteCohort" :disabled="loading"
+    :title="stringsStore.getString('deletecohort')">
     <i v-if="!loading" class="fa fa-trash"></i>
     <i v-else class="fa fa-spinner fa-spin"></i>
     <span v-if="$slots.default" class="ms-2">

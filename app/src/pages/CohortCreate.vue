@@ -37,17 +37,21 @@ const formData = ref({
 // Submit form
 const submitForm = async () => {
   if (!formData.value.name.trim()) {
-    add(stringsStore.getString('pleaseentercohortname'), 'error');
+    add(stringsStore.getString('pleaseentercohortname'), {
+      type: 'danger'
+    });
     return;
   }
 
   if (!formData.value.idnumber.trim()) {
-    add(stringsStore.getString('pleaseenteridnumber'), 'error');
+    add(stringsStore.getString('pleaseenteridnumber'), {
+      type: 'danger'
+    });
     return;
   }
 
   submitting.value = true;
-  
+
   try {
     const cohortData = {
       categorytype: formData.value.categorytype,
@@ -64,8 +68,10 @@ const submitForm = async () => {
     });
 
     // Show success toast
-    add(stringsStore.getString('cohortcreatedsuccessfully'), 'success');
-    
+    add(stringsStore.getString('cohortcreatedsuccessfully'), {
+      type: 'success'
+    });
+
     // Navigate to the newly created cohort details
     if (createdCohorts && createdCohorts.length > 0) {
       const newCohortId = createdCohorts[0].id;
@@ -116,7 +122,7 @@ const goBack = () => {
     <form @submit.prevent="submitForm" class="card">
       <div class="card-body">
         <h2 class="h5 mb-4">{{ stringsStore.getString('basicinformation') }}</h2>
-        
+
         <CohortNameInput v-model="formData.name" />
         <CohortIdNumberInput v-model="formData.idnumber" />
         <CohortDescriptionInput v-model="formData.description" />
@@ -124,7 +130,7 @@ const goBack = () => {
 
       <div class="card-body">
         <h2 class="h5 mb-4">{{ stringsStore.getString('settings') }}</h2>
-        
+
         <CohortVisibleInput v-model="formData.visible" />
         <ThemeSelect v-if="appStore.isAllowCohortThemesEnabled()" v-model="formData.theme" />
         <ContextSelect v-model="formData.categorytype" />
@@ -132,19 +138,10 @@ const goBack = () => {
 
       <!-- Form Actions -->
       <div class="card-footer d-flex justify-content-end gap-2">
-        <button
-          type="button"
-          @click="resetForm"
-          class="btn btn-secondary"
-          :disabled="submitting"
-        >
+        <button type="button" @click="resetForm" class="btn btn-secondary" :disabled="submitting">
           <i class="fa fa-undo"></i> {{ stringsStore.getString('reset') }}
         </button>
-        <button
-          type="submit"
-          class="btn btn-primary"
-          :disabled="submitting"
-        >
+        <button type="submit" class="btn btn-primary" :disabled="submitting">
           <i class="fa fa-plus"></i>
           {{ submitting ? stringsStore.getString('creating') : stringsStore.getString('createcohort') }}
         </button>
@@ -153,5 +150,4 @@ const goBack = () => {
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
