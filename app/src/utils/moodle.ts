@@ -1,6 +1,7 @@
 import Ajax from "core/ajax";
 import * as Config from "core/config";
 import Notification from "core/notification";
+import DynamicForm from "core_form/dynamicform";
 import Templates from "core/templates";
 import { useStringsStore } from '../stores/strings';
 import { useAppStore } from '../stores/app';
@@ -148,6 +149,19 @@ const getCohortCustomfieldForm = async (cohortid: number): Promise<Template> => 
 };
 
 /**
+ * Get cohort customfields
+ */
+const getCustomfieldDynamicForm = async (selector: string): Promise<any> => {
+
+  const element = document.querySelector(selector) as HTMLElement;
+  const response = new DynamicForm(
+    element,
+    'local_cohortmanager\\form\\customfield_form'
+  );
+  return response;
+};
+
+/**
  * 
  */
 const getCustomfieldTemplateConfig = async (component: string, area: string, itemid: number): Promise<any> => {
@@ -174,8 +188,8 @@ const getCustomfieldlist = async (): Promise<Template> => {
   const response = await Templates.renderForPromise('core_customfield/list', data);
 
   return {
-    html: response.html, 
-     js: response.js
+    html: response.html,
+    js: response.js
   };
 };
 
@@ -234,5 +248,6 @@ export {
   loadAppConfigs,
   getCustomfieldTemplateConfig,
   getCustomfieldlist,
-  getCohortCustomfieldForm
+  getCohortCustomfieldForm,
+  getCustomfieldDynamicForm
 };

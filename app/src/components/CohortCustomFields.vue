@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick, watch } from 'vue';
 import { useStringsStore } from '../stores/strings';
-import { getCohortCustomfieldForm } from '../utils/moodle';
-import Templates from 'core/templates';
+import { getCustomfieldDynamicForm } from '../utils/moodle';
 import Notification from 'core/notification';
 
 interface CustomField {
@@ -25,6 +24,7 @@ const emit = defineEmits<{
 const stringsStore = useStringsStore();
 
 // Reactive references
+const form = ref();
 const formHtml = ref<string>('');
 const isLoading = ref<boolean>(false);
 const formContainer = ref<HTMLElement | null>(null);
@@ -35,10 +35,10 @@ const loadCustomFieldForm = async () => {
 
   try {
     isLoading.value = true;
-    const template = await getCohortCustomfieldForm(props.cohortid);
-    formHtml.value = template.html;
-    await nextTick();
-    Templates.runTemplateJS(template.js);
+    form.value = await getCustomfieldDynamicForm('#custom-field-form');
+    form.value.load({
+      id: props.cohortid
+    });
     await nextTick();
     formContainer.value = document.querySelector('#custom-field-form form');
     setupFormListeners();
@@ -52,7 +52,7 @@ const loadCustomFieldForm = async () => {
 // Extract field data from the rendered form
 const extractFieldData = (): CustomField[] => {
   const fields: CustomField[] = [];
-
+  form.value.validateElements();
   if (!formContainer.value) return fields;
 
   // Find all form elements with customfield_ prefix
@@ -86,7 +86,7 @@ const extractFieldData = (): CustomField[] => {
       if (name.includes('[')) {
         const fieldParts = name.split('[');
         const fieldNameRaw = fieldParts[0];
-        const fieldName = fieldNameRaw ? fieldNameRaw.replace('customfield_', ''): '';
+        const fieldName = fieldNameRaw ? fieldNameRaw.replace('customfield_', '') : '';
         const subField = fieldParts[1]?.replace(']', '');
 
         if (!fieldName || !subField) return;
@@ -171,17 +171,10 @@ onMounted(() => {
   }
 });
 
-// Watch for formHtml changes to re-setup listeners
-watch(() => formHtml.value, () => {
-  if (formHtml.value) {
-    nextTick(() => {
-      setupFormListeners();
-    });
-  }
-});
 </script>
 
 <template>
+  <div id="custom-field-form"></div>
   <div v-if="formHtml" class="border-top pt-3">
     <h2 class="h4">{{ stringsStore.getString('customfields') }}</h2>
 
@@ -191,6 +184,5 @@ watch(() => formHtml.value, () => {
       </div>
     </div>
 
-    <div v-html="formHtml" id="custom-field-form"></div>
   </div>
 </template>
