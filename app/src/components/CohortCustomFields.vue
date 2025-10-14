@@ -14,6 +14,7 @@ interface CustomField {
 
 const props = defineProps<{
   cohortid: number;
+  customfields: CustomField[]
 }>();
 
 const emit = defineEmits<{

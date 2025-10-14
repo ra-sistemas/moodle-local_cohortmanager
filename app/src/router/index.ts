@@ -3,7 +3,7 @@ import CohortList from '@/pages/CohortList.vue';
 import CohortDetail from '@/pages/CohortDetail.vue';
 import CohortEdit from '@/pages/CohortEdit.vue';
 import CohortCreate from '@/pages/CohortCreate.vue';
-import CohortCustomFieldsManagement from '@/pages/CohortCustomFieldsManagement.vue';
+import CohortCustomFields from '@/pages/CohortCustomFields.vue';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -42,8 +42,8 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/custom-fields',
-    name: 'CohortCustomFieldsManagement',
-    component: CohortCustomFieldsManagement,
+    name: 'CohortCustomFields',
+    component: CohortCustomFields,
     meta: {
       title: 'Custom Fields Management'
     }
