@@ -166,16 +166,11 @@ onMounted(() => {
           <h2 class="h4">{{ stringsStore.getString('basicinformation') }}</h2>
 
           <CohortNameInput v-model="formData.name" />
-          <CohortIdNumberInput v-model="formData.idnumber" />
-          <CohortDescriptionInput v-model="formData.description" />
-        </div>
-
-        <div class="border-top pt-3">
-          <h2 class="h4">{{ stringsStore.getString('settings') }}</h2>
-
-          <CohortVisibleInput v-model="formData.visible" />
-          <ThemeSelect v-if="appStore.isAllowCohortThemesEnabled()" v-model="formData.theme" />
           <ContextSelect v-model="formData.contextinfo" />
+          <CohortIdNumberInput v-model="formData.idnumber" />
+          <CohortVisibleInput v-model="formData.visible" />
+          <CohortDescriptionInput v-model="formData.description" />
+          <ThemeSelect v-if="appStore.isAllowCohortThemesEnabled()" v-model="formData.theme" />
         </div>
 
         <!-- Custom Fields Section -->
