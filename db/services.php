@@ -136,7 +136,7 @@ $services = [
             'local_cohortmanager_update_cohorts',
             'local_cohortmanager_get_theme_list',
             'local_cohortmanager_get_app_config',
-            'local_cohortmanager_get_cohort_context_info',
+            'local_cohortmanager_get_cohort_context_info'
         ],
         'restrictedusers' => 0,
         'enabled' => 1,

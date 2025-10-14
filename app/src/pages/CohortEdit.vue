@@ -181,8 +181,7 @@ onMounted(() => {
         <!-- Custom Fields Section -->
         <CohortCustomFields
           v-if="cohort && cohort.customfields && cohort.customfields.length > 0"
-          :custom-fields="cohort!.customfields"
-          @update:custom-fields="(updatedFields) => cohort!.customfields = updatedFields"
+          :cohortid="cohort!.id"
         />
 
         <!-- Form Actions -->

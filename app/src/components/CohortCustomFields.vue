@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useStringsStore } from '../stores/strings';
-
+import { getCohortCustomfieldForm } from '../utils/moodle';
+import Templates from 'core/templates';
+import Notification from 'core/notification';
 interface CustomField {
   shortname: string;
   name: string;
@@ -11,7 +13,7 @@ interface CustomField {
 }
 
 const props = defineProps<{
-  customFields: CustomField[];
+  cohortid: number;
 }>();
 
 const emit = defineEmits<{
@@ -20,39 +22,55 @@ const emit = defineEmits<{
 
 const stringsStore = useStringsStore();
 
-// Reactive reference for custom fields
-const localCustomFields = ref<CustomField[]>(props.customFields);
+// Reactive references
+const formHtml = ref<string>('');
+const isLoading = ref<boolean>(false);
 
-const updateFieldValue = (fieldShortname: string, newValue: string) => {
-  const updatedFields = localCustomFields.value.map(field =>
-    field.shortname === fieldShortname
-      ? { ...field, value: newValue }
-      : field
-  );
-  emit('update:customFields', updatedFields);
+// Load custom field form
+const loadCustomFieldForm = async () => {
+  if (!props.cohortid) return;
+  
+  try {
+    isLoading.value = true;
+    const template = await getCohortCustomfieldForm(props.cohortid);
+    formHtml.value = template.html;
+    Templates.runTemplateJS(template.js);
+  } catch (error) {
+    Notification.exception(error);
+  } finally {
+    isLoading.value = false;
+  }
 };
 
-// Watch for changes from parent
-watch(() => props.customFields, (newFields: CustomField[]) => {
-  localCustomFields.value = newFields;
-}, { deep: true });
+// Extract field data from the rendered form
+// const extractFieldData = () => {
+//   // This will need to be implemented based on the actual HTML structure
+//   // For now, we'll emit an empty array to maintain compatibility
+//   emit('update:customFields', []);
+// };
+
+// Load form on component mount
+onMounted(() => {
+  if (props.cohortid) {
+    loadCustomFieldForm();
+  }
+});
 </script>
 
 <template>
-  <div v-if="customFields && customFields.length > 0" class="border-top pt-3">
+  <div v-if="formHtml" class="border-top pt-3">
     <h2 class="h4">{{ stringsStore.getString('customfields') }}</h2>
-
-    <div v-for="field in customFields" :key="field.shortname" class="mb-3">
-      <label :for="`custom-${field.shortname}`" class="form-label">{{ field.name }}</label>
-      <input 
-        :id="`custom-${field.shortname}`" 
-        :value="field.value"
-        @input="(e) => updateFieldValue(field.shortname, (e.target as HTMLInputElement).value)"
-        :type="field.type === 'text' ? 'text' : 'text'" 
-        class="form-control"
-        :placeholder="`Enter ${field.name}`" 
-      />
-      <div class="form-text">{{ field.name }}</div>
+    
+    <div v-if="isLoading" class="text-center py-3">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
     </div>
+    
+    <div
+      v-else
+      v-html="formHtml"
+      class="custom-field-form"
+    ></div>
   </div>
 </template>

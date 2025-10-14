@@ -30,6 +30,8 @@ export default defineConfig({
         "core/str",
         "core/toast",
         "core/templates",
+        "core_form/modalform",
+       'core/fragment'
       ],
       output: {
         format: 'amd',
@@ -46,6 +48,8 @@ export default defineConfig({
           'core/str': 'core/str',
           'core/toast': 'core/toast',
           "core/templates": "core/templates",
+          "core_form/modalform": "core_form/modalform",
+          'core/fragment': 'core/fragment'
         }
       }
     }

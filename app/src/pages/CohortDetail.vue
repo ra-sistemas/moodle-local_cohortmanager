@@ -35,12 +35,12 @@ const activeTab = ref('details');
 // Load cohort details
 const loadCohort = async () => {
   loading.value = true;
-  
+
   try {
     const cohortsList = await getCohorts({
       cohortids: [props.id]
     });
-    
+
     if (cohortsList && cohortsList.length > 0) {
       cohort.value = cohortsList[0];
       await loadMembers();
@@ -60,7 +60,7 @@ const loadMembers = async () => {
     const membersResponse = await getCohortMembers({
       cohortids: [props.id]
     });
-    
+
     if (membersResponse && membersResponse[props.id]) {
       members.value = membersResponse[props.id] || [];
     }
@@ -92,6 +92,7 @@ onMounted(() => {
 
 <template>
   <div class="container">
+
     <!-- Loading State -->
     <div v-if="loading" class="text-center py-4">
       <i class="fa fa-spinner fa-spin"></i> {{ stringsStore.getString('loadingcohortdetails') }}
@@ -108,25 +109,19 @@ onMounted(() => {
           <button @click="editCohort" class="btn btn-primary">
             <i class="fa fa-edit"></i> {{ stringsStore.getString('edit') }}
           </button>
-          <CohortDelete :cohort="cohort" @success="handleDeleteSuccess"/>
+          <CohortDelete :cohort="cohort" @success="handleDeleteSuccess" />
         </div>
       </div>
 
       <!-- Tabs -->
       <ul class="nav nav-tabs">
         <li class="nav-item">
-          <button
-            :class="['nav-link', { active: activeTab === 'details' }]"
-            @click="activeTab = 'details'"
-          >
+          <button :class="['nav-link', { active: activeTab === 'details' }]" @click="activeTab = 'details'">
             {{ stringsStore.getString('details') }}
           </button>
         </li>
         <li class="nav-item">
-          <button
-            :class="['nav-link', { active: activeTab === 'members' }]"
-            @click="activeTab = 'members'"
-          >
+          <button :class="['nav-link', { active: activeTab === 'members' }]" @click="activeTab = 'members'">
             {{ stringsStore.getString('members') }} ({{ members.length }})
           </button>
         </li>
@@ -182,11 +177,7 @@ onMounted(() => {
             </div>
             <div class="card-body">
               <div class="row">
-                <div
-                  v-for="field in cohort.customfields"
-                  :key="field.shortname"
-                  class="col-md-6 mb-3"
-                >
+                <div v-for="field in cohort.customfields" :key="field.shortname" class="col-md-6 mb-3">
                   <label class="form-label">{{ field.name }}:</label>
                   <p class="form-control-plaintext">{{ field.value }}</p>
                 </div>
@@ -212,10 +203,7 @@ onMounted(() => {
                 </tr>
               </thead>
               <tbody>
-                <tr
-                  v-for="member in members"
-                  :key="member.id"
-                >
+                <tr v-for="member in members" :key="member.id">
                   <td class="fw-medium">{{ member.firstname }} {{ member.lastname }}</td>
                   <td>{{ member.username }}</td>
                   <td>{{ member.email }}</td>

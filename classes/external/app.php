@@ -291,7 +291,6 @@ class app extends external_api
     public static function get_app_config()
     {
         global $PAGE;
-
         
         $context = context_system::instance();
         $PAGE->set_context($context);

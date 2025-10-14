@@ -4,6 +4,7 @@ import Notification from "core/notification";
 import Templates from "core/templates";
 import { useStringsStore } from '../stores/strings';
 import { useAppStore } from '../stores/app';
+import Fragment from 'core/fragment';
 import {
   extractSearchResponse,
   extractCreateResponse,
@@ -123,6 +124,30 @@ const getAppConfig = async (): Promise<any> => {
 };
 
 /**
+ * Get cohort customfields AJAX
+ */
+const getCohortCustomfieldFormAjax = async (cohortid: number): Promise<any> => {
+  const response = await ajax('core_form_dynamic_form', {
+    form: 'local_cohortmanager\\form\\customfield_form',
+    formdata: `id=${cohortid}`
+  });
+  return response;
+};
+
+/**
+ * Get cohort customfields
+ */
+const getCohortCustomfieldForm = async (cohortid: number): Promise<Template> => {
+
+  const response = await getCohortCustomfieldFormAjax(cohortid);
+
+  return {
+    html: response.html,
+    js: Fragment.processCollectedJavascript(response.javascript)
+  };
+};
+
+/**
  * 
  */
 const getCustomfieldTemplateConfig = async (component: string, area: string, itemid: number): Promise<any> => {
@@ -146,8 +171,12 @@ const getCustomfieldlist = async (): Promise<Template> => {
     0
   );
 
-  const { html, js } = await Templates.renderForPromise('core_customfield/list', data);
-  return { html, js };
+  const response = await Templates.renderForPromise('core_customfield/list', data);
+
+  return {
+    html: response.html, 
+     js: response.js
+  };
 };
 
 /**
@@ -204,5 +233,6 @@ export {
   loadAllStrings,
   loadAppConfigs,
   getCustomfieldTemplateConfig,
-  getCustomfieldlist
+  getCustomfieldlist,
+  getCohortCustomfieldForm
 };
