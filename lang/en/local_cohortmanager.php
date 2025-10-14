@@ -135,8 +135,6 @@ $string['back'] = 'Back';
 $string['backtohome'] = 'Back to home';
 
 // Custom field form strings
-$string['customfieldssaved'] = 'Custom fields saved successfully';
+$string['customfieldssaved'] = 'Custom fields saved successfully.';
 $string['errorprocessingcustomfields'] = 'Error processing custom fields. Please try again.';
-$string['formprocessedsuccessfully'] = 'Form processed successfully';
-$string['formnotsubmitted'] = 'Form not submitted';
-$string['errorprocessingform'] = 'Error processing form';
+$string['customfieldnotvalid'] = 'Custom fields not valid.';

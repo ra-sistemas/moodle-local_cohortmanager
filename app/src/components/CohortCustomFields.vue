@@ -34,17 +34,17 @@ const loadCustomFieldForm = async () => {
 
     form.value.addEventListener(form.value.events.FORM_SUBMITTED, (event: Event) => {
       event.preventDefault();
-      emit('submit:customFields:result', true, stringsStore.getString('formprocessedsuccessfully'));
+      emit('submit:customFields:result', true, stringsStore.getString('customfieldssaved'));
     });
 
     form.value.addEventListener(form.value.events.CLIENT_VALIDATION_ERROR, (event: Event) => {
       event.preventDefault();
-      emit('submit:customFields:result', false, stringsStore.getString('formnotsubmitted'));
+      emit('submit:customFields:result', false, stringsStore.getString('customfieldnotvalid'));
     });
 
     form.value.addEventListener(form.value.events.SERVER_VALIDATION_ERROR, (event: Event) => {
       event.preventDefault();
-      emit('submit:customFields:result', false, stringsStore.getString('formnotsubmitted'));
+      emit('submit:customFields:result', false, stringsStore.getString('customfieldnotvalid'));
     });
 
     await nextTick();
@@ -70,7 +70,7 @@ watch(() => props.submitting, async (newSubmitting) => {
       await form.value.submitFormAjax();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      emit('submit:customFields:result', false, stringsStore.getString('errorprocessingform') + ': ' + errorMessage);
+      emit('submit:customFields:result', false, stringsStore.getString('errorprocessingcustomfields') + ': ' + errorMessage);
     }
   }
 });
