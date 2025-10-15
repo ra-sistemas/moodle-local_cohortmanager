@@ -4,7 +4,7 @@ import { deleteCohorts } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
 import { add } from 'core/toast';
 import { deleteCancel } from 'core/notification';
-import type { Cohort } from '../types/moodle-api';
+import type { Cohort } from '../types/interfaces';
 import Notification from 'core/notification';
 
 // Props

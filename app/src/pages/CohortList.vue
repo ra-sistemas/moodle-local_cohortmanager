@@ -5,7 +5,7 @@ import { searchCohorts as searchCohortsApi } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
 import Notification from 'core/notification';
 import CohortDelete from '../components/CohortDelete.vue';
-import type { Cohort } from '../types/moodle-api';
+import type { Cohort } from '../types/interfaces';
 
 // Initialize strings store
 const stringsStore = useStringsStore();

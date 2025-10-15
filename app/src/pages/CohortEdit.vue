@@ -5,7 +5,7 @@ import { getCohorts, updateCohorts, getCohortContextInfo } from '../utils/moodle
 import { useStringsStore } from '../stores/strings';
 import { useAppStore } from '../stores/app';
 import { add } from 'core/toast';
-import type { Cohort } from '../types/moodle-api';
+import type { Cohort } from '../types/interfaces';
 import ThemeSelect from '../components/ThemeSelect.vue';
 import ContextSelect from '../components/ContextSelect.vue';
 import CohortNameInput from '../components/CohortNameInput.vue';

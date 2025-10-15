@@ -4,7 +4,7 @@ import type {
   CohortUpdateResponse,
   CohortDeleteResponse,
   AjaxResponse
-} from '../types/moodle-api';
+} from '../types/interfaces';
 import Notification from 'core/notification';
 
 /**

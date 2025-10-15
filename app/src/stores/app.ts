@@ -2,18 +2,11 @@ import { defineStore } from 'pinia';
 import { getAppConfig } from '../utils/moodle';
 import Notification from 'core/notification';
 
-interface AppConfig {
-  allowcohortthemes?: boolean;
-  themelist?: Array<Object>;
-  contextlist?: Array<Object>;
-  tinymceconfig?: string
-  // Add other config properties as needed
-}
-
-interface AppState {
-  appConfig: AppConfig | null;
-  error: string | null;
-}
+// Import interfaces from the unified interfaces file
+import type {
+  AppConfig,
+  AppState
+} from '../types/interfaces';
 
 export const useAppStore = defineStore('app', {
   state: (): AppState => ({

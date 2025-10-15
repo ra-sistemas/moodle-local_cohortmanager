@@ -19,20 +19,8 @@ declare global {
   }
 }
 
-/**
- * Options for TinyMCE editor initialization
- */
-export interface TinyMceOptions {
-  context?: number;
-  draftitemid?: number;
-  filepicker?: Record<string, any>;
-  language?: Record<string, any>;
-  currentLanguage?: string;
-  branding?: boolean;
-  css?: string[];
-  extended_valid_elements?: string;
-  plugins?: Record<string, any>;
-}
+// Import interfaces from the unified interfaces file
+import type { TinyMceOptions } from '../types/interfaces';
 
 /**
  * Initialize a TinyMCE editor for the specified element

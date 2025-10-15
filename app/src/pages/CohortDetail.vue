@@ -5,7 +5,7 @@ import { getCohorts, getCohortMembers } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
 import { add } from 'core/toast';
 import CohortDelete from '../components/CohortDelete.vue';
-import type { Cohort } from '../types/moodle-api';
+import type { Cohort } from '../types/interfaces';
 import Notification from 'core/notification';
 
 // Initialize strings store

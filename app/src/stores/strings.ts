@@ -2,22 +2,12 @@ import { defineStore } from 'pinia';
 import { getAllStrings } from '../utils/moodle';
 import Notification from 'core/notification';
 
-interface ExternalStringData {
-  identifier: string;
-  value: string;
-}
-
-interface LanguageData {
-  language: string;
-  strings: ExternalStringData[];
-}
-
-interface StringsState {
-  strings: Record<string, string>;
-  loading: boolean;
-  error: string | null;
-  loadedComponents: Set<string>;
-}
+// Import interfaces from the unified interfaces file
+import type {
+  ExternalStringData,
+  LanguageData,
+  StringsState
+} from '../types/interfaces';
 
 export const useStringsStore = defineStore('strings', {
   state: (): StringsState => ({

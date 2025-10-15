@@ -15,23 +15,12 @@ import {
   extractGetCohortMembersResponse
 } from './ajax-response';
 
-interface Template {
-  html: string;
-  js: string;
-}
-
-interface CohortInterface {
-  cohortid: number;
-  userids: number[];
-}
-
-interface CohortMember {
-  id: number;
-  username: string;
-  firstname: string;
-  lastname: string;
-  email: string;
-}
+// Import interfaces from the unified interfaces file
+import type {
+  Template,
+  CohortInterface,
+  CohortMember
+} from '../types/interfaces';
 
 
 const isDebugEnabled = Config.developerdebug;
