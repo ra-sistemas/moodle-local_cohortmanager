@@ -1,13 +1,14 @@
 declare module 'core/str' {
-  /**
-   * @typedef StringRequest
-   * @type {object}
-   * @param {string} requests.key The string identifer to fetch
-   * @param {string} [requests.component='core'] The componet to fetch from
-   * @param {string} [requests.lang] The language to fetch a string for. Defaults to current page language.
-   * @param {object|string} [requests.param] The param for variable expansion in the string.
-   */
 
+  /**
+ * String request interface
+ */
+  interface StringRequest {
+    key: string;
+    component?: string;
+    lang?: string;
+    param?: object | string;
+  }
   /**
    * Return a Promise that resolves to a string.
    *
