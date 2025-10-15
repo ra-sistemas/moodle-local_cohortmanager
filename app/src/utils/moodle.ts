@@ -20,6 +20,20 @@ interface Template {
   js: string;
 }
 
+interface CohortInterface {
+  cohortid: number;
+  userids: number[];
+}
+
+interface CohortMember {
+  id: number;
+  username: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+}
+
+
 const isDebugEnabled = Config.developerdebug;
 
 /**
@@ -95,9 +109,16 @@ const getCohorts = async (args: Object): Promise<any[]> => {
 /**
  * Obter membros de cohorts com tratamento de resposta tipado
  */
-const getCohortMembers = async (args: Object): Promise<Record<number, any[]>> => {
-  const response = await ajax('local_cohortmanager_get_cohort_members', args);
-  return extractGetCohortMembersResponse(response);
+const getCohortMembers = async (args: Object): Promise<CohortMember[]> => {
+  const response = extractGetCohortMembersResponse(await ajax('local_cohortmanager_get_cohort_members', args));
+  const cohort = response[0] as CohortInterface;
+  const members = cohort.userids;
+  const data: { field: string; values: number[] } = {
+    field: 'id',
+    values: members
+  };
+  const response2 = await ajax('core_user_get_users_by_field', data) as CohortMember[];
+  return response2;
 };
 
 /**

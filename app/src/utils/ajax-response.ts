@@ -62,8 +62,8 @@ export const extractGetCohortsResponse = (response: AjaxResponse): any[] => {
 /**
  * Função segura para extrair dados da resposta da API core_cohort_get_cohort_members
  */
-export const extractGetCohortMembersResponse = (response: AjaxResponse): Record<number, any[]> => {
-  return typeof response === 'object' && response !== null ? response : {};
+export const extractGetCohortMembersResponse = (response: AjaxResponse): Object[] => {
+  return Array.isArray(response) ? response : [];
 };
 
 /**

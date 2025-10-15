@@ -11,7 +11,6 @@ import Notification from 'core/notification';
 // Initialize strings store
 const stringsStore = useStringsStore();
 
-// Define types
 interface CohortMember {
   id: number;
   username: string;
@@ -62,10 +61,7 @@ const loadMembers = async () => {
     const membersResponse = await getCohortMembers({
       cohortids: [props.id]
     });
-
-    if (membersResponse && membersResponse[props.id]) {
-      members.value = membersResponse[props.id] || [];
-    }
+    members.value = membersResponse || [];
   } catch (err) {
     Notification.exception(err);
   }
