@@ -5,6 +5,8 @@ import { getCohorts, getCohortMembers } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
 import { add } from 'core/toast';
 import CohortDelete from '../components/CohortDelete.vue';
+import CohortDetailsPartial from './partials/CohortDetailsPartial.vue';
+import CohortMembersPartial from './partials/CohortMembersPartial.vue';
 import type { Cohort } from '../types/interfaces';
 import Notification from 'core/notification';
 
@@ -128,93 +130,10 @@ onMounted(() => {
       <!-- Tab Content -->
       <div class="tab-content">
         <!-- Details Tab -->
-        <div v-if="activeTab === 'details'" class="tab-pane fade show active">
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="card-title mb-0">{{ stringsStore.getString('basicinformation') }}</h5>
-            </div>
-            <div class="card-body">
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">{{ stringsStore.getString('name') }}:</label>
-                  <p class="form-control-plaintext">{{ cohort.name }}</p>
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">{{ stringsStore.getString('idnumber') }}:</label>
-                  <p class="form-control-plaintext">{{ cohort.idnumber }}</p>
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">{{ stringsStore.getString('visibility') }}:</label>
-                  <span :class="['badge', cohort.visible ? 'bg-success' : 'bg-secondary']">
-                    {{ cohort.visible ? stringsStore.getString('visible') : stringsStore.getString('hidden') }}
-                  </span>
-                </div>
-                <div v-if="cohort.theme" class="col-md-6 mb-3">
-                  <label class="form-label">{{ stringsStore.getString('theme') }}:</label>
-                  <p class="form-control-plaintext">{{ cohort.theme }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="card-title mb-0">{{ stringsStore.getString('description') }}</h5>
-            </div>
-            <div class="card-body">
-              <div v-if="cohort.description" v-html="cohort.description"></div>
-              <div v-else class="text-muted fst-italic">
-                {{ stringsStore.getString('nodescriptionprovided') }}
-              </div>
-            </div>
-          </div>
-
-          <div v-if="cohort.customfields && cohort.customfields.length > 0" class="card">
-            <div class="card-header">
-              <h5 class="card-title mb-0">{{ stringsStore.getString('customfields') }}</h5>
-            </div>
-            <div class="card-body">
-              <div class="row">
-                <div v-for="field in cohort.customfields" :key="field.shortname" class="col-md-6 mb-3">
-                  <label class="form-label">{{ field.name }}:</label>
-                  <p class="form-control-plaintext">{{ field.value }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
+        <CohortDetailsPartial v-if="activeTab === 'details'" :cohort="cohort" />
+        
         <!-- Members Tab -->
-        <div v-if="activeTab === 'members'" class="tab-pane fade show active">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="mb-0">{{ stringsStore.getString('cohortmembers') }}</h5>
-            <span class="badge bg-primary">{{ members.length }} {{ stringsStore.getString('memberscount') }}</span>
-          </div>
-
-          <div v-if="members.length > 0" class="table-responsive">
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th>{{ stringsStore.getString('name') }}</th>
-                  <th>{{ stringsStore.getString('username') }}</th>
-                  <th>{{ stringsStore.getString('email') }}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="member in members" :key="member.id">
-                  <td class="fw-medium">{{ member.firstname }} {{ member.lastname }}</td>
-                  <td>{{ member.username }}</td>
-                  <td>{{ member.email }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div v-else class="text-center py-4">
-            <i class="fa fa-users fa-3x text-muted mb-3"></i>
-            <p class="text-muted">{{ stringsStore.getString('nomembersfound') }}</p>
-          </div>
-        </div>
+        <CohortMembersPartial v-if="activeTab === 'members'" :members="members" />
       </div>
     </div>
 
