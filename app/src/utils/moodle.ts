@@ -2,6 +2,7 @@ import Ajax from "core/ajax";
 import * as Config from "core/config";
 import Notification from "core/notification";
 import DynamicForm from "core_form/dynamicform";
+import ModalForm from "core_form/modalform";
 import Templates from "core/templates";
 import { useStringsStore } from '../stores/strings';
 import { useAppStore } from '../stores/app';
@@ -172,6 +173,24 @@ const getCustomfieldDynamicForm = async (selector: string): Promise<any> => {
 };
 
 /**
+ * Show add Members modal
+ */
+const showAddMembersForm = (cohortid: number, title: string, saveButtonText: string): ModalForm => {
+
+  const modalForm = new ModalForm({
+    formClass: 'local_cohortmanager\\form\\add_member',
+    saveButtonText: title,
+    modalConfig: {
+      title:  saveButtonText,
+    },
+    args: {
+      id: cohortid
+    }
+  });
+  return modalForm;
+};
+
+/**
  * 
  */
 const getCustomfieldTemplateConfig = async (component: string, area: string, itemid: number): Promise<any> => {
@@ -259,5 +278,6 @@ export {
   getCustomfieldTemplateConfig,
   getCustomfieldlist,
   getCohortCustomfieldForm,
-  getCustomfieldDynamicForm
+  getCustomfieldDynamicForm,
+  showAddMembersForm
 };

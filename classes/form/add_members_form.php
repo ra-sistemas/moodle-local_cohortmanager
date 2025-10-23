@@ -1,0 +1,150 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+namespace local_cohortmanager\form;
+
+use core_form\dynamic_form;
+use context_system;
+use context;
+use moodle_url;
+use core_user;
+
+/**
+ * Class add_members_form
+ *
+ * @package    local_cohortmanager
+ * @copyright  2025 REVVO <www.revvo.com.br>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class add_members_form extends dynamic_form
+{
+    /**
+     * Form definition - adds form elements for adding cohort members
+     */
+    public function definition()
+    {
+        global $DB;
+
+        $mform = $this->_form;
+        $cohortid = $this->optional_param('id', 0, PARAM_INT);
+
+        // Hidden field for cohort ID
+        $mform->addElement('hidden', 'id');
+        $mform->setType('id', PARAM_INT);
+
+        // Users to add (multi-select)
+        $options = $this->get_potential_members($cohortid);
+        $mform->addElement('select', 'users', get_string('users'), $options);
+        $mform->addRule('users', get_string('required'), 'required', null, 'client');
+    }
+
+    /**
+     * Get potential members that can be added to the cohort
+     *
+     * @param int $cohortid The cohort ID
+     * @return array Array of potential users
+     */
+    protected function get_potential_members($cohortid)
+    {
+        global $DB;
+
+        if (!$cohortid) {
+            return array();
+        }
+
+        $context = context::instance_by_id($DB->get_field('cohort', 'contextid', array('id' => $cohortid)));
+        $users = get_enrolled_users($context, '', 0, 'u.id, u.firstname, u.lastname');
+
+        $options = array();
+        foreach ($users as $user) {
+            $options[$user->id] = fullname($user);
+        }
+
+        return $options;
+    }
+
+    /**
+     * Returns context where this form is used
+     *
+     * @return context
+     */
+    protected function get_context_for_dynamic_submission(): context
+    {
+        $cohortid = $this->optional_param('cohortid', 0, PARAM_INT);
+        if ($cohortid) {
+            global $DB;
+            $cohort = $DB->get_record('cohort', ['id' => $cohortid]);
+            if ($cohort) {
+                return context::instance_by_id($cohort->contextid);
+            }
+        }
+        return context_system::instance();
+    }
+
+    /**
+     * Checks if current user has access to this form, otherwise throws exception
+     */
+    protected function check_access_for_dynamic_submission(): void
+    {
+        $context = $this->get_context_for_dynamic_submission();
+        require_capability('moodle/cohort:assign', $context);
+    }
+
+    /**
+     * Process the form submission, used if form was submitted via AJAX
+     *
+     * @return mixed
+     */
+    public function process_dynamic_submission()
+    {
+        global $DB;
+
+        $cohortid = $this->optional_param('cohortid', 0, PARAM_INT);
+        $data = $this->get_data();
+
+        if ($cohortid && !empty($data) && !empty($data->users)) {
+            $users = is_array($data->users) ? $data->users : array($data->users);
+            $roleid = isset($data->roleid) ? $data->roleid : 0;
+
+            foreach ($users as $userid) {
+                cohort_add_member($cohortid, $userid, $roleid, 0, time());
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Load in existing data as form defaults
+     */
+    public function set_data_for_dynamic_submission(): void
+    {
+        // This form doesn't need to load existing data as it's for adding new members
+    }
+
+    /**
+     * Returns url to set in $PAGE->set_url() when form is being rendered or submitted via AJAX
+     *
+     * @return moodle_url
+     */
+    protected function get_page_url_for_dynamic_submission(): \moodle_url
+    {
+        $cohortid = $this->optional_param('cohortid', 0, PARAM_INT);
+        return new \moodle_url('/local/cohortmanager/add_members.php', ['cohortid' => $cohortid]);
+    }
+}

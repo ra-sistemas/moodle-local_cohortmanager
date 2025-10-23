@@ -133,7 +133,7 @@ onMounted(() => {
         <CohortDetailsPartial v-if="activeTab === 'details'" :cohort="cohort" />
         
         <!-- Members Tab -->
-        <CohortMembersPartial v-if="activeTab === 'members'" :members="members" />
+        <CohortMembersPartial v-if="activeTab === 'members'" :members="members" :cohort="cohort" />
       </div>
     </div>
 
