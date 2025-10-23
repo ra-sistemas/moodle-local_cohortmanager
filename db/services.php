@@ -80,6 +80,14 @@ $functions = [
         'capabilities' => 'moodle/cohort:view',
         'ajax' => true
     ],
+    'local_cohortmanager_get_potential_cohort_members' => [
+        'classname' => 'local_cohortmanager\\external\\members',
+        'methodname' => 'get_potential_members',
+        'description' => 'Get potential user to add in cohort.',
+        'type' => 'read',
+        'ajax' => true,
+        'capabilities' => 'moodle/cohort:view'
+    ],
     'local_cohortmanager_search_cohorts' => [
         'classname' => 'local_cohortmanager\\external\\app',
         'methodname' => 'search_cohorts_with_total',
@@ -131,6 +139,7 @@ $services = [
             'local_cohortmanager_delete_cohort_members',
             'local_cohortmanager_delete_cohorts',
             'local_cohortmanager_get_cohort_members',
+            'local_cohortmanager_get_potential_cohort_members',
             'local_cohortmanager_search_cohorts',
             'local_cohortmanager_get_cohorts',
             'local_cohortmanager_update_cohorts',

@@ -36,8 +36,6 @@ class add_members_form extends dynamic_form
      */
     public function definition()
     {
-        global $DB;
-
         $mform = $this->_form;
         $cohortid = $this->optional_param('id', 0, PARAM_INT);
 
@@ -46,34 +44,13 @@ class add_members_form extends dynamic_form
         $mform->setType('id', PARAM_INT);
 
         // Users to add (multi-select)
-        $options = $this->get_potential_members($cohortid);
-        $mform->addElement('select', 'users', get_string('users'), $options);
+        $options = [
+            'ajax' => 'local_cohortmanager/form-members-selector',
+            'cohortid' => $cohortid,
+            'multiple' => true
+        ];
+        $mform->addElement('autocomplete', 'users', get_string('users'), [], $options);
         $mform->addRule('users', get_string('required'), 'required', null, 'client');
-    }
-
-    /**
-     * Get potential members that can be added to the cohort
-     *
-     * @param int $cohortid The cohort ID
-     * @return array Array of potential users
-     */
-    protected function get_potential_members($cohortid)
-    {
-        global $DB;
-
-        if (!$cohortid) {
-            return array();
-        }
-
-        $context = context::instance_by_id($DB->get_field('cohort', 'contextid', array('id' => $cohortid)));
-        $users = get_enrolled_users($context, '', 0, 'u.id, u.firstname, u.lastname');
-
-        $options = array();
-        foreach ($users as $user) {
-            $options[$user->id] = fullname($user);
-        }
-
-        return $options;
     }
 
     /**
@@ -142,9 +119,9 @@ class add_members_form extends dynamic_form
      *
      * @return moodle_url
      */
-    protected function get_page_url_for_dynamic_submission(): \moodle_url
+    protected function get_page_url_for_dynamic_submission(): moodle_url
     {
         $cohortid = $this->optional_param('cohortid', 0, PARAM_INT);
-        return new \moodle_url('/local/cohortmanager/add_members.php', ['cohortid' => $cohortid]);
+        return new moodle_url('/local/cohortmanager/add_members.php', ['cohortid' => $cohortid]);
     }
 }

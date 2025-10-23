@@ -178,7 +178,7 @@ const getCustomfieldDynamicForm = async (selector: string): Promise<any> => {
 const showAddMembersForm = (cohortid: number, title: string, saveButtonText: string): ModalForm => {
 
   const modalForm = new ModalForm({
-    formClass: 'local_cohortmanager\\form\\add_member',
+    formClass: 'local_cohortmanager\\form\\add_members_form',
     saveButtonText: title,
     modalConfig: {
       title:  saveButtonText,
