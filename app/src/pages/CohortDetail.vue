@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { getCohorts, getCohortMembers } from '../utils/moodle';
+import { getCohorts } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
 import { add } from 'core/toast';
 import CohortDelete from '../components/CohortDelete.vue';
@@ -13,14 +13,6 @@ import Notification from 'core/notification';
 // Initialize strings store
 const stringsStore = useStringsStore();
 
-interface CohortMember {
-  id: number;
-  username: string;
-  firstname: string;
-  lastname: string;
-  email: string;
-}
-
 // Props
 const props = defineProps<{
   id: number;
@@ -29,7 +21,7 @@ const props = defineProps<{
 // State management
 const router = useRouter();
 const cohort = ref<Cohort | null>(null);
-const members = ref<CohortMember[]>([]);
+
 const loading = ref(false);
 const activeTab = ref('details');
 
@@ -44,7 +36,6 @@ const loadCohort = async () => {
 
     if (cohortsList && cohortsList.length > 0) {
       cohort.value = cohortsList[0];
-      await loadMembers();
     } else {
       add(stringsStore.getString('cohortnotfound'), {
         type: 'danger'
@@ -54,18 +45,6 @@ const loadCohort = async () => {
     Notification.exception(err);
   } finally {
     loading.value = false;
-  }
-};
-
-// Load cohort members
-const loadMembers = async () => {
-  try {
-    const membersResponse = await getCohortMembers({
-      cohortids: [props.id]
-    });
-    members.value = membersResponse || [];
-  } catch (err) {
-    Notification.exception(err);
   }
 };
 
@@ -122,7 +101,7 @@ onMounted(() => {
         </li>
         <li class="nav-item">
           <button :class="['nav-link', { active: activeTab === 'members' }]" @click="activeTab = 'members'">
-            {{ stringsStore.getString('members') }} ({{ members.length }})
+            {{ stringsStore.getString('members') }}
           </button>
         </li>
       </ul>
@@ -133,7 +112,7 @@ onMounted(() => {
         <CohortDetailsPartial v-if="activeTab === 'details'" :cohort="cohort" />
         
         <!-- Members Tab -->
-        <CohortMembersPartial v-if="activeTab === 'members'" :members="members" :cohort="cohort" />
+        <CohortMembersPartial v-if="activeTab === 'members'" :cohort="cohort" />
       </div>
     </div>
 

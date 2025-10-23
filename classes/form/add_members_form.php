@@ -22,6 +22,10 @@ use context;
 use moodle_url;
 use core_user;
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot . '/cohort/lib.php');
+
 /**
  * Class add_members_form
  *
@@ -60,7 +64,7 @@ class add_members_form extends dynamic_form
      */
     protected function get_context_for_dynamic_submission(): context
     {
-        $cohortid = $this->optional_param('cohortid', 0, PARAM_INT);
+        $cohortid = $this->optional_param('id', 0, PARAM_INT);
         if ($cohortid) {
             global $DB;
             $cohort = $DB->get_record('cohort', ['id' => $cohortid]);
@@ -89,15 +93,22 @@ class add_members_form extends dynamic_form
     {
         global $DB;
 
-        $cohortid = $this->optional_param('cohortid', 0, PARAM_INT);
+        $cohortid = $this->optional_param('id', 0, PARAM_INT);
         $data = $this->get_data();
 
-        if ($cohortid && !empty($data) && !empty($data->users)) {
-            $users = is_array($data->users) ? $data->users : array($data->users);
-            $roleid = isset($data->roleid) ? $data->roleid : 0;
+        $cohort = $DB->get_record(
+            'cohort',
+            array(
+                'id' => $cohortid
+            ),
+            '*',
+            MUST_EXIST
+        );
 
-            foreach ($users as $userid) {
-                cohort_add_member($cohortid, $userid, $roleid, 0, time());
+        if ($cohort && isset($data->users) && is_array($data->users)) {
+
+            foreach ($data->users as $userid) {
+                \cohort_add_member($cohortid, $userid);
             }
 
             return true;
@@ -111,7 +122,10 @@ class add_members_form extends dynamic_form
      */
     public function set_data_for_dynamic_submission(): void
     {
-        // This form doesn't need to load existing data as it's for adding new members
+        $data = (object)[
+            'id' => $this->optional_param('id', 0, PARAM_INT),
+        ];
+        $this->set_data($data);
     }
 
     /**
@@ -121,7 +135,6 @@ class add_members_form extends dynamic_form
      */
     protected function get_page_url_for_dynamic_submission(): moodle_url
     {
-        $cohortid = $this->optional_param('cohortid', 0, PARAM_INT);
-        return new moodle_url('/local/cohortmanager/add_members.php', ['cohortid' => $cohortid]);
+        return new moodle_url('/local/cohortmanager/');
     }
 }

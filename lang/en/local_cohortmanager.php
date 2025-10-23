@@ -138,3 +138,8 @@ $string['backtohome'] = 'Back to home';
 $string['customfieldssaved'] = 'Custom fields saved successfully.';
 $string['errorprocessingcustomfields'] = 'Error processing custom fields. Please try again.';
 $string['customfieldnotvalid'] = 'Custom fields not valid.';
+
+// CohortMembersAddModal component strings
+$string['addmembers'] = 'Add Members';
+$string['add'] = 'Add';
+$string['membersadded'] = 'Members added successfully';

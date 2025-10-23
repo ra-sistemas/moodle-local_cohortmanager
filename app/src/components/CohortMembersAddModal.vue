@@ -2,12 +2,14 @@
 import { ref } from 'vue';
 import { useStringsStore } from '../stores/strings';
 import { showAddMembersForm } from '../utils/moodle';
+import { add } from 'core/toast';
+
 const props = defineProps<{
     cohortid: number;
 }>();
 
 const emit = defineEmits<{
-    'added:Members': [value: string];
+    'added:members': [value: boolean];
 }>();
 
 const modal = ref();
@@ -20,7 +22,19 @@ const openModal = async () => {
         stringsStore.getString('addmembers'),
         stringsStore.getString('add'),
     );
-    console.debug(modal.value);
+
+    modal.value.addEventListener(modal.value.events.FORM_SUBMITTED, (event: any) => {
+        if (event.detail) {
+            add(stringsStore.getString('membersadded'), {
+                type: 'success'
+            });
+            emit('added:members', event.detail);
+        }
+        else {
+
+        }
+    });
+
     await modal.value.show();
 }
 
