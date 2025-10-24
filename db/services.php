@@ -127,6 +127,14 @@ $functions = [
         'description' => 'Returns cohort context information based on contextid',
         'type'       => 'read',
         'ajax' => true
+    ],
+    'local_cohortmanager_get_cohort_members_table_data' => [
+        'classname'   => 'local_cohortmanager\\external\\cohort_members_table',
+        'methodname' => 'get_cohort_members_table_data',
+        'description' => 'Returns cohort members table data for dynamic table',
+        'type'       => 'read',
+        'ajax' => true,
+        'capabilities' => 'moodle/cohort:manage'
     ]
 ];
 
@@ -145,7 +153,8 @@ $services = [
             'local_cohortmanager_update_cohorts',
             'local_cohortmanager_get_theme_list',
             'local_cohortmanager_get_app_config',
-            'local_cohortmanager_get_cohort_context_info'
+            'local_cohortmanager_get_cohort_context_info',
+            'local_cohortmanager_get_cohort_members_table_data'
         ],
         'restrictedusers' => 0,
         'enabled' => 1,

@@ -32,7 +32,8 @@ export default defineConfig({
         "core/templates",
         "core_form/modalform",
         'core/fragment',
-        'core_form/dynamicform'
+        'core_form/dynamicform',
+        'core_table/dynamic'
       ],
       output: {
         format: 'amd',
@@ -51,7 +52,8 @@ export default defineConfig({
           "core/templates": "core/templates",
           "core_form/modalform": "core_form/modalform",
           'core/fragment': 'core/fragment',
-          'core_form/dynamicform': 'core_form/dynamicform'
+          'core_form/dynamicform': 'core_form/dynamicform',
+          "core_table/dynamic": "core_table/dynamic"
         }
       }
     }
