@@ -39,7 +39,7 @@ require_once($CFG->dirroot . '/course/classes/category.php');
  *
  * @package    local_cohortmanager
  * @category   external
- * @copyright  2025 REVVO <www.revvo.com.br>
+ * @copyright  2025 Davison Almeida <ramosdealmeidasistemas@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class app extends external_api

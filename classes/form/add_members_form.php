@@ -30,7 +30,7 @@ require_once($CFG->dirroot . '/cohort/lib.php');
  * Class add_members_form
  *
  * @package    local_cohortmanager
- * @copyright  2025 REVVO <www.revvo.com.br>
+ * @copyright  2025 Davison Almeida <ramosdealmeidasistemas@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class add_members_form extends dynamic_form

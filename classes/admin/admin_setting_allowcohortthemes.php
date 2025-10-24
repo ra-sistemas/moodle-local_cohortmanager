@@ -23,7 +23,7 @@ use admin_setting_configcheckbox;
  * Class admin_setting_allowcohortthemes
  *
  * @package    local_cohortmanager
- * @copyright  2025 REVVO <www.revvo.com.br>
+ * @copyright  2025 Davison Almeida <ramosdealmeidasistemas@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class admin_setting_allowcohortthemes extends admin_setting_configcheckbox

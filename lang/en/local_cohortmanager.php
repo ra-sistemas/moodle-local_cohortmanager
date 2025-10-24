@@ -19,7 +19,7 @@
  *
  * @package    local_cohortmanager
  * @category   string
- * @copyright  2025 REVVO <www.revvo.com.br>
+ * @copyright  2025 Davison Almeida <ramosdealmeidasistemas@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
