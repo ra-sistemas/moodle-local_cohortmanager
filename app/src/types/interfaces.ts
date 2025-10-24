@@ -93,10 +93,15 @@ export interface CohortInterface {
  */
 export interface CohortMember {
   id: number;
+  fullname: string;
   username: string;
+  email: string;
   firstname: string;
   lastname: string;
-  email: string;
+  picture: number;
+  imagealt: string;
+  city: string;
+  country: string;
 }
 
 /**

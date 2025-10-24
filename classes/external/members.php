@@ -120,6 +120,8 @@ class members extends external_api
         $cohort = $DB->get_record('cohort', ['id' => $params['cohortid']], '*', MUST_EXIST);
         $context = context::instance_by_id($cohort->contextid, MUST_EXIST);
 
+        $PAGE->set_context($context);
+
         // Check capabilities.
         require_capability('moodle/cohort:manage', $context);
 
@@ -185,92 +187,10 @@ class members extends external_api
         }
 
         return [
-            'html' => self::render_table_html($formattedmembers, $params['hiddencolumns']),
+            'members' => $formattedmembers,
             'totalrows' => $totalcount,
             'hasmore' => ($offset + $params['pagesize']) < $totalcount
         ];
-    }
-
-    /**
-     * Render the table HTML.
-     *
-     * @param array $members Members data
-     * @param array $hiddencolumns Hidden columns
-     * @return string HTML
-     */
-    protected static function render_table_html($members, $hiddencolumns)
-    {
-        global $OUTPUT;
-
-        $html = '';
-
-        // Start table.
-        $html .= '<table class="table table-striped table-hover cohort-members-table">';
-        $html .= '<thead>';
-        $html .= '<tr>';
-
-        // Select column.
-        if (!in_array('select', $hiddencolumns)) {
-            $html .= '<th class="header c0" style="width: 30px;">';
-            $html .= '<input type="checkbox" id="select-all-cohort-members" class="form-check-input m-1" title="' . get_string('selectall') . '">';
-            $html .= '</th>';
-        }
-
-        // Name column.
-        if (!in_array('fullname', $hiddencolumns)) {
-            $html .= '<th class="header name">' . get_string('name') . '</th>';
-        }
-
-        // Username column.
-        if (!in_array('username', $hiddencolumns)) {
-            $html .= '<th class="header username">' . get_string('username') . '</th>';
-        }
-
-        // Email column.
-        if (!in_array('email', $hiddencolumns)) {
-            $html .= '<th class="header email">' . get_string('email') . '</th>';
-        }
-
-        $html .= '</tr>';
-        $html .= '</thead>';
-        $html .= '<tbody>';
-
-        // Table rows.
-        foreach ($members as $member) {
-            $html .= '<tr>';
-
-            // Select column.
-            if (!in_array('select', $hiddencolumns)) {
-                $html .= '<td class="cell c0">';
-                $html .= '<input type="checkbox" id="member' . $member['id'] . '" class="form-check-input membercheckbox m-1" title="' . get_string('selectitem', 'moodle', $member['fullname']) . '">';
-                $html .= '</td>';
-            }
-
-            // Name column.
-            if (!in_array('fullname', $hiddencolumns)) {
-                $html .= '<td class="cell name">';
-                $html .= $OUTPUT->user_picture($member, ['courseid' => SITEID, 'includefullname' => true]);
-                $html .= ' <span class="fullname">' . $member['fullname'] . '</span>';
-                $html .= '</td>';
-            }
-
-            // Username column.
-            if (!in_array('username', $hiddencolumns)) {
-                $html .= '<td class="cell username">' . $member['username'] . '</td>';
-            }
-
-            // Email column.
-            if (!in_array('email', $hiddencolumns)) {
-                $html .= '<td class="cell email">' . $member['email'] . '</td>';
-            }
-
-            $html .= '</tr>';
-        }
-
-        $html .= '</tbody>';
-        $html .= '</table>';
-
-        return $html;
     }
 
     /**
@@ -281,7 +201,20 @@ class members extends external_api
     public static function get_cohort_members_table_data_returns()
     {
         return new external_single_structure([
-            'html' => new external_value(PARAM_RAW, 'Table HTML'),
+            'members' => new external_multiple_structure(
+                new external_single_structure([
+                    'id' => new external_value(PARAM_INT, 'User ID'),
+                    'fullname' => new external_value(PARAM_TEXT, 'User full name'),
+                    'username' => new external_value(PARAM_TEXT, 'Username'),
+                    'email' => new external_value(PARAM_TEXT, 'Email address'),
+                    'firstname' => new external_value(PARAM_TEXT, 'First name'),
+                    'lastname' => new external_value(PARAM_TEXT, 'Last name'),
+                    'picture' => new external_value(PARAM_INT, 'Picture field value'),
+                    'imagealt' => new external_value(PARAM_TEXT, 'Image alt text'),
+                    'city' => new external_value(PARAM_TEXT, 'City'),
+                    'country' => new external_value(PARAM_TEXT, 'Country'),
+                ])
+            ),
             'totalrows' => new external_value(PARAM_INT, 'Total number of rows'),
             'hasmore' => new external_value(PARAM_BOOL, 'Whether there are more rows')
         ]);
