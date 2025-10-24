@@ -129,7 +129,7 @@ $functions = [
         'ajax' => true
     ],
     'local_cohortmanager_get_cohort_members_table_data' => [
-        'classname'   => 'local_cohortmanager\\external\\cohort_members_table',
+        'classname'   => 'local_cohortmanager\\external\\members',
         'methodname' => 'get_cohort_members_table_data',
         'description' => 'Returns cohort members table data for dynamic table',
         'type'       => 'read',
