@@ -145,7 +145,10 @@ class members extends external_api
             $sortclauses = [];
             foreach ($params['sortdata'] as $sort) {
                 $direction = $sort['sortorder'] == 1 ? 'ASC' : 'DESC';
-                $sortclauses[] = "u.{$sort['sortby']} {$direction}";
+                $sortclauses[] = $sort['sortby'] == 'fullname'
+                    ? "u.firstname {$direction}, u.lastname {$direction}"
+                    : "u.{$sort['sortby']} {$direction}"
+                ;
             }
             $orderby = "ORDER BY " . implode(', ', $sortclauses);
         } else {
