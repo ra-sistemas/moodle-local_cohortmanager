@@ -141,32 +141,22 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="select-column" v-model="hiddenColumns"
-                                value="select">
-                            <label class="form-check-label" for="select-column">Select</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="fullname-column" v-model="hiddenColumns"
-                                value="fullname">
-                            <label class="form-check-label" for="fullname-column">Name</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="username-column" v-model="hiddenColumns"
+                            <input class="form-check-input" type="checkbox" id="username-column" v-model="visibleColumns"
                                 value="username">
                             <label class="form-check-label" for="username-column">Username</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="email-column" v-model="hiddenColumns"
+                            <input class="form-check-input" type="checkbox" id="email-column" v-model="visibleColumns"
                                 value="email">
                             <label class="form-check-label" for="email-column">Email</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="city-column" v-model="hiddenColumns"
+                            <input class="form-check-input" type="checkbox" id="city-column" v-model="visibleColumns"
                                 value="city">
                             <label class="form-check-label" for="city-column">City</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="country-column" v-model="hiddenColumns"
+                            <input class="form-check-input" type="checkbox" id="country-column" v-model="visibleColumns"
                                 value="country">
                             <label class="form-check-label" for="country-column">Country</label>
                         </div>
@@ -233,7 +223,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch, onMounted, nextTick } from 'vue';
 import type { CohortMember } from '@/types/interfaces';
 import { getCohortMembers, deleteCohortMembers } from '../utils/moodle';
 // import { useStringsStore } from '@/stores/strings';
@@ -258,7 +248,7 @@ const filters = ref<{ name: string, value: string }[]>([]);
 const searchQuery = ref('');
 const firstInitial = ref('');
 const lastInitial = ref('');
-const hiddenColumns = ref<string[]>([]);
+const visibleColumns = ref<string[]>(['select', 'fullname', 'username', 'email', 'city', 'country']);
 const selectedMembers = ref<number[]>([]);
 const showColumnModal = ref(false);
 const showDeleteModal = ref(false);
@@ -292,7 +282,7 @@ const fetchMembers = async () => {
             filters: filters.value,
             pagenumber: currentPage.value,
             pagesize: pageSize.value,
-            hiddencolumns: hiddenColumns.value
+            hiddencolumns: visibleColumns.value.filter(col => !['select', 'fullname'].includes(col))
         });
 
         members.value = response.members;
@@ -353,6 +343,26 @@ const buildFilters = () => {
 
 const toggleColumnVisibility = () => {
     showColumnModal.value = !showColumnModal.value;
+    // Ensure always-visible columns are always included when modal opens
+    cleanupVisibleColumns();
+};
+
+// Clean up visibleColumns to ensure always-visible columns are always included
+const cleanupVisibleColumns = () => {
+    const alwaysVisible = ['select', 'fullname'];
+    const currentColumns = visibleColumns.value;
+    
+    // Ensure always-visible columns are present
+    alwaysVisible.forEach(column => {
+        if (!currentColumns.includes(column)) {
+            currentColumns.push(column);
+        }
+    });
+    
+    // Only update if the array actually changed
+    if (JSON.stringify(currentColumns) !== JSON.stringify(visibleColumns.value)) {
+        visibleColumns.value = currentColumns;
+    }
 };
 
 const toggleSelectAll = () => {
@@ -365,7 +375,11 @@ const toggleSelectAll = () => {
 
 // Define isColumnHidden function
 const isColumnHidden = (column: string): boolean => {
-    return hiddenColumns.value.includes(column);
+    // Select and fullname columns are always visible
+    if (column === 'select' || column === 'fullname') {
+        return false;
+    }
+    return !visibleColumns.value.includes(column);
 };
 
 // Helper function to get member fullname by ID
@@ -401,7 +415,15 @@ const deleteSelectedMembers = async () => {
 };
 
 // Watchers
-watch([currentPage, sortData, filters, firstInitial, lastInitial, hiddenColumns], fetchMembers);
+watch([currentPage, sortData, filters, firstInitial, lastInitial], fetchMembers);
+
+// Watch for changes in visibleColumns and clean up always-visible columns
+watch(visibleColumns, () => {
+    // Use nextTick to avoid recursive updates
+    nextTick(() => {
+        cleanupVisibleColumns();
+    });
+}, { deep: true });
 
 // Initial load
 onMounted(() => {
