@@ -143,3 +143,8 @@ $string['customfieldnotvalid'] = 'Custom fields not valid.';
 $string['addmembers'] = 'Add Members';
 $string['add'] = 'Add';
 $string['membersadded'] = 'Members added successfully';
+
+// Delete membership confirmation strings
+$string['delete_membership_confirmation'] = 'Are you sure you want to delete the selected {$a} members from this cohort?';
+$string['delete_membership_warning'] = 'Warning: This action is permanent and cannot be undone. The selected members will be permanently removed from this cohort.';
+$string['selected_members_list'] = 'Selected members: {$a}';
