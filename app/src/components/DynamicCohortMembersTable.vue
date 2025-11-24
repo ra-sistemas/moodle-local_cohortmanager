@@ -7,24 +7,27 @@
                     @input="handleSearch">
             </div>
 
+            <!-- Letter filters -->
+            <div class="col-2">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text">First</span>
+                    <input type="text" class="form-control" maxlength="1" v-model="firstInitial"
+                        @input="handleLetterFilter">
+                </div>
+
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text">Last</span>
+                    <input type="text" class="form-control" maxlength="1" v-model="lastInitial"
+                        @input="handleLetterFilter">
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 mb-3 flex-wrap">
             <div class="d-flex gap-2">
                 <button class="btn btn-sm btn-outline-secondary" @click="toggleColumnVisibility">
                     <i class="bi bi-grid-3x3"></i> Columns
                 </button>
-            </div>
-        </div>
-
-        <!-- Letter filters -->
-        <div class="d-flex gap-2 mb-3 flex-wrap">
-            <div class="input-group input-group-sm">
-                <span class="input-group-text">First</span>
-                <input type="text" class="form-control" maxlength="1" v-model="firstInitial"
-                    @input="handleLetterFilter">
-            </div>
-
-            <div class="input-group input-group-sm">
-                <span class="input-group-text">Last</span>
-                <input type="text" class="form-control" maxlength="1" v-model="lastInitial" @input="handleLetterFilter">
             </div>
         </div>
 
@@ -271,22 +274,22 @@ const handleLetterFilter = () => {
 
 const buildFilters = () => {
     const newFilters = [];
-    
+
     // Add search filter if search query is provided
     if (searchQuery.value.trim()) {
         newFilters.push({ name: 'search', value: searchQuery.value.trim() });
     }
-    
+
     // Add first initial filter if provided
     if (firstInitial.value.trim()) {
         newFilters.push({ name: 'firstinitial', value: firstInitial.value.trim().toUpperCase() });
     }
-    
+
     // Add last initial filter if provided
     if (lastInitial.value.trim()) {
         newFilters.push({ name: 'lastinitial', value: lastInitial.value.trim().toUpperCase() });
     }
-    
+
     filters.value = newFilters;
 };
 
