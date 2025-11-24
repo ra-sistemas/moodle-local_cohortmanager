@@ -132,8 +132,10 @@ class members extends external_api
         // Apply filters.
         foreach ($params['filters'] as $filter) {
             if ($filter['name'] === 'search') {
-                $where .= " AND (u.firstname LIKE :search OR u.lastname LIKE :search OR u.email LIKE :search)";
-                $params_sql['search'] = '%' . $filter['value'] . '%';
+                $where .= " AND (u.firstname LIKE :search1 OR u.lastname LIKE :search2 OR u.email LIKE :search3)";
+                $params_sql['search1'] = '%' . $filter['value'] . '%';
+                $params_sql['search2'] = '%' . $filter['value'] . '%';
+                $params_sql['search3'] = '%' . $filter['value'] . '%';
             }
         }
 
