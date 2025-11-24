@@ -1,75 +1,11 @@
 <template>
-    <div v-if="show" class="modal show" style="display: block;">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title text-danger">
-                        <i class="bi bi-exclamation-triangle"></i> Confirm Deletion
-                    </h5>
-                    <button 
-                        type="button" 
-                        class="btn-close" 
-                        @click="$emit('close')"
-                        :disabled="deleting"
-                    ></button>
-                </div>
-                <div class="modal-body">
-                    <p class="mb-3">
-                        Are you sure you want to delete the selected
-                        <strong>{{ selectedMembersCount }} member{{ selectedMembersCount > 1 ? 's' : '' }}</strong>
-                        from this cohort?
-                    </p>
-                    <div class="alert alert-warning">
-                        <i class="bi bi-exclamation-circle"></i>
-                        <strong>Warning:</strong> This action is permanent and cannot be undone.
-                        The selected members will be permanently removed from this cohort.
-                    </div>
-                    <div v-if="selectedMembersList.length > 0" class="mt-3">
-                        <small class="text-muted">Selected members:</small>
-                        <div class="mt-1">
-                            <span 
-                                v-for="memberId in displayedMembers" 
-                                :key="memberId"
-                                class="badge bg-secondary me-1"
-                            >
-                                {{ getMemberFullname(memberId) }}
-                            </span>
-                            <span 
-                                v-if="selectedMembersList.length > displayLimit" 
-                                class="badge bg-secondary"
-                            >
-                                +{{ selectedMembersList.length - displayLimit }} more
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button 
-                        type="button" 
-                        class="btn btn-secondary" 
-                        @click="$emit('close')"
-                        :disabled="deleting"
-                    >
-                        Cancel
-                    </button>
-                    <button 
-                        type="button" 
-                        class="btn btn-danger" 
-                        @click="$emit('confirm')"
-                        :disabled="deleting"
-                    >
-                        <span v-if="deleting" class="spinner-border spinner-border-sm me-1" role="status"></span>
-                        <i v-else class="bi bi-trash"></i>
-                        {{ deleting ? 'Deleting...' : 'Delete Members' }}
-                    </button>
-                </div>
-            </div>
-        </div>
+    <div v-if="false" class="modal show" style="display: none;">
     </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
+import { deleteCancel } from 'core/notification';
 
 // Define props
 const props = defineProps<{
@@ -91,29 +27,59 @@ const displayLimit = 15;
 // Computed properties
 const selectedMembersCount = computed(() => props.selectedMembers.length);
 const selectedMembersList = computed(() => props.selectedMembers);
-const displayedMembers = computed(() => 
+const displayedMembers = computed(() =>
     props.selectedMembers.slice(0, displayLimit)
 );
+
+// Watch for show prop changes to show/hide the modal
+watch(() => props.show, async (newShow) => {
+    if (newShow) {
+        await showDeleteConfirmationModal();
+    }
+});
+
+// Function to show the delete confirmation modal using AMD module
+const showDeleteConfirmationModal = async () => {
+    try {
+        const title = 'Confirm Deletion';
+        const question = `Are you sure you want to delete the selected ${selectedMembersCount.value} member${selectedMembersCount.value > 1 ? 's' : ''} from this cohort?`;
+        const deleteLabel = 'Delete Members';
+        
+        // Build the warning message
+        const warningMessage = 'Warning: This action is permanent and cannot be undone. The selected members will be permanently removed from this cohort.';
+        
+        // Build the selected members list if any
+        let membersList = '';
+        if (selectedMembersList.value.length > 0) {
+            const displayed = displayedMembers.value.map(id => props.getMemberFullname(id)).join(', ');
+            const remaining = selectedMembersList.value.length - displayLimit;
+            membersList = remaining > 0
+                ? `Selected members: ${displayed} +${remaining} more`
+                : `Selected members: ${displayed}`;
+        }
+        
+        const fullQuestion = `${question}\n\n${warningMessage}${membersList ? '\n\n' + membersList : ''}`;
+        
+        await deleteCancel(
+            title,
+            fullQuestion,
+            deleteLabel,
+            () => {
+                // Delete callback - emit confirm event
+                emit('confirm');
+            },
+            () => {
+                // Cancel callback - emit close event
+                emit('close');
+            }
+        );
+    } catch (error) {
+        console.error('Error showing delete confirmation modal:', error);
+        emit('close');
+    }
+};
 </script>
 
 <style scoped>
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
 
-.modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    width: 500px;
-    max-width: 90vw;
-}
 </style>
