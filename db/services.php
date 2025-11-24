@@ -135,6 +135,14 @@ $functions = [
         'type'       => 'read',
         'ajax' => true,
         'capabilities' => 'moodle/cohort:manage'
+    ],
+    'local_cohortmanager_count_cohort_members' => [
+        'classname'   => 'local_cohortmanager\\external\\members',
+        'methodname' => 'count_cohort_members',
+        'description' => 'Count the members of a specific cohort',
+        'type'       => 'read',
+        'ajax' => true,
+        'capabilities' => 'moodle/cohort:view'
     ]
 ];
 
@@ -154,7 +162,8 @@ $services = [
             'local_cohortmanager_get_theme_list',
             'local_cohortmanager_get_app_config',
             'local_cohortmanager_get_cohort_context_info',
-            'local_cohortmanager_get_cohort_members_table_data'
+            'local_cohortmanager_get_cohort_members_table_data',
+            'local_cohortmanager_count_cohort_members'
         ],
         'restrictedusers' => 0,
         'enabled' => 1,

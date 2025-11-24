@@ -299,4 +299,45 @@ class members extends external_api
             ]
         ));
     }
+
+    /**
+     * Parameter description for count_cohort_members().
+     *
+     * @return external_function_parameters
+     */
+    public static function count_cohort_members_parameters()
+    {
+        return new external_function_parameters([
+            'cohortid' => new external_value(PARAM_INT, 'The cohort id')
+        ]);
+    }
+
+    /**
+     * Count the members of a specific cohort.
+     *
+     * @param int $cohortid The cohort id
+     * @return array
+     */
+    public static function count_cohort_members($cohortid)
+    {
+        global $DB;
+
+        // Validate parameters.
+        $params = self::validate_parameters(self::count_cohort_members_parameters(), [
+            'cohortid' => $cohortid
+        ]);
+
+        // Count members in the cohort.
+        return $DB->count_records('cohort_members', ['cohortid' => $params['cohortid']]);
+    }
+
+    /**
+     * Return description for count_cohort_members().
+     *
+     * @return external_value
+     */
+    public static function count_cohort_members_returns()
+    {
+        return new external_value(PARAM_INT, 'The cohort id that was counted');
+    }
 }

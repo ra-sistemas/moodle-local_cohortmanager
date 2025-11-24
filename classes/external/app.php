@@ -21,6 +21,7 @@ use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use core_external\external_value;
 use core_external\external_format_value;
+use local_cohortmanager\external\members;
 use core_cohort_external;
 use core_course_category;
 use context_system;
@@ -171,6 +172,10 @@ class app extends external_api
 
         $return = core_cohort_external::search_cohorts($params['query'], $context, 'all', $params['page'], $params['perpage']);
 
+        foreach($return['cohorts'] as $cohort) {
+            $cohort['members'] = members::count_cohort_members($cohort['id']);
+        }
+
         $total_return = core_cohort_external::search_cohorts($params['query'], $context, 'all', 0, 0);
         $return['total'] = count($total_return['cohorts']);
 
@@ -195,6 +200,7 @@ class app extends external_api
                     'visible' => new external_value(PARAM_BOOL, 'cohort visible'),
                     'theme' => new external_value(PARAM_THEME, 'cohort theme', VALUE_OPTIONAL),
                     'customfields' => self::build_custom_fields_returns_structure(),
+                    'members' => new external_value(PARAM_INT, 'cohort members counting'),
                 ))
             ),
             'total' => new external_value(PARAM_INT, 'Total number of cohorts matching the query')
