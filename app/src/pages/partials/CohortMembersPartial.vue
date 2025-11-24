@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { useStringsStore } from '../../stores/strings';
 import type { Cohort } from '../../types/interfaces';
+import { countCohortMembers } from '../../utils/moodle';
 import CohortMembersAddModal from '../../components/CohortMembersAddModal.vue';
 import DynamicCohortMembersTable from '../../components/DynamicCohortMembersTable.vue';
 
@@ -13,8 +14,7 @@ const totalMembers = ref(0);
 // Load members
 const loadMembers = async () => {
   try {
-    // TODO: Must use a api key to load total members
-    totalMembers.value = 12;
+    totalMembers.value =  await countCohortMembers(props.cohort.id);
   } catch (err) {
     console.error('Error loading members:', err);
   }
@@ -38,7 +38,7 @@ onMounted(() => {
 });
 
 // Props
-defineProps<{
+let props = defineProps<{
   cohort: Cohort;
 }>();
 

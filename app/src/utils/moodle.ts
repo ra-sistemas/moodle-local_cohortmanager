@@ -137,6 +137,16 @@ const getCohortCustomfieldFormAjax = async (cohortid: number): Promise<any> => {
 };
 
 /**
+ * Count cohort members
+ */
+const countCohortMembers = async (cohortid: number): Promise<any> => {
+  const response = await ajax('local_cohortmanager_count_cohort_members', {
+    cohortid: cohortid
+  });
+  return response;
+};
+
+/**
  * Get cohort customfields
  */
 const getCohortCustomfieldForm = async (cohortid: number): Promise<Template> => {
@@ -269,5 +279,6 @@ export {
   getCustomfieldlist,
   getCohortCustomfieldForm,
   getCustomfieldDynamicForm,
-  showAddMembersForm
+  showAddMembersForm,
+  countCohortMembers
 };
