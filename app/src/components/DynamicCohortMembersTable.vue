@@ -132,100 +132,31 @@
         </div>
 
         <!-- Column visibility modal -->
-        <div v-if="showColumnModal" class="modal show" style="display: block;">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Column Visibility</h5>
-                        <button type="button" class="btn-close" @click="showColumnModal = false"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="username-column" v-model="visibleColumns"
-                                value="username">
-                            <label class="form-check-label" for="username-column">Username</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="email-column" v-model="visibleColumns"
-                                value="email">
-                            <label class="form-check-label" for="email-column">Email</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="city-column" v-model="visibleColumns"
-                                value="city">
-                            <label class="form-check-label" for="city-column">City</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="country-column" v-model="visibleColumns"
-                                value="country">
-                            <label class="form-check-label" for="country-column">Country</label>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @click="showColumnModal = false">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <ColumnVisibilityModal
+            :show="showColumnModal"
+            :visible-columns="visibleColumns"
+            @close="showColumnModal = false"
+            @save="handleColumnVisibilitySave"
+        />
 
         <!-- Delete confirmation modal -->
-        <div v-if="showDeleteModal" class="modal show" style="display: block;">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title text-danger">
-                            <i class="bi bi-exclamation-triangle"></i> Confirm Deletion
-                        </h5>
-                        <button type="button" class="btn-close" @click="showDeleteModal = false"
-                            :disabled="deleting"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p class="mb-3">
-                            Are you sure you want to delete the selected
-                            <strong>{{ selectedMembers.length }} member{{ selectedMembers.length > 1 ? 's' : ''
-                                }}</strong>
-                            from this cohort?
-                        </p>
-                        <div class="alert alert-warning">
-                            <i class="bi bi-exclamation-circle"></i>
-                            <strong>Warning:</strong> This action is permanent and cannot be undone.
-                            The selected members will be permanently removed from this cohort.
-                        </div>
-                        <div v-if="selectedMembers.length > 0" class="mt-3">
-                            <small class="text-muted">Selected members:</small>
-                            <div class="mt-1">
-                                <span v-for="memberId in selectedMembers.slice(0, 15)" :key="memberId"
-                                    class="badge bg-secondary me-1">
-                                    {{ getMemberFullname(memberId) }}
-                                </span>
-                                <span v-if="selectedMembers.length > 15" class="badge bg-secondary">
-                                    +{{ selectedMembers.length - 15 }} more
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @click="showDeleteModal = false"
-                            :disabled="deleting">
-                            Cancel
-                        </button>
-                        <button type="button" class="btn btn-danger" @click="deleteSelectedMembers"
-                            :disabled="deleting">
-                            <span v-if="deleting" class="spinner-border spinner-border-sm me-1" role="status"></span>
-                            <i v-else class="bi bi-trash"></i>
-                            {{ deleting ? 'Deleting...' : 'Delete Members' }}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <DeleteConfirmationModal
+            :show="showDeleteModal"
+            :selected-members="selectedMembers"
+            :deleting="deleting"
+            :get-member-fullname="getMemberFullname"
+            @close="showDeleteModal = false"
+            @confirm="deleteSelectedMembers"
+        />
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, nextTick } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import type { CohortMember } from '@/types/interfaces';
 import { getCohortMembers, deleteCohortMembers } from '../utils/moodle';
+import ColumnVisibilityModal from './ColumnVisibilityModal.vue';
+import DeleteConfirmationModal from './DeleteConfirmationModal.vue';
 // import { useStringsStore } from '@/stores/strings';
 
 // Define props
@@ -343,27 +274,12 @@ const buildFilters = () => {
 
 const toggleColumnVisibility = () => {
     showColumnModal.value = !showColumnModal.value;
-    // Ensure always-visible columns are always included when modal opens
-    cleanupVisibleColumns();
 };
 
-// Clean up visibleColumns to ensure always-visible columns are always included
-const cleanupVisibleColumns = () => {
-    const alwaysVisible = ['select', 'fullname'];
-    const currentColumns = visibleColumns.value;
-    
-    // Ensure always-visible columns are present
-    alwaysVisible.forEach(column => {
-        if (!currentColumns.includes(column)) {
-            currentColumns.push(column);
-        }
-    });
-    
-    // Only update if the array actually changed
-    if (JSON.stringify(currentColumns) !== JSON.stringify(visibleColumns.value)) {
-        visibleColumns.value = currentColumns;
-    }
+const handleColumnVisibilitySave = (columns: string[]) => {
+    visibleColumns.value = columns;
 };
+
 
 const toggleSelectAll = () => {
     if (allSelected.value) {
@@ -419,10 +335,6 @@ watch([currentPage, sortData, filters, firstInitial, lastInitial], fetchMembers)
 
 // Watch for changes in visibleColumns and clean up always-visible columns
 watch(visibleColumns, () => {
-    // Use nextTick to avoid recursive updates
-    nextTick(() => {
-        cleanupVisibleColumns();
-    });
 }, { deep: true });
 
 // Initial load
@@ -432,22 +344,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    width: 300px;
-}
+/* Modal styles have been moved to separate modal components */
 </style>
