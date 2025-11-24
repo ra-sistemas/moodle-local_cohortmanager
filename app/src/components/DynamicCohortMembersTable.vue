@@ -24,11 +24,15 @@
         </div>
 
         <div class="d-flex gap-2 mb-3 flex-wrap">
-            <div class="d-flex gap-2">
-                <button class="btn btn-sm btn-outline-secondary" @click="toggleColumnVisibility">
-                    <i class="bi bi-grid-3x3"></i> Columns
-                </button>
-            </div>
+            <button class="btn btn-sm btn-outline-secondary" @click="toggleColumnVisibility">
+                <i class="bi bi-grid-3x3"></i> Columns
+            </button>
+
+            <!-- Delete button - shown when users are selected -->
+            <button v-if="selectedMembers.length > 0" class="btn btn-sm btn-outline-danger"
+                @click="showDeleteModal = true">
+                <i class="bi bi-trash"></i> Delete ({{ selectedMembers.length }})
+            </button>
         </div>
 
         <!-- Table -->
@@ -173,13 +177,65 @@
                 </div>
             </div>
         </div>
+
+        <!-- Delete confirmation modal -->
+        <div v-if="showDeleteModal" class="modal show" style="display: block;">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-danger">
+                            <i class="bi bi-exclamation-triangle"></i> Confirm Deletion
+                        </h5>
+                        <button type="button" class="btn-close" @click="showDeleteModal = false"
+                            :disabled="deleting"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="mb-3">
+                            Are you sure you want to delete the selected
+                            <strong>{{ selectedMembers.length }} member{{ selectedMembers.length > 1 ? 's' : ''
+                                }}</strong>
+                            from this cohort?
+                        </p>
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-circle"></i>
+                            <strong>Warning:</strong> This action is permanent and cannot be undone.
+                            The selected members will be permanently removed from this cohort.
+                        </div>
+                        <div v-if="selectedMembers.length > 0" class="mt-3">
+                            <small class="text-muted">Selected members:</small>
+                            <div class="mt-1">
+                                <span v-for="memberId in selectedMembers.slice(0, 15)" :key="memberId"
+                                    class="badge bg-secondary me-1">
+                                    {{ getMemberFullname(memberId) }}
+                                </span>
+                                <span v-if="selectedMembers.length > 15" class="badge bg-secondary">
+                                    +{{ selectedMembers.length - 15 }} more
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="showDeleteModal = false"
+                            :disabled="deleting">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn btn-danger" @click="deleteSelectedMembers"
+                            :disabled="deleting">
+                            <span v-if="deleting" class="spinner-border spinner-border-sm me-1" role="status"></span>
+                            <i v-else class="bi bi-trash"></i>
+                            {{ deleting ? 'Deleting...' : 'Delete Members' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
 import type { CohortMember } from '@/types/interfaces';
-import { getCohortMembers } from '../utils/moodle';
+import { getCohortMembers, deleteCohortMembers } from '../utils/moodle';
 // import { useStringsStore } from '@/stores/strings';
 
 // Define props
@@ -205,6 +261,8 @@ const lastInitial = ref('');
 const hiddenColumns = ref<string[]>([]);
 const selectedMembers = ref<number[]>([]);
 const showColumnModal = ref(false);
+const showDeleteModal = ref(false);
+const deleting = ref(false);
 
 // Computed properties
 const currentSortBy = computed(() => sortData.value[0]?.sortby || 'lastname');
@@ -308,6 +366,38 @@ const toggleSelectAll = () => {
 // Define isColumnHidden function
 const isColumnHidden = (column: string): boolean => {
     return hiddenColumns.value.includes(column);
+};
+
+// Helper function to get member fullname by ID
+const getMemberFullname = (memberId: number): string => {
+    const member = members.value.find(m => m.id === memberId);
+    return member ? member.fullname : `Unknown (${memberId})`;
+};
+
+const deleteSelectedMembers = async () => {
+    try {
+        deleting.value = true;
+
+        // Format data according to the webservice requirements
+        const membersData = selectedMembers.value.map(userId => ({
+            cohortid: props.cohortId,
+            userid: userId
+        }));
+
+        // Call the deleteCohortMembers function
+        await deleteCohortMembers({
+            members: membersData
+        });
+
+        // Clear selection and refresh data
+        selectedMembers.value = [];
+        showDeleteModal.value = false;
+        fetchMembers();
+    } catch (err) {
+        error.value = err instanceof Error ? err.message : 'An error occurred while deleting members';
+    } finally {
+        deleting.value = false;
+    }
 };
 
 // Watchers

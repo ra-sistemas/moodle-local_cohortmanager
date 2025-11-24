@@ -147,6 +147,14 @@ const countCohortMembers = async (cohortid: number): Promise<any> => {
 };
 
 /**
+ * Delete cohort members with treatment
+ */
+const deleteCohortMembers = async (args: Object): Promise<Object> => {
+  await ajax('local_cohortmanager_delete_cohort_members', args);
+  return extractDeleteResponse();
+};
+
+/**
  * Get cohort customfields
  */
 const getCohortCustomfieldForm = async (cohortid: number): Promise<Template> => {
@@ -280,5 +288,6 @@ export {
   getCohortCustomfieldForm,
   getCustomfieldDynamicForm,
   showAddMembersForm,
-  countCohortMembers
+  countCohortMembers,
+  deleteCohortMembers
 };
