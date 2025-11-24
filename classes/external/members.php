@@ -66,8 +66,6 @@ class members extends external_api
                 VALUE_DEFAULT,
                 []
             ),
-            'firstinitial' => new external_value(PARAM_ALPHANUMEXT, 'First initial filter', VALUE_DEFAULT, ''),
-            'lastinitial' => new external_value(PARAM_ALPHANUMEXT, 'Last initial filter', VALUE_DEFAULT, ''),
             'pagenumber' => new external_value(PARAM_INT, 'Page number', VALUE_DEFAULT, 1),
             'pagesize' => new external_value(PARAM_INT, 'Page size', VALUE_DEFAULT, 20),
             'hiddencolumns' => new external_multiple_structure(
@@ -96,8 +94,6 @@ class members extends external_api
         $cohortid,
         $sortdata = [],
         $filters = [],
-        $firstinitial = '',
-        $lastinitial = '',
         $pagenumber = 1,
         $pagesize = 20,
         $hiddencolumns = []
@@ -109,8 +105,6 @@ class members extends external_api
             'cohortid' => $cohortid,
             'sortdata' => $sortdata,
             'filters' => $filters,
-            'firstinitial' => $firstinitial,
-            'lastinitial' => $lastinitial,
             'pagenumber' => $pagenumber,
             'pagesize' => $pagesize,
             'hiddencolumns' => $hiddencolumns
@@ -136,6 +130,12 @@ class members extends external_api
                 $params_sql['search1'] = '%' . $filter['value'] . '%';
                 $params_sql['search2'] = '%' . $filter['value'] . '%';
                 $params_sql['search3'] = '%' . $filter['value'] . '%';
+            } else if ($filter['name'] === 'firstinitial') {
+                $where .= " AND u.firstname LIKE :firstinitial";
+                $params_sql['firstinitial'] = $filter['value'] . '%';
+            } else if ($filter['name'] === 'lastinitial') {
+                $where .= " AND u.lastname LIKE :lastinitial";
+                $params_sql['lastinitial'] = $filter['value'] . '%';
             }
         }
 

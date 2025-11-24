@@ -11,15 +11,11 @@
                 <button class="btn btn-sm btn-outline-secondary" @click="toggleColumnVisibility">
                     <i class="bi bi-grid-3x3"></i> Columns
                 </button>
-
-                <button class="btn btn-sm btn-outline-secondary" @click="toggleLetterFilters">
-                    <i class="bi bi-alphabet"></i> Letters
-                </button>
             </div>
         </div>
 
         <!-- Letter filters -->
-        <div v-if="showLetterFilters" class="d-flex gap-2 mb-3 flex-wrap">
+        <div class="d-flex gap-2 mb-3 flex-wrap">
             <div class="input-group input-group-sm">
                 <span class="input-group-text">First</span>
                 <input type="text" class="form-control" maxlength="1" v-model="firstInitial"
@@ -206,7 +202,6 @@ const lastInitial = ref('');
 const hiddenColumns = ref<string[]>([]);
 const selectedMembers = ref<number[]>([]);
 const showColumnModal = ref(false);
-const showLetterFilters = ref(false);
 
 // Computed properties
 const currentSortBy = computed(() => sortData.value[0]?.sortby || 'lastname');
@@ -234,8 +229,6 @@ const fetchMembers = async () => {
             cohortid: props.cohortId,
             sortdata: sortData.value,
             filters: filters.value,
-            firstinitial: firstInitial.value,
-            lastinitial: lastInitial.value,
             pagenumber: currentPage.value,
             pagesize: pageSize.value,
             hiddencolumns: hiddenColumns.value
@@ -267,22 +260,38 @@ const toggleSort = (column: string) => {
 };
 
 const handleSearch = () => {
-    filters.value = [
-        { name: 'search', value: searchQuery.value }
-    ];
+    buildFilters();
     fetchMembers();
 };
 
 const handleLetterFilter = () => {
+    buildFilters();
     fetchMembers();
+};
+
+const buildFilters = () => {
+    const newFilters = [];
+    
+    // Add search filter if search query is provided
+    if (searchQuery.value.trim()) {
+        newFilters.push({ name: 'search', value: searchQuery.value.trim() });
+    }
+    
+    // Add first initial filter if provided
+    if (firstInitial.value.trim()) {
+        newFilters.push({ name: 'firstinitial', value: firstInitial.value.trim().toUpperCase() });
+    }
+    
+    // Add last initial filter if provided
+    if (lastInitial.value.trim()) {
+        newFilters.push({ name: 'lastinitial', value: lastInitial.value.trim().toUpperCase() });
+    }
+    
+    filters.value = newFilters;
 };
 
 const toggleColumnVisibility = () => {
     showColumnModal.value = !showColumnModal.value;
-};
-
-const toggleLetterFilters = () => {
-    showLetterFilters.value = !showLetterFilters.value;
 };
 
 const toggleSelectAll = () => {
