@@ -153,10 +153,10 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
         <table class="table table-striped table-hover">
           <thead class="thead-light">
             <tr>
-              <th class="w-50">{{ stringsStore.getString('name') }}</th>
-              <th class="w-10">{{ stringsStore.getString('id') }}</th>
-              <th class="w-30">{{ stringsStore.getString('description') }}</th>
-              <th class="w-10 text-center">{{ stringsStore.getString('actions') }}</th>
+              <th>{{ stringsStore.getString('name') }}</th>
+              <th>{{ stringsStore.getString('id') }}</th>
+              <th>{{ stringsStore.getString('members') }}</th>
+              <th class="text-center">{{ stringsStore.getString('actions') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -166,8 +166,8 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
                   <strong>{{ cohort.name }}</strong>
                 </a>
               </td>
-              <td class="text-center">{{ cohort.id }}</td>
-              <td class="text-muted small" v-html="cohort.description || stringsStore.getString('nodescription')"></td>
+              <td>{{ cohort.id }}</td>
+              <td>{{ cohort.members }}</td>
               <td class="text-center">
                 <div class="btn-group btn-group-sm" role="group">
                   <button class="btn btn-outline-primary" @click="navigateToEdit(cohort)"

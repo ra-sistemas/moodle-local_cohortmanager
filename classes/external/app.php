@@ -173,7 +173,7 @@ class app extends external_api
         $return = core_cohort_external::search_cohorts($params['query'], $context, 'all', $params['page'], $params['perpage']);
 
         foreach($return['cohorts'] as $cohort) {
-            $cohort['members'] = members::count_cohort_members($cohort['id']);
+            $cohort->members = members::count_cohort_members($cohort->id);
         }
 
         $total_return = core_cohort_external::search_cohorts($params['query'], $context, 'all', 0, 0);
