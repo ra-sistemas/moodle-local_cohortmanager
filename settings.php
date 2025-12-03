@@ -26,14 +26,10 @@ use local_cohortmanager\admin\admin_setting_allowcohortthemes;
 
 defined('MOODLE_INTERNAL') || die();
 
-if (!function_exists('local_cohortmanager_write_setting')) {
-    
-}
-
-if ($ADMIN->fulltree) {
+if ($hassiteconfig) {
     $settings = new admin_settingpage(
-        'localcohortmanager',
-        get_string('settings') . ' - ' . get_string('pluginname', 'local_cohortmanager')
+        'cohortmanager',
+        get_string('pluginname', 'local_cohortmanager')
     );
 
     $settings->add( new admin_setting_allowcohortthemes(
