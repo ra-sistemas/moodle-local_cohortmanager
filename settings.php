@@ -23,6 +23,7 @@
  */
 
 use local_cohortmanager\admin\admin_setting_allowcohortthemes;
+use moodle_url;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -42,5 +43,15 @@ if ($hassiteconfig) {
     $ADMIN->add(
         'localplugins',
         $settings
+    );
+
+    $ADMIN->add(
+        'accounts',
+        new admin_externalpage(
+            'local_offermanager/index',
+            get_string('pluginname', 'local_cohortmanager'),
+            new moodle_url('/local/cohortmanager'),
+            'moodle/cohort:manage'
+        )
     );
 }
