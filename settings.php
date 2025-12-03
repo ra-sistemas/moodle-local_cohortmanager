@@ -23,7 +23,6 @@
  */
 
 use local_cohortmanager\admin\admin_setting_allowcohortthemes;
-use moodle_url;
 
 defined('MOODLE_INTERNAL') || die();
 
