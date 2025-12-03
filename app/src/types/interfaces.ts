@@ -106,6 +106,19 @@ export interface CohortMember {
 }
 
 /**
+ * Cohort enrol instance interface
+ */
+export interface CohortEnrolInstance {
+  id: number;
+  courseid: number;
+  courseshortname: string;
+  coursefullname: string;
+  enrol: string;
+  status: boolean;
+  cohortid: number;
+}
+
+/**
  * Options for TinyMCE editor initialization
  */
 export interface TinyMceOptions {

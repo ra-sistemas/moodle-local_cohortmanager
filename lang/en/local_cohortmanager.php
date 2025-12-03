@@ -95,6 +95,7 @@ $string['cohortnotfounddetails'] = 'The cohort you are looking for may have been
 $string['details'] = 'Details';
 $string['members'] = 'Members';
 $string['memberscount'] = 'members';
+$string['enrolinstances'] = 'Enrol Instances';
 $string['visibility'] = 'Visibility';
 $string['nodescriptionprovided'] = 'No description provided.';
 $string['customfields'] = 'Custom Fields';
@@ -148,3 +149,19 @@ $string['membersadded'] = 'Members added successfully';
 $string['delete_membership_confirmation'] = 'Are you sure you want to delete the selected {$a} members from this cohort?';
 $string['delete_membership_warning'] = 'Warning: This action is permanent and cannot be undone. The selected members will be permanently removed from this cohort.';
 $string['selected_members_list'] = 'Selected members: {$a}';
+
+// CohortEnrolInstancesPartial component strings
+$string['cohortenrolinstances'] = 'Cohort Enrol Instances';
+$string['instancescount'] = 'instances';
+$string['loadingenrolinstances'] = 'Loading enrol instances...';
+$string['noenrolinstancesfound'] = 'No Enrol Instances Found';
+$string['noenrolinstancesfounddescription'] = 'No enrol instances found for this cohort.';
+$string['enrolinstanceslist'] = 'Enrol Instances List';
+$string['refresh'] = 'Refresh';
+$string['course'] = 'Course';
+$string['enrolmethod'] = 'Enrol Method';
+$string['status'] = 'Status';
+$string['active'] = 'Active';
+$string['inactive'] = 'Inactive';
+$string['cohortenrol'] = 'Cohort';
+$string['view'] = 'View';

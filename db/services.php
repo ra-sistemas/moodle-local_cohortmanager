@@ -143,6 +143,14 @@ $functions = [
         'type'       => 'read',
         'ajax' => true,
         'capabilities' => 'moodle/cohort:view'
+    ],
+    'local_cohortmanager_get_cohort_enrol_instances' => [
+        'classname'   => 'local_cohortmanager\\external\\enrols',
+        'methodname' => 'get_cohort_enrol_instances',
+        'description' => 'Get all enrol instances of enrol=cohort that the customint1 field is equal to the cohortid',
+        'type'       => 'read',
+        'ajax' => true,
+        'capabilities' => 'enrol/cohort:config'
     ]
 ];
 
@@ -163,7 +171,8 @@ $services = [
             'local_cohortmanager_get_app_config',
             'local_cohortmanager_get_cohort_context_info',
             'local_cohortmanager_get_cohort_members_table_data',
-            'local_cohortmanager_count_cohort_members'
+            'local_cohortmanager_count_cohort_members',
+            'local_cohortmanager_get_cohort_enrol_instances'
         ],
         'restrictedusers' => 0,
         'enabled' => 1,

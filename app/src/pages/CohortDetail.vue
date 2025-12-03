@@ -7,6 +7,7 @@ import { add } from 'core/toast';
 import CohortDelete from '../components/CohortDelete.vue';
 import CohortDetailsPartial from './partials/CohortDetailsPartial.vue';
 import CohortMembersPartial from './partials/CohortMembersPartial.vue';
+import CohortEnrolInstancesPartial from './partials/CohortEnrolInstancesPartial.vue';
 import type { Cohort } from '../types/interfaces';
 import Notification from 'core/notification';
 
@@ -104,6 +105,11 @@ onMounted(() => {
             {{ stringsStore.getString('members') }}
           </button>
         </li>
+        <li class="nav-item">
+          <button :class="['nav-link', { active: activeTab === 'enrolinstances' }]" @click="activeTab = 'enrolinstances'">
+            {{ stringsStore.getString('enrolinstances') }}
+          </button>
+        </li>
       </ul>
 
       <!-- Tab Content -->
@@ -113,6 +119,9 @@ onMounted(() => {
         
         <!-- Members Tab -->
         <CohortMembersPartial v-if="activeTab === 'members'" :cohort="cohort" />
+        
+        <!-- Enrol Instances Tab -->
+        <CohortEnrolInstancesPartial v-if="activeTab === 'enrolinstances'" :cohort="cohort" />
       </div>
     </div>
 
