@@ -133,6 +133,21 @@ onMounted(() => {
   // Add event listener for clicks outside
   document.addEventListener('click', handleClickOutside);
   
+  // Check if context is empty and set system as default
+  if (props.modelValue.type == 'id' && !props.modelValue.value) {
+    selectedOption.value = {
+      type: 'system',
+      value: '',
+      label: stringsStore.getString('systemcontext')
+    };
+    
+    // Emit the update to set system as the default
+    emit('update:modelValue', {
+      type: 'system',
+      value: ''
+    });
+  }
+  
   // Fetch context list if not already loaded
   if (contextList.value.length === 0) {
     // The context list should be loaded by the parent component or through app initialization
