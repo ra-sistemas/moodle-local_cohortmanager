@@ -148,4 +148,45 @@ class enrols extends external_api {
             ])
         );
     }
+
+    /**
+     * Parameter description for count_cohort_enrol_instances().
+     *
+     * @return external_function_parameters
+     */
+    public static function count_cohort_enrol_instances_parameters() {
+        return new external_function_parameters([
+            'cohortid' => new external_value(PARAM_INT, 'The cohort id')
+        ]);
+    }
+
+    /**
+     * Count the enrol instances of a specific cohort.
+     *
+     * @param int $cohortid The cohort id
+     * @return array
+     */
+    public static function count_cohort_enrol_instances($cohortid) {
+        global $DB;
+
+        // Validate parameters.
+        $params = self::validate_parameters(self::count_cohort_enrol_instances_parameters(), [
+            'cohortid' => $cohortid
+        ]);
+
+        // Count enrol instances where customint1 equals the cohortid.
+        return $DB->count_records_sql(
+            "SELECT COUNT(*) FROM {enrol} WHERE enrol = 'cohort' AND customint1 = :cohortid",
+            ['cohortid' => $params['cohortid']]
+        );
+    }
+
+    /**
+     * Return description for count_cohort_enrol_instances().
+     *
+     * @return external_value
+     */
+    public static function count_cohort_enrol_instances_returns() {
+        return new external_value(PARAM_INT, 'The number of enrol instances for the cohort');
+    }
 }

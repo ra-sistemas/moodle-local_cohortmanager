@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { useStringsStore } from '../../stores/strings';
 import type { Cohort, CohortEnrolInstance } from '../../types/interfaces';
-import { getCohortEnrolInstances } from '../../utils/moodle';
+import { getCohortEnrolInstances, countCohortEnrolInstances } from '../../utils/moodle';
 // import { add } from 'core/toast';
 import Notification from 'core/notification';
 
@@ -10,16 +10,21 @@ import Notification from 'core/notification';
 const stringsStore = useStringsStore();
 
 const enrolInstances = ref<CohortEnrolInstance[]>([]);
+const enrolInstancesCount = ref(0);
 const loading = ref(false);
 
 // Load enrol instances
 const loadEnrolInstances = async () => {
   loading.value = true;
   try {
-    const response = await getCohortEnrolInstances({
-      cohortid: props.cohort.id
-    });
-    enrolInstances.value = response || [];
+    const [instancesResponse, countResponse] = await Promise.all([
+      getCohortEnrolInstances({
+        cohortid: props.cohort.id
+      }),
+      countCohortEnrolInstances(props.cohort.id)
+    ]);
+    enrolInstances.value = instancesResponse || [];
+    enrolInstancesCount.value = countResponse || 0;
   } catch (err) {
     Notification.exception(err);
   } finally {
@@ -47,7 +52,7 @@ let props = defineProps<{
   <div class="tab-pane fade show active">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h5 class="mb-0">{{ stringsStore.getString('cohortenrolinstances') }}</h5>
-      <span class="badge bg-primary">{{ enrolInstances.length }} {{ stringsStore.getString('instancescount') }}</span>
+      <span class="badge bg-primary">{{ enrolInstancesCount }} {{ stringsStore.getString('instancescount') }}</span>
     </div>
 
     <!-- Loading State -->

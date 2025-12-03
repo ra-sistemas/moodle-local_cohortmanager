@@ -156,6 +156,7 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
               <th>{{ stringsStore.getString('name') }}</th>
               <th>{{ stringsStore.getString('id') }}</th>
               <th>{{ stringsStore.getString('members') }}</th>
+              <th>{{ stringsStore.getString('cohortenrolinstances') }}</th>
               <th class="text-center">{{ stringsStore.getString('actions') }}</th>
             </tr>
           </thead>
@@ -168,6 +169,7 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
               </td>
               <td>{{ cohort.id }}</td>
               <td>{{ cohort.members }}</td>
+               <td>{{ cohort.enrols }}</td>
               <td class="text-center">
                 <div class="btn-group btn-group-sm" role="group">
                   <button class="btn btn-outline-primary" @click="navigateToEdit(cohort)"

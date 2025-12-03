@@ -19,6 +19,7 @@ export interface Cohort {
   visible: boolean;
   theme?: string;
   members: number;
+  enrols: number;
   customfields?: Array<{
     name: string;
     shortname: string;

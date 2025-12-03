@@ -147,6 +147,16 @@ const countCohortMembers = async (cohortid: number): Promise<any> => {
 };
 
 /**
+ * Count cohort enrol instances
+ */
+const countCohortEnrolInstances = async (cohortid: number): Promise<any> => {
+  const response = await ajax('local_cohortmanager_count_cohort_enrol_instances', {
+    cohortid: cohortid
+  });
+  return response;
+};
+
+/**
  * Delete cohort members with treatment
  */
 const deleteCohortMembers = async (args: Object): Promise<Object> => {
@@ -298,5 +308,6 @@ export {
   showAddMembersForm,
   countCohortMembers,
   deleteCohortMembers,
-  getCohortEnrolInstances
+  getCohortEnrolInstances,
+  countCohortEnrolInstances
 };
