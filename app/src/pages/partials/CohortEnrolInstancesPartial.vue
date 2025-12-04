@@ -5,6 +5,7 @@ import type { Cohort, CohortEnrolInstance } from '../../types/interfaces';
 import { getCohortEnrolInstances, countCohortEnrolInstances } from '../../utils/moodle';
 // import { add } from 'core/toast';
 import Notification from 'core/notification';
+import CohortEnrolInstancesAddModal from '../../components/CohortEnrolInstancesAddModal.vue';
 
 // Initialize strings store
 const stringsStore = useStringsStore();
@@ -37,6 +38,13 @@ const handleRefresh = () => {
   loadEnrolInstances();
 };
 
+// Handle added enrol instances event
+const handleAddedEnrolInstances = (result: boolean) => {
+  if (result) {
+    loadEnrolInstances();
+  }
+};
+
 // Initialize the component
 onMounted(() => {
   loadEnrolInstances();
@@ -53,6 +61,10 @@ let props = defineProps<{
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h5 class="mb-0">{{ stringsStore.getString('cohortenrolinstances') }}</h5>
       <span class="badge bg-primary">{{ enrolInstancesCount }} {{ stringsStore.getString('instancescount') }}</span>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <CohortEnrolInstancesAddModal :cohortid="cohort.id" @added:enrolinstances="handleAddedEnrolInstances" />
     </div>
 
     <!-- Loading State -->

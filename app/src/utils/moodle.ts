@@ -217,7 +217,25 @@ const showAddMembersForm = (cohortid: number, title: string, saveButtonText: str
 };
 
 /**
- * 
+ * Show add Enrol Instances modal
+ */
+const showAddEnrolInstancesForm = (cohortid: number, title: string, saveButtonText: string): ModalForm => {
+
+  const modalForm = new ModalForm({
+    formClass: 'local_cohortmanager\\form\\add_enrol_instances_form',
+    saveButtonText: title,
+    modalConfig: {
+      title:  saveButtonText,
+    },
+    args: {
+      id: cohortid
+    }
+  });
+  return modalForm;
+};
+
+/**
+ *
  */
 const getCustomfieldTemplateConfig = async (component: string, area: string, itemid: number): Promise<any> => {
   const response = await ajax('core_customfield_reload_template', {
@@ -306,6 +324,7 @@ export {
   getCohortCustomfieldForm,
   getCustomfieldDynamicForm,
   showAddMembersForm,
+  showAddEnrolInstancesForm,
   countCohortMembers,
   deleteCohortMembers,
   getCohortEnrolInstances,
