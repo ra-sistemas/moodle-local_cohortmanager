@@ -97,7 +97,6 @@ let props = defineProps<{
               <thead class="table-light">
                 <tr>
                   <th>{{ stringsStore.getString('course') }}</th>
-                  <th>{{ stringsStore.getString('enrolmethod') }}</th>
                   <th>{{ stringsStore.getString('status') }}</th>
                   <th>{{ stringsStore.getString('actions') }}</th>
                 </tr>
@@ -112,13 +111,8 @@ let props = defineProps<{
                     </div>
                   </td>
                   <td>
-                    <span class="badge bg-info">
-                      <i class="fa fa-users"></i> {{ stringsStore.getString('cohortenrol') }}
-                    </span>
-                  </td>
-                  <td>
-                    <span :class="['badge', instance.status ? 'bg-success' : 'bg-secondary']">
-                      {{ instance.status ? stringsStore.getString('active') : stringsStore.getString('inactive') }}
+                    <span :class="['badge', instance.status ? 'bg-secondary' : 'bg-success']">
+                      {{ instance.status ? stringsStore.getString('inactive') : stringsStore.getString('active') }}
                     </span>
                   </td>
                   <td>

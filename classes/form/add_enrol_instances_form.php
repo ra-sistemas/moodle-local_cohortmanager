@@ -20,9 +20,15 @@ use core_form\dynamic_form;
 use context_system;
 use context;
 use moodle_url;
-use core_user;
+use ReflectionClass;
+use enrol_cohort_plugin;
 
 defined('MOODLE_INTERNAL') || die();
+
+global $CFG;
+
+// Include the enrol cohort plugin
+require_once($CFG->dirroot . '/enrol/cohort/lib.php');
 
 // require_once($CFG->dirroot . '/cohort/lib.php');
 // require_once($CFG->dirroot . '/enrol/locallib.php');
@@ -42,25 +48,63 @@ class add_enrol_instances_form extends dynamic_form
     public function definition()
     {
         $mform = $this->_form;
-        $cohortid = $this->optional_param('id', 0, PARAM_INT);
 
         // Hidden field for cohort ID
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
-        $mform->addElement('hidden', 'enrolmethod', 'cohort');
-        $mform->setType('enrolmethod', PARAM_TEXT);
 
-        $mform->addElement('course', 'courses', get_string('course'));
+        $mform->addElement(
+            'course',
+            'courses',
+            get_string('course'),
+            [
+                'multiple' => true
+            ]
+        );
+
         $mform->addRule('courses', get_string('required'), 'required', null, 'client');
 
-        // Status selection
-        $statusoptions = [
-            1 => get_string('active'),
-            0 => get_string('inactive')
-        ];
-        $mform->addElement('select', 'status', get_string('status'), $statusoptions);
+        $mform->addElement(
+            'select',
+            'status',
+            get_string('status', 'enrol_cohort'),
+            $this->get_status_options()
+        );
 
-        $mform->setDefault('status', 1);
+        $mform->addElement(
+            'select',
+            'roleid',
+            get_string('assignrole', 'enrol_cohort'),
+            $this->get_role_options()
+        );
+    }
+
+    /**
+     * Return an array of valid options for the roles.
+     *
+     * @param stdClass $instance
+     * @param context $coursecontext
+     * @return array
+     */
+    protected function get_role_options()
+    {
+        return get_default_enrol_roles(
+            $this->get_context_for_dynamic_submission()
+        );
+    }
+
+    /**
+     * Return an array of valid options for the status.
+     *
+     * @return array
+     */
+    protected function get_status_options()
+    {
+        $reflection = new ReflectionClass(enrol_cohort_plugin::class);
+        $method = $reflection->getMethod('get_status_options');
+
+        $plugin = new enrol_cohort_plugin();
+        return $method->invoke($plugin);
     }
 
     /**
@@ -123,6 +167,10 @@ class add_enrol_instances_form extends dynamic_form
         $cohortid = $this->optional_param('id', 0, PARAM_INT);
         $data = $this->get_data();
 
+        if (!isset($data->courses) || !is_array($data->courses)) {
+            return false;
+        }
+    
         $cohort = $DB->get_record(
             'cohort',
             array(
@@ -132,48 +180,20 @@ class add_enrol_instances_form extends dynamic_form
             MUST_EXIST
         );
 
-        if ($cohort && isset($data->courses) && is_array($data->courses)) {
+        $plugin = new enrol_cohort_plugin;
 
-            foreach ($data->courses as $courseid) {
-                // $this->add_enrol_instance($cohortid, $courseid, $data->enrolmethod, $data->status);
-            }
-
-            return true;
+        foreach ($data->courses as $courseid) {
+            $course = get_course($courseid);
+            $plugin->add_instance(
+                $course,
+                [
+                    'status' => $data->status,
+                    'roleid' => $data->roleid,
+                    'customint1' => $cohort->id
+                ]
+            );
         }
 
-        return false;
+        return true;
     }
-
-    // /**
-    //  * Add enrol instance to cohort
-    //  *
-    //  * @param int $cohortid
-    //  * @param int $courseid
-    //  * @param string $enrolmethod
-    //  * @param int $status
-    //  */
-    // protected function add_enrol_instance($cohortid, $courseid, $enrolmethod, $status)
-    // {
-    //     global $DB;
-
-    //     // Check if enrol instance already exists
-    //     $existing = $DB->get_record('cohort_enrol_instances', [
-    //         'cohortid' => $cohortid,
-    //         'courseid' => $courseid,
-    //         'enrolmethod' => $enrolmethod
-    //     ]);
-
-    //     if (!$existing) {
-    //         $record = new \stdClass();
-    //         $record->cohortid = $cohortid;
-    //         $record->courseid = $courseid;
-    //         $record->enrolmethod = $enrolmethod;
-    //         $record->status = $status;
-    //         $record->timecreated = time();
-    //         $record->timemodified = time();
-
-    //         $DB->insert_record('enrol', $record);
-    //     }
-    // }
-
 }

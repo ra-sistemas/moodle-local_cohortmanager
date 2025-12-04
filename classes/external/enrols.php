@@ -60,7 +60,7 @@ class enrols extends external_api {
         ]);
 
         // Get cohort enrol instances where customint1 equals the cohortid
-        $sql = "SELECT e.*, c.fullname as coursename, c.shortname as courseshortname
+        $sql = "SELECT e.*, c.fullname, c.shortname
                   FROM {enrol} e
                   JOIN {course} c ON e.courseid = c.id
                  WHERE e.enrol = 'cohort' AND e.customint1 = :cohortid
@@ -94,19 +94,13 @@ class enrols extends external_api {
             $result[] = [
                 'id' => $instance->id,
                 'courseid' => $instance->courseid,
-                'coursename' => format_string($instance->coursename, true, ['context' => $coursecontext]),
-                'courseshortname' => $instance->courseshortname,
+                'coursefullname' => format_string($instance->fullname, true, ['context' => $coursecontext]),
+                'courseshortname' => $instance->shortname,
                 'roleid' => $instance->roleid,
                 'rolename' => $rolename,
                 'status' => $instance->status,
                 'cohortid' => $instance->customint1,
                 'groupid' => $instance->customint2,
-                // 'customint3' => $instance->customint3,
-                // 'customint4' => $instance->customint4,
-                // 'customtext1' => $instance->customtext1,
-                // 'customtext2' => $instance->customtext2,
-                // 'customtext3' => $instance->customtext3,
-                // 'customtext4' => $instance->customtext4,
                 'timecreated' => $instance->timecreated,
                 'timemodified' => $instance->timemodified,
                 // 'groupinfo' => $groupinfo
@@ -126,19 +120,13 @@ class enrols extends external_api {
             new external_single_structure([
                 'id' => new external_value(PARAM_INT, 'ID of the enrol instance'),
                 'courseid' => new external_value(PARAM_INT, 'ID of the course'),
-                'coursename' => new external_value(PARAM_RAW, 'Name of the course'),
+                'coursefullname' => new external_value(PARAM_RAW, 'Name of the course'),
                 'courseshortname' => new external_value(PARAM_RAW, 'Short name of the course'),
                 'roleid' => new external_value(PARAM_INT, 'ID of the role'),
                 'rolename' => new external_value(PARAM_RAW, 'Name of the role'),
                 'status' => new external_value(PARAM_INT, 'Status of the enrol instance'),
                 'cohortid' => new external_value(PARAM_INT, 'Custom integer 1 (cohort ID)'),
                 'groupid' => new external_value(PARAM_INT, 'Custom integer 2 (group ID)', VALUE_OPTIONAL),
-                // 'customint3' => new external_value(PARAM_INT, 'Custom integer 3', VALUE_OPTIONAL),
-                // 'customint4' => new external_value(PARAM_INT, 'Custom integer 4', VALUE_OPTIONAL),
-                // 'customtext1' => new external_value(PARAM_RAW, 'Custom text 1', VALUE_OPTIONAL),
-                // 'customtext2' => new external_value(PARAM_RAW, 'Custom text 2', VALUE_OPTIONAL),
-                // 'customtext3' => new external_value(PARAM_RAW, 'Custom text 3', VALUE_OPTIONAL),
-                // 'customtext4' => new external_value(PARAM_RAW, 'Custom text 4', VALUE_OPTIONAL),
                 'timecreated' => new external_value(PARAM_INT, 'Time created'),
                 'timemodified' => new external_value(PARAM_INT, 'Time modified'),
                 // 'groupinfo' => new external_single_structure([
