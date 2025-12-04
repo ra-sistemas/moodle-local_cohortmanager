@@ -205,9 +205,9 @@ const showAddMembersForm = (cohortid: number, title: string, saveButtonText: str
 
   const modalForm = new ModalForm({
     formClass: 'local_cohortmanager\\form\\add_members_form',
-    saveButtonText: title,
+    saveButtonText: saveButtonText,
     modalConfig: {
-      title:  saveButtonText,
+      title:  title ,
     },
     args: {
       id: cohortid
@@ -223,9 +223,9 @@ const showAddEnrolInstancesForm = (cohortid: number, title: string, saveButtonTe
 
   const modalForm = new ModalForm({
     formClass: 'local_cohortmanager\\form\\add_enrol_instances_form',
-    saveButtonText: title,
+    saveButtonText: saveButtonText,
     modalConfig: {
-      title:  saveButtonText,
+      title:  title,
     },
     args: {
       id: cohortid

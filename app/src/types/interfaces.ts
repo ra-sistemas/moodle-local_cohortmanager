@@ -114,9 +114,16 @@ export interface CohortEnrolInstance {
   courseid: number;
   courseshortname: string;
   coursefullname: string;
-  enrol: string;
+  roleid: number;
+  rolename: string;
   status: boolean;
   cohortid: number;
+  enroled: number;
+  groupid: number;
+  groupname: string;
+  groupmembers: number;
+  timecreated: string;
+  timemodified: string;
 }
 
 /**

@@ -32,14 +32,16 @@ use context_course;
  * @copyright  2025 Davison Almeida <ramosdealmeidasistemas@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class enrols extends external_api {
+class enrols extends external_api
+{
 
     /**
      * Returns description of method parameters
      *
      * @return external_function_parameters
      */
-    public static function get_cohort_enrol_instances_parameters() {
+    public static function get_cohort_enrol_instances_parameters()
+    {
         return new external_function_parameters([
             'cohortid' => new external_value(PARAM_INT, 'ID of the cohort')
         ]);
@@ -51,7 +53,8 @@ class enrols extends external_api {
      * @param int $cohortid ID of the cohort
      * @return array Array of enrol instances
      */
-    public static function get_cohort_enrol_instances($cohortid) {
+    public static function get_cohort_enrol_instances($cohortid)
+    {
         global $DB;
 
         // Validate parameters
@@ -101,13 +104,26 @@ class enrols extends external_api {
                 'status' => $instance->status,
                 'cohortid' => $instance->customint1,
                 'groupid' => $instance->customint2,
-                'timecreated' => $instance->timecreated,
-                'timemodified' => $instance->timemodified,
-                // 'groupinfo' => $groupinfo
+                'groupname' => $instance->customint2 ? groups_get_group_name($instance->customint2) : null,
+                'groupmembers' => self::count_group_members($instance->id),
+                'enroled' => self::count_enrols($instance->id),
+                'timecreated' => usertime($instance->timecreated),
+                'timemodified' => usertime($instance->timemodified),
             ];
         }
 
         return $result;
+    }
+
+    public static function count_enrols($instanceid) 
+    {
+        global $DB;
+        return $DB->count_records('user_enrolments', array('enrolid'=>$instanceid));
+    }
+
+    public static function count_group_members($intanceid)
+    {
+        return count(groups_get_members($intanceid));
     }
 
     /**
@@ -115,7 +131,8 @@ class enrols extends external_api {
      *
      * @return external_multiple_structure
      */
-    public static function get_cohort_enrol_instances_returns() {
+    public static function get_cohort_enrol_instances_returns()
+    {
         return new external_multiple_structure(
             new external_single_structure([
                 'id' => new external_value(PARAM_INT, 'ID of the enrol instance'),
@@ -126,13 +143,12 @@ class enrols extends external_api {
                 'rolename' => new external_value(PARAM_RAW, 'Name of the role'),
                 'status' => new external_value(PARAM_INT, 'Status of the enrol instance'),
                 'cohortid' => new external_value(PARAM_INT, 'Custom integer 1 (cohort ID)'),
-                'groupid' => new external_value(PARAM_INT, 'Custom integer 2 (group ID)', VALUE_OPTIONAL),
+                'enroled' => new external_value(PARAM_INT, 'Counter of users enroled in instances'),
+                'groupid' => new external_value(PARAM_INT, 'Custom integer 2 (group ID)'),
+                'groupname' => new external_value(PARAM_RAW, 'Group name'),
+                'groupmembers' => new external_value(PARAM_INT, 'Group members counter'),
                 'timecreated' => new external_value(PARAM_INT, 'Time created'),
                 'timemodified' => new external_value(PARAM_INT, 'Time modified'),
-                // 'groupinfo' => new external_single_structure([
-                //     'id' => new external_value(PARAM_INT, 'Group ID'),
-                //     'name' => new external_value(PARAM_RAW, 'Group name')
-                // ], 'Group information', VALUE_OPTIONAL)
             ])
         );
     }
@@ -142,7 +158,8 @@ class enrols extends external_api {
      *
      * @return external_function_parameters
      */
-    public static function count_cohort_enrol_instances_parameters() {
+    public static function count_cohort_enrol_instances_parameters()
+    {
         return new external_function_parameters([
             'cohortid' => new external_value(PARAM_INT, 'The cohort id')
         ]);
@@ -154,7 +171,8 @@ class enrols extends external_api {
      * @param int $cohortid The cohort id
      * @return array
      */
-    public static function count_cohort_enrol_instances($cohortid) {
+    public static function count_cohort_enrol_instances($cohortid)
+    {
         global $DB;
 
         // Validate parameters.
@@ -174,7 +192,8 @@ class enrols extends external_api {
      *
      * @return external_value
      */
-    public static function count_cohort_enrol_instances_returns() {
+    public static function count_cohort_enrol_instances_returns()
+    {
         return new external_value(PARAM_INT, 'The number of enrol instances for the cohort');
     }
 }

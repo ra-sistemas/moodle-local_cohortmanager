@@ -151,6 +151,7 @@ $string['delete_membership_warning'] = 'Warning: This action is permanent and ca
 $string['selected_members_list'] = 'Selected members: {$a}';
 
 // CohortEnrolInstancesPartial component strings
+$string['addenrolinstance'] = 'Add Enrol Instance';
 $string['cohortenrolinstances'] = 'Cohort Enrol Instances';
 $string['instancescount'] = 'instances';
 $string['loadingenrolinstances'] = 'Loading enrol instances...';

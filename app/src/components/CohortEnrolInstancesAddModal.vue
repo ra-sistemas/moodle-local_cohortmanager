@@ -19,8 +19,8 @@ const stringsStore = useStringsStore();
 const openModal = async () => {
     modal.value = showAddEnrolInstancesForm(
         props.cohortid,
-        stringsStore.getString('addenrolinstance'),
         stringsStore.getString('add'),
+        stringsStore.getString('addenrolinstance'),
     );
 
     modal.value.addEventListener(modal.value.events.FORM_SUBMITTED, (event: any) => {
