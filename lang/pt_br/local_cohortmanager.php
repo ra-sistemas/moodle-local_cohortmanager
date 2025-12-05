@@ -57,6 +57,7 @@ $string['failedtosavecohort'] = 'Falha ao salvar coorte. Tente novamente.';
 $string['deleteconfirmation'] = 'Tem certeza de que deseja excluir "%s"?';
 $string['deletethiscohort'] = 'Excluir esta coorte';
 $string['cohortdeletedsuccessfully'] = 'Coorte excluída com sucesso';
+$string['instanceexists'] = 'Já existe uma instância inscrita, no curso e com esta turma, com a função selecionada. Tente outra função.';
 
 // CohortCreate component strings
 $string['basicinformation'] = 'Informações Básicas';

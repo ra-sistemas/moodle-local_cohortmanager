@@ -6,6 +6,7 @@ import { getCohortEnrolInstances, countCohortEnrolInstances } from '../../utils/
 // import { add } from 'core/toast';
 import Notification from 'core/notification';
 import CohortEnrolInstancesAddModal from '../../components/CohortEnrolInstancesAddModal.vue';
+import CohortEnrolInstancesEditModal from '../../components/CohortEnrolInstancesEditModal.vue';
 
 // Initialize strings store
 const stringsStore = useStringsStore();
@@ -35,6 +36,13 @@ const loadEnrolInstances = async () => {
 
 // Handle added enrol instances event
 const handleAddedEnrolInstances = (result: boolean) => {
+  if (result) {
+    loadEnrolInstances();
+  }
+};
+
+// Handle updated enrol instance event
+const handleUpdatedEnrolInstance = (result: boolean) => {
   if (result) {
     loadEnrolInstances();
   }
@@ -120,9 +128,7 @@ let props = defineProps<{
                         :title="stringsStore.getString('view')">
                         <i class="fa " :class="instance.status ? 'fa-eye' : 'fa-eye-slash'"></i>
                       </button>
-                      <button class="btn btn-outline-secondary" :title="stringsStore.getString('edit')">
-                        <i class="fa fa-edit"></i>
-                      </button>
+                      <CohortEnrolInstancesEditModal :enrolinstance="instance" @updated:enrolinstance="handleUpdatedEnrolInstance" />
                     </div>
                   </td>
                 </tr>

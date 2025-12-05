@@ -57,6 +57,7 @@ $string['failedtosavecohort'] = 'Failed to save cohort. Please try again.';
 $string['deleteconfirmation'] = 'Are you sure you want to delete "%s"?';
 $string['deletethiscohort'] = 'Delete this cohort';
 $string['cohortdeletedsuccessfully'] = 'Cohort deleted successfully';
+$string['instanceexists'] = 'There is a already a enrol instance, in course and with this cohort, with the selected role. Try another role.';
 
 // CohortCreate component strings
 $string['basicinformation'] = 'Basic Information';

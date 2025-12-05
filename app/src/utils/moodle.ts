@@ -235,6 +235,24 @@ const showAddEnrolInstancesForm = (cohortid: number, title: string, saveButtonTe
 };
 
 /**
+ * Show edit Enrol Instances modal
+ */
+const showEditEnrolInstancesForm = (enrolinstanceid: number, title: string, saveButtonText: string): ModalForm => {
+
+  const modalForm = new ModalForm({
+    formClass: 'local_cohortmanager\\form\\edit_enrol_instances_form',
+    saveButtonText: saveButtonText,
+    modalConfig: {
+      title:  title,
+    },
+    args: {
+      id: enrolinstanceid
+    }
+  });
+  return modalForm;
+};
+
+/**
  *
  */
 const getCustomfieldTemplateConfig = async (component: string, area: string, itemid: number): Promise<any> => {
@@ -325,6 +343,7 @@ export {
   getCustomfieldDynamicForm,
   showAddMembersForm,
   showAddEnrolInstancesForm,
+  showEditEnrolInstancesForm,
   countCohortMembers,
   deleteCohortMembers,
   getCohortEnrolInstances,
