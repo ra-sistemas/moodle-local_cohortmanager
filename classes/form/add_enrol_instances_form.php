@@ -47,20 +47,19 @@ class add_enrol_instances_form extends dynamic_form
      */
     public function definition()
     {
+        $cohortid = $this->optional_param('id', 0, PARAM_INT);
         $mform = $this->_form;
 
-        // Hidden field for cohort ID
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
 
-        $mform->addElement(
-            'course',
-            'courses',
-            get_string('course'),
-            [
-                'multiple' => true
-            ]
-        );
+        $options = [
+            'ajax' => 'local_cohortmanager/form-courses-selector',
+            'cohortid' => $cohortid,
+            'multiple' => true
+        ];
+
+        $mform->addElement('autocomplete', 'courses', get_string('courses'), [], $options);
 
         $mform->addRule('courses', get_string('required'), 'required', null, 'client');
 
@@ -170,7 +169,7 @@ class add_enrol_instances_form extends dynamic_form
         if (!isset($data->courses) || !is_array($data->courses)) {
             return false;
         }
-    
+
         $cohort = $DB->get_record(
             'cohort',
             array(
@@ -195,5 +194,61 @@ class add_enrol_instances_form extends dynamic_form
         }
 
         return true;
+    }
+
+    /**
+     * Validate form data using the enrol plugin's edit_instance_validation method
+     *
+     * @param array $data submitted data
+     * @param array $files submitted files
+     * @return array of errors
+     */
+    public function validation($data, $files)
+    {
+        global $DB;
+
+        $errors = parent::validation($data, $files);
+
+        // Get the enrol cohort plugin
+        $plugin = new enrol_cohort_plugin();
+
+        // Prepare data for validation
+        $cohortid = $this->optional_param('id', 0, PARAM_INT);
+
+        // Cast data to object if it's an array
+        $dataobj = is_array($data) ? (object) $data : $data;
+
+        // Validate for each selected course
+        if (!empty($dataobj->courses) && is_array($dataobj->courses)) {
+            foreach ($dataobj->courses as $courseid) {
+
+                // Check if instance already exists for this course
+                $existing = $DB->record_exists_select(
+                    'enrol',
+                    "courseid = :courseid AND roleid = :roleid AND customint1 = :customint1 AND enrol = 'cohort'",
+                    [
+                        'courseid' => $courseid,
+                        'roleid' => $dataobj->roleid,
+                        'customint1' => $cohortid
+                    ]
+                );
+
+                if ($existing) {
+                    $errors['roleid'] = get_string('instanceexists', 'local_cohortmanager');
+                    break;
+                }
+
+                $tovalidate = array(
+                    'status' => array_keys(self::get_status_options()),
+                    'roleid' => array_keys(self::get_role_options()),
+                );
+
+                $typeerrors = $plugin->validate_param_types($data, $tovalidate);
+
+                $errors = array_merge($errors, $typeerrors);
+            }
+        }
+
+        return $errors;
     }
 }

@@ -16,7 +16,7 @@
 /**
  * Potential course selector module.
  *
- * @module     local_cohortmanager/form-course-selector
+ * @module     local_cohortmanager/form-courses-selector
  * @copyright  2025 Davison Ramos
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

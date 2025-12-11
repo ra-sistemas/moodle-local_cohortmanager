@@ -115,17 +115,6 @@ class enrols extends external_api
         return $result;
     }
 
-    public static function count_enrols($instanceid) 
-    {
-        global $DB;
-        return $DB->count_records('user_enrolments', array('enrolid'=>$instanceid));
-    }
-
-    public static function count_group_members($intanceid)
-    {
-        return count(groups_get_members($intanceid));
-    }
-
     /**
      * Returns description of method result value
      *
@@ -195,5 +184,101 @@ class enrols extends external_api
     public static function count_cohort_enrol_instances_returns()
     {
         return new external_value(PARAM_INT, 'The number of enrol instances for the cohort');
+    }
+
+    /**
+     * Parameter description for get_potential_cohort_courses().
+     *
+     * @return external_function_parameters
+     */
+    public static function get_potential_cohort_courses_parameters()
+    {
+        return new external_function_parameters([
+            'cohortid' => new external_value(PARAM_INT, 'The cohort id'),
+            'query' => new external_value(PARAM_TEXT, 'The query string to search'),
+        ]);
+    }
+
+    /**
+     * Get potential courses to create enrol_cohort instances
+     *
+     * @param int    $cohortid The cohort id
+     * @param string $query    The search string to match against fullname, shortname, or idnumber
+     * 
+     * @return array of course records
+     */
+    public static function get_potential_cohort_courses($cohortid, $query)
+    {
+        global $DB;
+
+        $params = self::validate_parameters(self::get_potential_cohort_courses_parameters(), [
+            'cohortid' => $cohortid,
+            'query' => $query
+        ]);
+
+        $params = [
+            'cohortid' => $cohortid,
+            'query' => "%{$query}%",
+            'contextlevel' => CONTEXT_COURSE
+        ];
+
+        $sql = "SELECT DISTINCT c.id, c.fullname
+            FROM {course} c
+            JOIN {role_context_levels} rcl ON rcl.contextlevel = :contextlevel
+            LEFT JOIN {enrol} e 
+                ON e.courseid = c.id 
+                AND e.enrol = 'cohort' 
+                AND e.customint1 = :cohortid 
+                AND e.roleid = rcl.roleid
+            WHERE e.id IS NULL
+        ";
+
+        if (!empty($query)) {
+
+            $fullnamelike =  $DB->sql_like('LOWER(c.fullname)', ':fullname');
+            $shortnamelike = $DB->sql_like('LOWER(c.shortname)', ':shortname');
+            $idnumberlike = $DB->sql_like('LOWER(c.idnumber)', ':idnumber');
+
+            $sql .= " AND ({$fullnamelike} OR {$shortnamelike} OR {$idnumberlike})";
+
+            $params['fullname'] = $params['query'];
+            $params['shortname'] = $params['query'];
+            $params['idnumber'] = $params['query'];
+        }
+
+        unset($params['query']);
+
+        return $DB->get_records_sql($sql, $params);
+    }
+
+    /**
+     * Return description for get_potential_cohort_courses().
+     *
+     * @return external_value
+     */
+    public static function get_potential_cohort_courses_returns()
+    {
+        return new external_multiple_structure(
+            new external_single_structure([
+                'id' => new external_value(PARAM_INT, 'ID of potential course'),
+                'fullname' => new external_value(PARAM_TEXT, 'Fullname of potential course'),
+            ])
+        );
+    }
+
+    private static function count_enrols($instanceid)
+    {
+        global $DB;
+        return $DB->count_records(
+            'user_enrolments',
+            [
+                'enrolid' => $instanceid
+            ]
+        );
+    }
+
+    private static function count_group_members($intanceid)
+    {
+        return count(groups_get_members($intanceid));
     }
 }
