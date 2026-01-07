@@ -282,3 +282,30 @@ export interface ToastOptions {
   type?: string | object;
   delay?: number;
 }
+
+/**
+* Course interface for potential courses
+*/
+export interface Course {
+ id: number;
+ fullname: string;
+}
+
+/**
+* Role interface for course roles
+*/
+export interface Role {
+ id: number;
+ name: string;
+}
+
+/**
+* Selected course with role and status
+*/
+export interface SelectedCourse {
+ courseid: number;
+ coursename: string;
+ status: 'active' | 'inactive';
+ roleid: number;
+ rolename: string;
+}

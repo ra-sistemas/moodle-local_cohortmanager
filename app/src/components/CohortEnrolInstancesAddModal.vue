@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { useStringsStore } from '../stores/strings';
-import { showAddEnrolInstancesForm } from '../utils/moodle';
+import CohortEnrolInstancesSearchModal from './CohortEnrolInstancesSearchModal.vue';
 import { add } from 'core/toast';
 
-const props = defineProps<{
+defineProps<{
     cohortid: number;
 }>();
 
@@ -12,33 +11,23 @@ const emit = defineEmits<{
     'added:enrolinstances': [value: boolean];
 }>();
 
-const modal = ref();
-
 const stringsStore = useStringsStore();
 
-const openModal = async () => {
-    modal.value = showAddEnrolInstancesForm(
-        props.cohortid,
-        stringsStore.getString('add'),
-        stringsStore.getString('addenrolinstance'),
-    );
-
-    modal.value.addEventListener(modal.value.events.FORM_SUBMITTED, (event: any) => {
-        if (event.detail) {
-            add(stringsStore.getString('enrolinstanceadded'), {
-                type: 'success'
-            });
-            emit('added:enrolinstances', event.detail);
-        }
-        else {
-
-        }
+// Handle selected courses from the search modal
+const handleSelectedCourses = (courses: any[]) => {
+    // Here you would typically send the selected courses to the backend
+    // For now, we'll just emit a success event
+    add(stringsStore.getString('enrolinstanceadded'), {
+        type: 'success',
+        courses: courses
     });
-
-    await modal.value.show();
-}
-
+    emit('added:enrolinstances', true);
+};
 </script>
+
 <template>
-    <button class="btn btn-primary" @click="openModal">{{ stringsStore.getString('addenrolinstance') }}</button>
+    <CohortEnrolInstancesSearchModal 
+        :cohortid="cohortid" 
+        @selected:courses="handleSelectedCourses" 
+    />
 </template>

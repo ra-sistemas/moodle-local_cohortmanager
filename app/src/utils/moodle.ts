@@ -173,6 +173,22 @@ const getCohortEnrolInstances = async (args: Object): Promise<any> => {
 };
 
 /**
+ * Get potential cohort courses with treatment
+ */
+const getPotentialCohortCourses = async (args: Object): Promise<any> => {
+  const response = await ajax('local_cohortmanager_get_potential_cohort_courses', args);
+  return response;
+};
+
+/**
+ * Get cohort course roles with treatment
+ */
+const getCohortCourseRoles = async (args: Object): Promise<any> => {
+  const response = await ajax('local_cohortmanager_get_cohort_course_roles', args);
+  return response;
+};
+
+/**
  * Get cohort customfields
  */
 const getCohortCustomfieldForm = async (cohortid: number): Promise<Template> => {
@@ -347,5 +363,7 @@ export {
   countCohortMembers,
   deleteCohortMembers,
   getCohortEnrolInstances,
-  countCohortEnrolInstances
+  countCohortEnrolInstances,
+  getPotentialCohortCourses,
+  getCohortCourseRoles
 };

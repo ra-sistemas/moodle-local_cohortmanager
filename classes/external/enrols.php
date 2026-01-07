@@ -310,7 +310,9 @@ class enrols extends external_api
 
         $params['contextlevel'] = CONTEXT_COURSE;
 
-        $sql = "SELECT r.id, r.name
+        $context_course = context_course::instance($params['courseid']);
+
+        $sql = "SELECT r.id
             FROM {role} r
             JOIN {role_context_levels} rcl ON rcl.roleid = r.id
             LEFT JOIN {enrol} e 
@@ -321,11 +323,26 @@ class enrols extends external_api
                     AND e.customint1 = :cohortid
                 )
             WHERE rcl.contextlevel = :contextlevel
-                AND e.id IS NULL
+                AND e.id IS NOT NULL
             ORDER BY r.name ASC
         ";
 
-        return array_values($DB->get_records_sql($sql, $params));
+        $roleids = $DB->get_fieldset_sql($sql, $params);
+
+        $course_roles = get_assignable_roles($context_course);
+
+        $roles = [];
+
+        foreach($course_roles as $roleid => $rolename) {
+            if(!in_array($roleid,$roleids)){
+                $roles[] = [
+                    'id' => $roleid,
+                    'name' => $rolename
+                ];
+            }
+        }
+
+        return $roles;
     }
 
     /**
