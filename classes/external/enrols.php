@@ -23,6 +23,7 @@ use core_external\external_single_structure;
 use core_external\external_value;
 use core_external\external_format_value;
 use context;
+use moodle_exception;
 use context_course;
 
 /**
@@ -262,6 +263,82 @@ class enrols extends external_api
             new external_single_structure([
                 'id' => new external_value(PARAM_INT, 'ID of potential course'),
                 'fullname' => new external_value(PARAM_TEXT, 'Fullname of potential course'),
+            ])
+        );
+    }
+
+    /**
+     * Parameter description for get_cohort_course_roles().
+     *
+     * @return external_function_parameters
+     */
+    public static function get_cohort_course_roles_parameters()
+    {
+        return new external_function_parameters([
+            'cohortid' => new external_value(PARAM_INT, 'The cohort id'),
+            'courseid' => new external_value(PARAM_INT, 'The course id'),
+        ]);
+    }
+
+    /**
+     * Returns a list of roles that are valid for the course context
+     * but are NOT currently assigned to the specific cohort enrolment instance.
+     *
+     * @param int $cohortid The cohort id
+     * @param int $courseid The course id
+     * 
+     * @return array
+     * @throws moodle_exception
+     */
+    public static function get_cohort_course_roles($cohortid, $courseid)
+    {
+        global $DB;
+
+        $params = self::validate_parameters(self::get_cohort_course_roles_parameters(), [
+            'cohortid' => $cohortid,
+            'courseid' => $courseid
+        ]);
+
+        
+        if (!$DB->record_exists('course', ['id' => $params['courseid']])) {
+            throw new moodle_exception('invalidcourse', 'cohort', '', $params['courseid']);
+        }
+
+        if (!$DB->record_exists('cohort', ['id' => $params['cohortid']])) {
+            throw new moodle_exception('invalidcohort', 'cohort', '', $params['cohortid']);
+        }
+
+        $params['contextlevel'] = CONTEXT_COURSE;
+
+        $sql = "SELECT r.id, r.name
+            FROM {role} r
+            JOIN {role_context_levels} rcl ON rcl.roleid = r.id
+            LEFT JOIN {enrol} e 
+                ON (
+                    e.roleid = r.id 
+                    AND e.enrol = 'cohort' 
+                    AND e.courseid = :courseid 
+                    AND e.customint1 = :cohortid
+                )
+            WHERE rcl.contextlevel = :contextlevel
+                AND e.id IS NULL
+            ORDER BY r.name ASC
+        ";
+
+        return array_values($DB->get_records_sql($sql, $params));
+    }
+
+    /**
+     * Return description for get_cohort_course_roles().
+     *
+     * @return external_multiple_structure
+     */
+    public static function get_cohort_course_roles_returns()
+    {
+        return new external_multiple_structure(
+            new external_single_structure([
+                'id' => new external_value(PARAM_INT, 'ID of role'),
+                'name' => new external_value(PARAM_TEXT, 'Role name'),
             ])
         );
     }

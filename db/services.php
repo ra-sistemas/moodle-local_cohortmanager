@@ -167,6 +167,14 @@ $functions = [
         'type'       => 'read',
         'ajax' => true,
         'capabilities' => 'enrol/cohort:config'
+    ],
+    'local_cohortmanager_get_cohort_course_roles' => [
+        'classname'   => 'local_cohortmanager\\external\\enrols',
+        'methodname' => 'get_cohort_course_roles',
+        'description' => 'Get list of course roles to create the cohort enrol instances.',
+        'type'       => 'read',
+        'ajax' => true,
+        'capabilities' => 'enrol/cohort:config'
     ]
 ];
 
@@ -190,7 +198,8 @@ $services = [
             'local_cohortmanager_count_cohort_members',
             'local_cohortmanager_get_cohort_enrol_instances',
             'local_cohortmanager_count_cohort_enrol_instances',
-            'local_cohortmanager_get_potential_cohort_courses'
+            'local_cohortmanager_get_potential_cohort_courses',
+            'local_cohortmanager_get_cohort_course_roles'
         ],
         'restrictedusers' => 0,
         'enabled' => 1,
