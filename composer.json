@@ -1,5 +1,5 @@
 {
-    "name": "rasistemas/local_cohortmanager",
+    "name": "ra-sistemas/moodle_local_cohortmanager",
     "description": "All-in-On Cohort Manager. Nothing new. Just the basic in one place.",
     "type": "library",
     "autoload": {
