@@ -12,5 +12,7 @@
             "name": "RA SISTEMAS"
         }
     ],
-    "require": {}
+    "require": {
+        "composer/installers": "^2.3"
+    }
 }
