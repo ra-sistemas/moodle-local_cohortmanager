@@ -50,6 +50,10 @@ watch(searchQuery, (newQuery) => {
     }, 300);
 });
 
+const getExcludeCourseIds = () => {
+    return selectedCourses.value.map(course => course.courseid);
+};
+
 // Search for courses
 const searchCourses = async (query: string) => {
     if (!query.trim()) {
@@ -57,11 +61,13 @@ const searchCourses = async (query: string) => {
         return;
     }
     
+    const excludeCourseIds = getExcludeCourseIds();
     isSearching.value = true;
     try {
         const response = await getPotentialCohortCourses({
             cohortid: props.cohortid,
-            query: query.trim()
+            query: query.trim(),
+            excludecourseids: excludeCourseIds
         });
         searchResults.value = response || [];
     } catch (error) {
@@ -209,26 +215,28 @@ onBeforeUnmount(() => {
                         <!-- Search Section -->
                         <div class="mb-4">
                             <label class="form-label">{{ stringsStore.getString('searchcourses') }}</label>
-                            <div class="input-group">
-                                <input 
-                                    type="text" 
-                                    class="form-control" 
-                                    v-model="searchQuery"
-                                    :placeholder="stringsStore.getString('searchcoursesplaceholder')"
-                                    autocomplete="off"
-                                />
-                                <span class="input-group-text">
-                                    <i class="fa fa-search"></i>
-                                </span>
-                            </div>
-                            
-                            <!-- Search Results -->
-                            <div v-if="searchQuery && searchResults.length > 0" class="dropdown-menu show w-100 mt-1">
-                                <div v-for="course in searchResults" :key="course.id" 
-                                     class="dropdown-item cursor-pointer"
-                                     @click="handleCourseSelect(course)">
-                                    <div class="fw-bold">{{ course.fullname }}</div>
-                                    <small class="text-muted">ID: {{ course.id }}</small>
+                            <div class="position-relative">
+                                <div class="input-group">
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        v-model="searchQuery"
+                                        :placeholder="stringsStore.getString('searchcoursesplaceholder')"
+                                        autocomplete="off"
+                                    />
+                                    <span class="input-group-text">
+                                        <i class="fa fa-search"></i>
+                                    </span>
+                                </div>
+                                
+                                <!-- Search Results -->
+                                <div v-if="searchQuery && searchResults.length > 0" class="dropdown-menu show w-100">
+                                    <div v-for="course in searchResults" :key="course.id" 
+                                         class="dropdown-item cursor-pointer"
+                                         @click="handleCourseSelect(course)">
+                                        <div class="fw-bold">{{ course.fullname }}</div>
+                                        <small class="text-muted">ID: {{ course.id }}</small>
+                                    </div>
                                 </div>
                             </div>
                             

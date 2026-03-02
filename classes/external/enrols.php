@@ -197,6 +197,12 @@ class enrols extends external_api
         return new external_function_parameters([
             'cohortid' => new external_value(PARAM_INT, 'The cohort id'),
             'query' => new external_value(PARAM_TEXT, 'The query string to search'),
+            'excludecourseids' => new external_multiple_structure(
+                new external_value(PARAM_INT, 'Course ID to exclude from search'),
+                'List of course IDs to exclude from search results',
+                VALUE_DEFAULT,
+                []
+            ),
         ]);
     }
 
@@ -205,16 +211,18 @@ class enrols extends external_api
      *
      * @param int    $cohortid The cohort id
      * @param string $query    The search string to match against fullname, shortname, or idnumber
-     * 
+     * @param array  $excludecourseids List of course IDs to exclude from search results
+     *
      * @return array of course records
      */
-    public static function get_potential_cohort_courses($cohortid, $query)
+    public static function get_potential_cohort_courses($cohortid, $query, $excludecourseids = [])
     {
         global $DB;
 
         $params = self::validate_parameters(self::get_potential_cohort_courses_parameters(), [
             'cohortid' => $cohortid,
-            'query' => $query
+            'query' => $query,
+            'excludecourseids' => $excludecourseids
         ]);
 
         $params = [
@@ -226,13 +234,19 @@ class enrols extends external_api
         $sql = "SELECT DISTINCT c.id, c.fullname
             FROM {course} c
             JOIN {role_context_levels} rcl ON rcl.contextlevel = :contextlevel
-            LEFT JOIN {enrol} e 
-                ON e.courseid = c.id 
-                AND e.enrol = 'cohort' 
-                AND e.customint1 = :cohortid 
+            LEFT JOIN {enrol} e
+                ON e.courseid = c.id
+                AND e.enrol = 'cohort'
+                AND e.customint1 = :cohortid
                 AND e.roleid = rcl.roleid
             WHERE e.id IS NULL
         ";
+
+        if (!empty($excludecourseids)) {
+            [$insql, $inparams] = $DB->get_in_or_equal($excludecourseids, SQL_PARAMS_NAMED, 'exclude_', false);
+            $sql .= " AND c.id {$insql}";
+            $params = array_merge($params, $inparams);
+        }
 
         if (!empty($query)) {
 
