@@ -4,7 +4,6 @@ import { useRouter } from 'vue-router';
 import { searchCohorts as searchCohortsApi } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
 import Notification from 'core/notification';
-import CohortDelete from '../components/CohortDelete.vue';
 import type { Cohort } from '../types/interfaces';
 
 // Initialize strings store
@@ -78,10 +77,6 @@ const nextPage = () => {
   }
 };
 
-// Handle cohort deletion success
-const handleDeleteSuccess = () => {
-  loadCohorts();
-};
 
 // View cohort details
 const viewCohort = (cohort: Cohort) => {
@@ -89,10 +84,6 @@ const viewCohort = (cohort: Cohort) => {
   router.push(`cohort/${cohort.id}`);
 };
 
-// Navigation functions
-const navigateToEdit = (cohort: Cohort) => {
-  router.push(`/cohort/${cohort.id}/edit`);
-};
 
 // Calculate pagination info
 const paginationInfo = computed(() => {
@@ -169,14 +160,13 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
               </td>
               <td>{{ cohort.id }}</td>
               <td>{{ cohort.members }}</td>
-               <td>{{ cohort.enrols }}</td>
+              <td>{{ cohort.enrols }}</td>
               <td class="text-center">
                 <div class="btn-group btn-group-sm" role="group">
-                  <button class="btn btn-outline-primary" @click="navigateToEdit(cohort)"
-                    :title="stringsStore.getString('editcohort')">
-                    <i class="fa fa-edit"></i>
+                  <button class="btn btn-outline-primary" @click="viewCohort(cohort)"
+                    :title="stringsStore.getString('view') + ' ' + stringsStore.getString('Cohort')">
+                    <i class="fa fa-info"></i>
                   </button>
-                  <CohortDelete :cohort="cohort" @success="handleDeleteSuccess" />
                 </div>
               </td>
             </tr>
