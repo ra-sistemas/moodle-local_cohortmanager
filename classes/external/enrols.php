@@ -21,8 +21,6 @@ use core_external\external_function_parameters;
 use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use core_external\external_value;
-use core_external\external_format_value;
-use context;
 use moodle_exception;
 use context_course;
 
@@ -240,6 +238,7 @@ class enrols extends external_api
                 AND e.customint1 = :cohortid
                 AND e.roleid = rcl.roleid
             WHERE e.id IS NULL
+                AND c.id > 1
         ";
 
         if (!empty($excludecourseids)) {
@@ -312,7 +311,6 @@ class enrols extends external_api
             'cohortid' => $cohortid,
             'courseid' => $courseid
         ]);
-
         
         if (!$DB->record_exists('course', ['id' => $params['courseid']])) {
             throw new moodle_exception('invalidcourse', 'cohort', '', $params['courseid']);
@@ -347,8 +345,8 @@ class enrols extends external_api
 
         $roles = [];
 
-        foreach($course_roles as $roleid => $rolename) {
-            if(!in_array($roleid,$roleids)){
+        foreach ($course_roles as $roleid => $rolename) {
+            if (!in_array($roleid, $roleids)) {
                 $roles[] = [
                     'id' => $roleid,
                     'name' => $rolename
@@ -388,5 +386,123 @@ class enrols extends external_api
     private static function count_group_members($intanceid)
     {
         return count(groups_get_members($intanceid));
+    }
+
+    /**
+     * Parameter description for create_cohort_enrol_instances().
+     *
+     * @return external_function_parameters
+     */
+    public static function create_cohort_enrol_instances_parameters()
+    {
+        return new external_function_parameters([
+            'cohortid' => new external_value(PARAM_INT, 'The cohort id'),
+            'courses' => new external_multiple_structure(
+                new external_single_structure([
+                    'courseid' => new external_value(PARAM_INT, 'ID of the course'),
+                    'roleid' => new external_value(PARAM_INT, 'ID of the role'),
+                    'status' => new external_value(PARAM_INT, 'Status of the enrol instance (0 = inactive, 1 = active)'),
+                ]),
+                'List of courses with role and status to create enrol instances'
+            ),
+        ]);
+    }
+
+    /**
+     * Create cohort enrol instances for multiple courses
+     *
+     * @param int $cohortid The cohort id
+     * @param array $courses List of courses with role and status
+     * @return array
+     */
+    public static function create_cohort_enrol_instances($cohortid, $courses)
+    {
+        global $DB, $CFG;
+
+        // Validate parameters.
+        $params = self::validate_parameters(self::create_cohort_enrol_instances_parameters(), [
+            'cohortid' => $cohortid,
+            'courses' => $courses
+        ]);
+
+        // Verify cohort exists
+        if (!$DB->record_exists('cohort', ['id' => $params['cohortid']])) {
+            throw new moodle_exception('invalidcohort', 'cohort', '', $params['cohortid']);
+        }
+
+        $created_count = 0;
+        $errors = [];
+
+        // Create enrol instance
+        $enrol_plugin = enrol_get_plugin('cohort');
+        if (!$enrol_plugin) {
+            throw new moodle_exception('enrolpluginnotfound', 'enrol_cohort');
+        }
+
+        foreach ($params['courses'] as $course_data) {
+
+            $course = $DB->get_record('course', ['id' => $course_data['courseid']]);
+            if (!$course) {
+                $errors[] = "Course ID {$course_data['courseid']} not found";
+                continue;
+            }
+
+            $context = context_course::instance($course_data['courseid']);
+            if (!$DB->record_exists('role', ['id' => $course_data['roleid']])) {
+                $errors[] = "Role ID {$course_data['roleid']} not found for course {$course_data['courseid']}";
+                continue;
+            }
+
+            $existing_enrol = $DB->get_record('enrol', [
+                'enrol' => 'cohort',
+                'courseid' => $course_data['courseid'],
+                'customint1' => $params['cohortid'],
+                'roleid' => $course_data['roleid']
+            ]);
+
+            if ($existing_enrol) {
+                $errors[] = "Enrol instance already exists for course {$course_data['courseid']} with role {$course_data['roleid']}";
+                continue;
+            }
+
+            $fields = [
+                'enrol' => 'cohort',
+                'status' => $course_data['status'],
+                'roleid' => $course_data['roleid'],
+                'customint1' => $params['cohortid'],
+                'customint2' => 0,
+                'timecreated' => time(),
+                'timemodified' => time()
+            ];
+
+            $instanceid = $enrol_plugin->add_instance($course, $fields);
+
+            if ($instanceid) {
+                $created_count++;
+            } else {
+                $errors[] = "Failed to create enrol instance for course {$course_data['courseid']}";
+            }
+        }
+
+        return [
+            'created_count' => $created_count,
+            'errors' => $errors
+        ];
+    }
+
+    /**
+     * Return description for create_cohort_enrol_instances().
+     *
+     * @return external_single_structure
+     */
+    public static function create_cohort_enrol_instances_returns()
+    {
+        return new external_single_structure([
+            'created_count' => new external_value(PARAM_INT, 'Number of enrol instances created successfully'),
+            'errors' => new external_multiple_structure(
+                new external_value(PARAM_RAW, 'Error messages for failed creations'),
+                'List of error messages'
+            ),
+        ]);
     }
 }

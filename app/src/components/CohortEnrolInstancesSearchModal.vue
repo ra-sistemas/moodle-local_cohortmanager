@@ -224,9 +224,7 @@ onBeforeUnmount(() => {
                                         :placeholder="stringsStore.getString('searchcoursesplaceholder')"
                                         autocomplete="off"
                                     />
-                                    <span class="input-group-text">
-                                        <i class="fa fa-search"></i>
-                                    </span>
+                                    
                                 </div>
                                 
                                 <!-- Search Results -->

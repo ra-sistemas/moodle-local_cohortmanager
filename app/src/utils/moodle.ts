@@ -189,6 +189,14 @@ const getCohortCourseRoles = async (args: Object): Promise<any> => {
 };
 
 /**
+ * Create cohort enrol instances with treatment
+ */
+const createCohortEnrolInstances = async (args: Object): Promise<any> => {
+  const response = await ajax('local_cohortmanager_create_cohort_enrol_instances', args);
+  return response;
+};
+
+/**
  * Get cohort customfields
  */
 const getCohortCustomfieldForm = async (cohortid: number): Promise<Template> => {
@@ -365,5 +373,6 @@ export {
   getCohortEnrolInstances,
   countCohortEnrolInstances,
   getPotentialCohortCourses,
-  getCohortCourseRoles
+  getCohortCourseRoles,
+  createCohortEnrolInstances
 };
