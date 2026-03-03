@@ -292,11 +292,20 @@ export interface Course {
 }
 
 /**
-* Role interface for course roles
-*/
+ * Role interface for course roles
+ */
 export interface Role {
  id: number;
  name: string;
+}
+
+/**
+ * Group interface for course groups
+ */
+export interface Group {
+ id: number;
+ name: string;
+ courseid: number;
 }
 
 /**
@@ -308,4 +317,6 @@ export interface SelectedCourse {
  status: 'active' | 'inactive';
  roleid: number;
  rolename: string;
+ groupid?: number;
+ groupname?: string;
 }

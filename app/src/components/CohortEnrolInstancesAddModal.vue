@@ -22,7 +22,8 @@ const handleSelectedCourses = async (courses: any[]) => {
         const coursesData = courses.map(course => ({
             courseid: course.courseid,
             roleid: course.roleid,
-            status: course.status === 'active' ? 1 : 0
+            status: course.status === 'active' ? 1 : 0,
+            groupid: course.groupid
         }));
 
         // Call the API to create cohort enrol instances

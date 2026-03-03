@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useStringsStore } from '../stores/strings';
-import { getPotentialCohortCourses, getCohortCourseRoles } from '../utils/moodle';
-import type { Course, Role, SelectedCourse } from '../types/interfaces';
+import { getPotentialCohortCourses, getCohortCourseRoles, getCourseGroups } from '../utils/moodle';
+import type { Course, Role, SelectedCourse, Group } from '../types/interfaces';
 import { add } from 'core/toast';
 import Notification from 'core/notification';
 
@@ -33,6 +33,11 @@ const selectedCourses = ref<SelectedCourse[]>([]);
 const availableRoles = ref<Role[]>([]);
 const selectedRole = ref<number | null>(null);
 const selectedStatus = ref<'active' | 'inactive'>('active');
+
+// Available groups for the selected course
+const availableGroups = ref<Group[]>([]);
+const selectedGroup = ref<number | null>(null);
+const showGroupOptions = ref<boolean>(false);
 
 // Watch for search query changes
 watch(searchQuery, (newQuery) => {
@@ -102,13 +107,30 @@ const handleCourseSelect = async (course: Course) => {
         selectedRole.value = null;
     }
     
+    // Get available groups for this course
+    try {
+        const response = await getCourseGroups({
+            courseid: course.id
+        });
+        availableGroups.value = response || [];
+        selectedGroup.value = availableGroups.value.length > 0 ? availableGroups.value[0]?.id ?? null : null;
+        showGroupOptions.value = true;
+    } catch (error) {
+        Notification.exception(error);
+        availableGroups.value = [];
+        selectedGroup.value = null;
+        showGroupOptions.value = false;
+    }
+    
     // Add course to selected list with default values
     const newSelectedCourse: SelectedCourse = {
         courseid: course.id,
         coursename: course.fullname,
         status: selectedStatus.value,
         roleid: selectedRole.value || 0,
-        rolename: selectedRole.value ? availableRoles.value.find(r => r.id === selectedRole.value)?.name || '' : ''
+        rolename: selectedRole.value ? availableRoles.value.find(r => r.id === selectedRole.value)?.name || '' : '',
+        groupid: selectedGroup.value || undefined,
+        groupname: selectedGroup.value ? availableGroups.value.find(g => g.id === selectedGroup.value)?.name || '' : undefined
     };
     
     selectedCourses.value.push(newSelectedCourse);
@@ -139,6 +161,15 @@ const updateCourseRole = (index: number, roleid: number) => {
     }
 };
 
+// Update selected course group
+const updateCourseGroup = (index: number, groupid: number | undefined) => {
+    if (selectedCourses.value[index]) {
+        const group = availableGroups.value.find(g => g.id === groupid);
+        selectedCourses.value[index].groupid = groupid || undefined;
+        selectedCourses.value[index].groupname = group?.name || undefined;
+    }
+};
+
 // Submit selected courses
 const submitSelectedCourses = () => {
     if (selectedCourses.value.length === 0) {
@@ -161,6 +192,9 @@ const openModal = () => {
     availableRoles.value = [];
     selectedRole.value = null;
     selectedStatus.value = 'active';
+    availableGroups.value = [];
+    selectedGroup.value = null;
+    showGroupOptions.value = false;
 };
 
 // Close modal
@@ -172,6 +206,9 @@ const closeModal = () => {
     availableRoles.value = [];
     selectedRole.value = null;
     selectedStatus.value = 'active';
+    availableGroups.value = [];
+    selectedGroup.value = null;
+    showGroupOptions.value = false;
 };
 
 // Handle escape key
@@ -259,6 +296,7 @@ onBeforeUnmount(() => {
                                             <th>{{ stringsStore.getString('course') }}</th>
                                             <th>{{ stringsStore.getString('status') }}</th>
                                             <th>{{ stringsStore.getString('role') }}</th>
+                                            <th>{{ stringsStore.getString('group') }}</th>
                                             <th>{{ stringsStore.getString('actions') }}</th>
                                         </tr>
                                     </thead>
@@ -279,13 +317,24 @@ onBeforeUnmount(() => {
                                                 </select>
                                             </td>
                                             <td>
-                                                <select 
+                                                <select
                                                     class="form-select form-select-sm"
                                                     v-model="course.roleid"
                                                     @change="updateCourseRole(index, course.roleid)"
                                                 >
                                                     <option v-for="role in availableRoles" :key="role.id" :value="role.id">
                                                         {{ role.name }}
+                                                    </option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <select
+                                                    class="form-select form-select-sm"
+                                                    v-model="course.groupid"
+                                                    @change="updateCourseGroup(index, course.groupid)"
+                                                >
+                                                    <option v-for="group in availableGroups" :key="group.id" :value="group.id">
+                                                        {{ group.name }}
                                                     </option>
                                                 </select>
                                             </td>
