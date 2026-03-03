@@ -311,7 +311,7 @@ class enrols extends external_api
             'cohortid' => $cohortid,
             'courseid' => $courseid
         ]);
-        
+
         if (!$DB->record_exists('course', ['id' => $params['courseid']])) {
             throw new moodle_exception('invalidcourse', 'cohort', '', $params['courseid']);
         }
@@ -389,6 +389,83 @@ class enrols extends external_api
     }
 
     /**
+     * Parameter description for get_course_groups().
+     *
+     * @return external_function_parameters
+     */
+    public static function get_course_groups_parameters()
+    {
+        return new external_function_parameters([
+            'courseid' => new external_value(PARAM_INT, 'The course id'),
+        ]);
+    }
+
+    /**
+     * Get all groups for a specific course
+     *
+     * @param int $courseid The course id
+     * @return array of groups
+     */
+    public static function get_course_groups($courseid)
+    {
+        global $DB;
+
+        $params = self::validate_parameters(self::get_course_groups_parameters(), [
+            'courseid' => $courseid
+        ]);
+
+        // Verify course exists
+        if (!$DB->record_exists('course', ['id' => $params['courseid']])) {
+            throw new moodle_exception('invalidcourse', 'cohort', '', $params['courseid']);
+        }
+
+        $coursecontext = context_course::instance($params['courseid']);
+        $groups = groups_get_all_groups($params['courseid'], 0, 0, 'g.id, g.name, g.description');
+
+        $result = [];
+
+        // Add option to no group
+        $result[] = [
+            'id' => 0,
+            'name' => get_string('none'),
+            'description' => ''
+        ];
+
+        // Add option to create new group
+        $result[] = [
+            'id' => -1,
+            'name' => get_string('creategroup', 'enrol_cohort'),
+            'description' => ''
+        ];
+
+        foreach ($groups as $group) {
+            $result[] = [
+                'id' => $group->id,
+                'name' => format_string($group->name, true, ['context' => $coursecontext]),
+                'description' => format_text($group->description, $group->descriptionformat, ['context' => $coursecontext])
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Return description for get_course_groups().
+     *
+     * @return external_multiple_structure
+     */
+    public static function get_course_groups_returns()
+    {
+        return new external_multiple_structure(
+            new external_single_structure([
+                'id' => new external_value(PARAM_INT, 'ID of the group'),
+                'name' => new external_value(PARAM_TEXT, 'Name of the group'),
+                'description' => new external_value(PARAM_RAW, 'Description of the group'),
+            ])
+        );
+    }
+
+    /**
      * Parameter description for create_cohort_enrol_instances().
      *
      * @return external_function_parameters
@@ -402,17 +479,18 @@ class enrols extends external_api
                     'courseid' => new external_value(PARAM_INT, 'ID of the course'),
                     'roleid' => new external_value(PARAM_INT, 'ID of the role'),
                     'status' => new external_value(PARAM_INT, 'Status of the enrol instance (0 = inactive, 1 = active)'),
+                    'groupid' => new external_value(PARAM_INT, 'ID of the group (optional, -1 to create new group)', VALUE_DEFAULT, 0),
                 ]),
-                'List of courses with role and status to create enrol instances'
+                'List of courses with role, status and group to create enrol instances'
             ),
         ]);
     }
 
     /**
-     * Create cohort enrol instances for multiple courses
+     * Create cohort enrol instances for multiple courses with optional group assignment
      *
      * @param int $cohortid The cohort id
-     * @param array $courses List of courses with role and status
+     * @param array $courses List of courses with role, status and group
      * @return array
      */
     public static function create_cohort_enrol_instances($cohortid, $courses)
@@ -470,9 +548,7 @@ class enrols extends external_api
                 'status' => $course_data['status'],
                 'roleid' => $course_data['roleid'],
                 'customint1' => $params['cohortid'],
-                'customint2' => 0,
-                'timecreated' => time(),
-                'timemodified' => time()
+                'customint2' => $course_data['groupid'],
             ];
 
             $instanceid = $enrol_plugin->add_instance($course, $fields);
