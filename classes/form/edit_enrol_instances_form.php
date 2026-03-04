@@ -99,15 +99,25 @@ class edit_enrol_instances_form extends dynamic_form
     /**
      * Return an array of valid options for the roles.
      *
-     * @param stdClass $instance
-     * @param context $coursecontext
      * @return array
      */
     protected function get_role_options()
     {
-        return get_default_enrol_roles(
-            $this->get_context_for_dynamic_submission()
-        );
+        global $DB;
+
+        $enrolinstanceid = $this->optional_param('id', 0, PARAM_INT);
+
+        $instance = $DB->get_record('enrol', ['id' => $enrolinstanceid]);
+
+        $roles = enrols::get_cohort_course_roles($instance->customint1, $instance->courseid, $instance->id);
+
+        $options = [];
+
+        foreach ($roles as $role) {
+            $options[$role['id']] = $role['name'];
+        }
+
+        return $options;
     }
 
     /**
@@ -131,7 +141,11 @@ class edit_enrol_instances_form extends dynamic_form
      */
     protected function get_group_options()
     {
-        $courseid = $this->optional_param('courseid', 0, PARAM_INT);
+        global $DB;
+
+        $enrolinstanceid = $this->optional_param('id', 0, PARAM_INT);
+
+        $courseid = $DB->get_field('enrol', 'courseid', ['id' => $enrolinstanceid]);
 
         if (!$courseid) {
             return array(0 => get_string('none'));

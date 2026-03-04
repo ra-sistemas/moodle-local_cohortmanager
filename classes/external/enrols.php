@@ -290,26 +290,30 @@ class enrols extends external_api
         return new external_function_parameters([
             'cohortid' => new external_value(PARAM_INT, 'The cohort id'),
             'courseid' => new external_value(PARAM_INT, 'The course id'),
+            'enrolinstanceid' => new external_value(PARAM_INT, 'The enrol instance id (optional, for editing mode)', VALUE_DEFAULT, 0),
         ]);
     }
 
     /**
      * Returns a list of roles that are valid for the course context
      * but are NOT currently assigned to the specific cohort enrolment instance.
+     * When editing an existing instance, the current instance is excluded from the check.
      *
      * @param int $cohortid The cohort id
      * @param int $courseid The course id
-     * 
+     * @param int $enrolinstanceid The enrol instance id (optional, for editing mode)
+     *
      * @return array
      * @throws moodle_exception
      */
-    public static function get_cohort_course_roles($cohortid, $courseid)
+    public static function get_cohort_course_roles($cohortid, $courseid, $enrolinstanceid = 0)
     {
         global $DB;
 
         $params = self::validate_parameters(self::get_cohort_course_roles_parameters(), [
             'cohortid' => $cohortid,
-            'courseid' => $courseid
+            'courseid' => $courseid,
+            'enrolinstanceid' => $enrolinstanceid
         ]);
 
         if (!$DB->record_exists('course', ['id' => $params['courseid']])) {
@@ -327,17 +331,23 @@ class enrols extends external_api
         $sql = "SELECT r.id
             FROM {role} r
             JOIN {role_context_levels} rcl ON rcl.roleid = r.id
-            LEFT JOIN {enrol} e 
+            LEFT JOIN {enrol} e
                 ON (
-                    e.roleid = r.id 
-                    AND e.enrol = 'cohort' 
-                    AND e.courseid = :courseid 
+                    e.roleid = r.id
+                    AND e.enrol = 'cohort'
+                    AND e.courseid = :courseid
                     AND e.customint1 = :cohortid
                 )
             WHERE rcl.contextlevel = :contextlevel
                 AND e.id IS NOT NULL
-            ORDER BY r.name ASC
         ";
+
+        // Add exclusion for current enrol instance when editing
+        if (!empty($params['enrolinstanceid'])) {
+            $sql .= " AND e.id <> :enrolinstanceid";
+        }
+
+        $sql .= " ORDER BY r.name ASC";
 
         $roleids = $DB->get_fieldset_sql($sql, $params);
 

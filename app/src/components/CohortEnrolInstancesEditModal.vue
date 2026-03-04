@@ -20,7 +20,6 @@ const stringsStore = useStringsStore();
 const openModal = async () => {
     modal.value = showEditEnrolInstancesForm(
         props.enrolinstance.id,
-        props.enrolinstance.courseid,
         stringsStore.getString('edit'),
         stringsStore.getString('editenrolinstance'),
     );
