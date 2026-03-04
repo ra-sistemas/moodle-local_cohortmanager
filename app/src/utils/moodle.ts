@@ -269,7 +269,7 @@ const showAddEnrolInstancesForm = (cohortid: number, title: string, saveButtonTe
 /**
  * Show edit Enrol Instances modal
  */
-const showEditEnrolInstancesForm = (enrolinstanceid: number, title: string, saveButtonText: string): ModalForm => {
+const showEditEnrolInstancesForm = (enrolinstanceid: number, courseid: number, title: string, saveButtonText: string): ModalForm => {
 
   const modalForm = new ModalForm({
     formClass: 'local_cohortmanager\\form\\edit_enrol_instances_form',
@@ -278,7 +278,8 @@ const showEditEnrolInstancesForm = (enrolinstanceid: number, title: string, save
       title:  title,
     },
     args: {
-      id: enrolinstanceid
+      id: enrolinstanceid,
+      courseid: courseid
     }
   });
   return modalForm;

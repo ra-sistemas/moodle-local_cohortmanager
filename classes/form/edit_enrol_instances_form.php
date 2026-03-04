@@ -19,6 +19,7 @@ namespace local_cohortmanager\form;
 use core_form\dynamic_form;
 use context_system;
 use context_course;
+use local_cohortmanager\external\enrols;
 use context;
 use moodle_url;
 use ReflectionClass;
@@ -85,6 +86,14 @@ class edit_enrol_instances_form extends dynamic_form
             $this->get_role_options()
         );
         $mform->setType('roleid', PARAM_INT);
+
+        $mform->addElement(
+            'select',
+            'customint2',
+            get_string('addgroup', 'enrol_cohort'),
+            $this->get_group_options()
+        );
+        $mform->setType('customint2', PARAM_INT);
     }
 
     /**
@@ -113,6 +122,30 @@ class edit_enrol_instances_form extends dynamic_form
 
         $plugin = new enrol_cohort_plugin();
         return $method->invoke($plugin);
+    }
+
+    /**
+     * Return an array of valid options for the groups.
+     *
+     * @return array
+     */
+    protected function get_group_options()
+    {
+        $courseid = $this->optional_param('courseid', 0, PARAM_INT);
+
+        if (!$courseid) {
+            return array(0 => get_string('none'));
+        }
+
+        $options = enrols::get_course_groups($courseid);
+
+        $list = [];
+
+        foreach($options as $option) {
+            $list[$option['id']] = $option['name'];
+        }
+
+        return $list;
     }
 
     /**
@@ -172,7 +205,8 @@ class edit_enrol_instances_form extends dynamic_form
                     'cohortname' => $instance->cohortname,
                     'roleid' => (int) $instance->roleid,
                     'courseid' => (int) $instance->courseid,
-                    'courseinfo' => $instance->coursefullname . ' (' . $instance->courseshortname . ')'
+                    'courseinfo' => $instance->coursefullname . ' (' . $instance->courseshortname . ')',
+                    'customint2' => (int) $instance->customint2
                 ];
                 $this->set_data($data);
             }
@@ -211,6 +245,7 @@ class edit_enrol_instances_form extends dynamic_form
         // Update the instance
         $instance->status = $data->status;
         $instance->roleid = $data->roleid;
+        $instance->customint2 = $data->customint2;
         $instance->timemodified = time();
 
         $DB->update_record('enrol', $instance);
@@ -246,6 +281,7 @@ class edit_enrol_instances_form extends dynamic_form
         $tovalidate = array(
             'status' => array_keys($this->get_status_options()),
             'roleid' => array_keys($this->get_role_options()),
+            'customint2' => array_keys($this->get_group_options()),
         );
 
         $typeerrors = $plugin->validate_param_types($data, $tovalidate);

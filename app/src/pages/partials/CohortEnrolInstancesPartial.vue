@@ -124,10 +124,6 @@ let props = defineProps<{
                   </td>
                   <td>
                     <div class="btn-group btn-group-sm" role="group">
-                      <button class="btn" :class="instance.status ? 'btn-outline-primary' : 'btn-primary'"
-                        :title="stringsStore.getString('view')">
-                        <i class="fa " :class="instance.status ? 'fa-eye' : 'fa-eye-slash'"></i>
-                      </button>
                       <CohortEnrolInstancesEditModal :enrolinstance="instance" @updated:enrolinstance="handleUpdatedEnrolInstance" />
                     </div>
                   </td>
