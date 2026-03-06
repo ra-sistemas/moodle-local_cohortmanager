@@ -299,6 +299,12 @@ export interface Role {
  name: string;
 }
 
+export interface RoleFormData extends Role {
+  shortname: string;
+  description: string;
+  archetype: string;
+}
+
 /**
  * Group interface for course groups
  */
@@ -319,4 +325,9 @@ export interface SelectedCourse {
  rolename: string;
  groupid?: number;
  groupname?: string;
+}
+export interface Pagination {
+  page: number;
+  perpage: number;
+  total: number;
 }

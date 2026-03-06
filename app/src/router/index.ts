@@ -4,6 +4,7 @@ import CohortDetail from '@/pages/CohortDetail.vue';
 import CohortEdit from '@/pages/CohortEdit.vue';
 import CohortCreate from '@/pages/CohortCreate.vue';
 import CohortCustomFields from '@/pages/CohortCustomFields.vue';
+import RolesList from '@/pages/RolesList.vue';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -46,6 +47,14 @@ const routes: RouteRecordRaw[] = [
     component: CohortCustomFields,
     meta: {
       title: 'Custom Fields Management'
+    }
+  },
+  {
+    path: '/roles',
+    name: 'RolesList',
+    component: RolesList,
+    meta: {
+      title: 'Roles Management'
     }
   }
 ];

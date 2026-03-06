@@ -4,18 +4,12 @@ import { useRouter } from 'vue-router';
 import { searchCohorts as searchCohortsApi } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
 import Notification from 'core/notification';
-import type { Cohort } from '../types/interfaces';
+import type { Cohort, Pagination } from '../types/interfaces';
 
 // Initialize strings store
 const stringsStore = useStringsStore();
 
 // Define types
-
-interface Pagination {
-  page: number;
-  perpage: number;
-  total: number;
-}
 
 // State management
 const router = useRouter();
@@ -103,6 +97,9 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
       <div class="d-flex gap-2 mt-2 mt-md-0">
         <router-link to="cohort/create" class="btn btn-primary">
           <i class="fa fa-plus"></i> {{ stringsStore.getString('newcohort') }}
+        </router-link>
+        <router-link to="roles" class="btn btn-info">
+          <i class="fa fa-user-tag"></i> {{ stringsStore.getString('rolesmanagement') }}
         </router-link>
         <router-link to="custom-fields" class="btn btn-secondary">
           <i class="fa fa-cogs"></i> {{ stringsStore.getString('customfieldsmanagement') }}

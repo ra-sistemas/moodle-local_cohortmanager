@@ -213,6 +213,46 @@ const deleteCohortEnrolInstance = async (args: Object): Promise<any> => {
 };
 
 /**
+ * Get user context roles with treatment
+ */
+const getUserContextRoles = async (args: Object): Promise<any> => {
+  const response = await ajax('local_cohortmanager_get_user_context_roles', args);
+  return response;
+};
+
+/**
+ * Get single role with treatment
+ */
+const getRole = async (args: Object): Promise<any> => {
+  const response = await ajax('local_cohortmanager_get_role', args);
+  return response;
+};
+
+/**
+ * Create role with treatment
+ */
+const createRole = async (args: Object): Promise<any> => {
+  const response = await ajax('local_cohortmanager_create_role', args);
+  return response;
+};
+
+/**
+ * Update role with treatment
+ */
+const updateRole = async (args: Object): Promise<any> => {
+  const response = await ajax('local_cohortmanager_update_role', args);
+  return response;
+};
+
+/**
+ * Delete role with treatment
+ */
+const deleteRole = async (args: Object): Promise<any> => {
+  const response = await ajax('local_cohortmanager_delete_role', args);
+  return response;
+};
+
+/**
  * Get cohort customfields
  */
 const getCohortCustomfieldForm = async (cohortid: number): Promise<Template> => {
@@ -392,5 +432,10 @@ export {
   getCohortCourseRoles,
   createCohortEnrolInstances,
   getCourseGroups,
-  deleteCohortEnrolInstance
+  deleteCohortEnrolInstance,
+  getUserContextRoles,
+  getRole,
+  createRole,
+  updateRole,
+  deleteRole
 };

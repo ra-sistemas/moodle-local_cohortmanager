@@ -199,6 +199,46 @@ $functions = [
         'type'       => 'write',
         'ajax' => true,
         'capabilities' => 'enrol/cohort:config'
+    ],
+    'local_cohortmanager_get_user_context_roles' => [
+        'classname'   => 'local_cohortmanager\\external\\roles',
+        'methodname' => 'get_user_context_roles',
+        'description' => 'Get all roles that can be assigned in user context.',
+        'type'       => 'read',
+        'ajax' => true,
+        'capabilities' => 'moodle/role:manage'
+    ],
+    'local_cohortmanager_get_role' => [
+        'classname'   => 'local_cohortmanager\\external\\roles',
+        'methodname' => 'get_role',
+        'description' => 'Get a single role by ID.',
+        'type'       => 'read',
+        'ajax' => true,
+        'capabilities' => 'moodle/role:manage'
+    ],
+    'local_cohortmanager_create_role' => [
+        'classname'   => 'local_cohortmanager\\external\\roles',
+        'methodname' => 'create_role',
+        'description' => 'Create a new role that can be assigned in user context.',
+        'type'       => 'write',
+        'ajax' => true,
+        'capabilities' => 'moodle/role:manage'
+    ],
+    'local_cohortmanager_update_role' => [
+        'classname'   => 'local_cohortmanager\\external\\roles',
+        'methodname' => 'update_role',
+        'description' => 'Update a role\'s custom name and description.',
+        'type'       => 'write',
+        'ajax' => true,
+        'capabilities' => 'moodle/role:manage'
+    ],
+    'local_cohortmanager_delete_role' => [
+        'classname'   => 'local_cohortmanager\\external\\roles',
+        'methodname' => 'delete_role',
+        'description' => 'Delete a role.',
+        'type'       => 'write',
+        'ajax' => true,
+        'capabilities' => 'moodle/role:manage'
     ]
 ];
 
@@ -226,7 +266,12 @@ $services = [
             'local_cohortmanager_get_cohort_course_roles',
             'local_cohortmanager_create_cohort_enrol_instances',
             'local_cohortmanager_get_course_groups',
-            'local_cohortmanager_delete_cohort_enrol_instance'
+            'local_cohortmanager_delete_cohort_enrol_instance',
+            'local_cohortmanager_get_user_context_roles',
+            'local_cohortmanager_get_role',
+            'local_cohortmanager_create_role',
+            'local_cohortmanager_update_role',
+            'local_cohortmanager_delete_role'
         ],
         'restrictedusers' => 0,
         'enabled' => 1,
