@@ -205,6 +205,14 @@ const getCourseGroups = async (args: Object): Promise<any> => {
 };
 
 /**
+ * Delete cohort enrol instance with treatment
+ */
+const deleteCohortEnrolInstance = async (args: Object): Promise<any> => {
+  const response = await ajax('local_cohortmanager_delete_cohort_enrol_instance', args);
+  return response;
+};
+
+/**
  * Get cohort customfields
  */
 const getCohortCustomfieldForm = async (cohortid: number): Promise<Template> => {
@@ -383,5 +391,6 @@ export {
   getPotentialCohortCourses,
   getCohortCourseRoles,
   createCohortEnrolInstances,
-  getCourseGroups
+  getCourseGroups,
+  deleteCohortEnrolInstance
 };

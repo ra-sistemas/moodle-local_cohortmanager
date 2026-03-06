@@ -166,3 +166,7 @@ $string['active'] = 'Ativo';
 $string['inactive'] = 'Inativo';
 $string['cohortenrol'] = 'Coorte';
 $string['view'] = 'Visualizar';
+$string['deleteenrolinstance'] = 'Excluir instância de matrícula';
+$string['deleteenrolinstanceconfirmation'] = 'Tem certeza de que deseja excluir a instância de matrícula para "%s"?';
+$string['deleteenrolinstancewarning'] = 'Aviso: Isso removerá {$a} matrículas de usuários deste curso.';
+$string['enrolinstancedeletedsuccessfully'] = 'Instância de matrícula excluída com sucesso';

@@ -191,6 +191,14 @@ $functions = [
         'type'       => 'read',
         'ajax' => true,
         'capabilities' => 'enrol/cohort:config'
+    ],
+    'local_cohortmanager_delete_cohort_enrol_instance' => [
+        'classname'   => 'local_cohortmanager\\external\\enrols',
+        'methodname' => 'delete_cohort_enrol_instance',
+        'description' => 'Delete a cohort enrol instance.',
+        'type'       => 'write',
+        'ajax' => true,
+        'capabilities' => 'enrol/cohort:config'
     ]
 ];
 
@@ -217,7 +225,8 @@ $services = [
             'local_cohortmanager_get_potential_cohort_courses',
             'local_cohortmanager_get_cohort_course_roles',
             'local_cohortmanager_create_cohort_enrol_instances',
-            'local_cohortmanager_get_course_groups'
+            'local_cohortmanager_get_course_groups',
+            'local_cohortmanager_delete_cohort_enrol_instance'
         ],
         'restrictedusers' => 0,
         'enabled' => 1,

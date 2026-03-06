@@ -7,6 +7,7 @@ import { getCohortEnrolInstances, countCohortEnrolInstances } from '../../utils/
 import Notification from 'core/notification';
 import CohortEnrolInstancesAddModal from '../../components/CohortEnrolInstancesAddModal.vue';
 import CohortEnrolInstancesEditModal from '../../components/CohortEnrolInstancesEditModal.vue';
+import CohortEnrolInstancesDelete from '../../components/CohortEnrolInstancesDelete.vue';
 
 // Initialize strings store
 const stringsStore = useStringsStore();
@@ -46,6 +47,11 @@ const handleUpdatedEnrolInstance = (result: boolean) => {
   if (result) {
     loadEnrolInstances();
   }
+};
+
+// Handle deleted enrol instance event
+const handleDeletedEnrolInstance = () => {
+  loadEnrolInstances();
 };
 
 // Initialize the component
@@ -125,6 +131,7 @@ let props = defineProps<{
                   <td>
                     <div class="btn-group btn-group-sm" role="group">
                       <CohortEnrolInstancesEditModal :enrolinstance="instance" @updated:enrolinstance="handleUpdatedEnrolInstance" />
+                      <CohortEnrolInstancesDelete :enrolinstance="instance" @deleted:enrolinstance="handleDeletedEnrolInstance" />
                     </div>
                   </td>
                 </tr>

@@ -167,3 +167,7 @@ $string['active'] = 'Active';
 $string['inactive'] = 'Inactive';
 $string['cohortenrol'] = 'Cohort';
 $string['view'] = 'View';
+$string['deleteenrolinstance'] = 'Delete enrol instance';
+$string['deleteenrolinstanceconfirmation'] = 'Are you sure you want to delete the enrol instance for "%s"?';
+$string['deleteenrolinstancewarning'] = 'Warning: This will remove {$a} user enrolments from this course.';
+$string['enrolinstancedeletedsuccessfully'] = 'Enrol instance deleted successfully';

@@ -591,4 +591,77 @@ class enrols extends external_api
             ),
         ]);
     }
+
+    /**
+     * Parameter description for delete_cohort_enrol_instance().
+     *
+     * @return external_function_parameters
+     */
+    public static function delete_cohort_enrol_instance_parameters()
+    {
+        return new external_function_parameters([
+            'enrolinstanceid' => new external_value(PARAM_INT, 'The enrol instance id to delete'),
+        ]);
+    }
+
+    /**
+     * Delete a cohort enrol instance
+     *
+     * @param int $enrolinstanceid The enrol instance id to delete
+     * @return array
+     */
+    public static function delete_cohort_enrol_instance($enrolinstanceid)
+    {
+        global $DB;
+
+        // Validate parameters
+        $params = self::validate_parameters(self::delete_cohort_enrol_instance_parameters(), [
+            'enrolinstanceid' => $enrolinstanceid
+        ]);
+
+        // Get the enrol instance
+        $instance = $DB->get_record('enrol', [
+            'id' => $params['enrolinstanceid'],
+            'enrol' => 'cohort'
+        ]);
+
+        if (!$instance) {
+            throw new moodle_exception('invalidinstance', 'enrol_cohort', '', $params['enrolinstanceid']);
+        }
+
+        // Get the cohort enrol plugin
+        $enrol_plugin = enrol_get_plugin('cohort');
+        if (!$enrol_plugin) {
+            throw new moodle_exception('enrolpluginnotfound', 'enrol_cohort');
+        }
+
+        // Check if user can delete this instance
+        $context = context_course::instance($instance->courseid);
+        self::validate_context($context);
+
+        if (!$enrol_plugin->can_delete_instance($instance)) {
+            throw new moodle_exception('nopermissions', 'error', '', 'enrol/cohort:config');
+        }
+
+        // Delete the instance using the plugin method
+        $enrol_plugin->delete_instance($instance);
+
+        return [
+            'success' => true,
+            'message' => get_string('enrolinstancedeleted', 'local_cohortmanager')
+        ];
+    }
+
+    /**
+     * Return description for delete_cohort_enrol_instance().
+     *
+     * @return external_single_structure
+     */
+    public static function delete_cohort_enrol_instance_returns()
+    {
+        return new external_single_structure([
+            'success' => new external_value(PARAM_BOOL, 'Whether the deletion was successful'),
+            'message' => new external_value(PARAM_TEXT, 'Success or error message'),
+        ]);
+    }
 }
