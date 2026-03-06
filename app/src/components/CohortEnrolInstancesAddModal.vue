@@ -22,7 +22,7 @@ const handleSelectedCourses = async (courses: any[]) => {
         const coursesData = courses.map(course => ({
             courseid: course.courseid,
             roleid: course.roleid,
-            status: course.status === 'active' ? 1 : 0,
+            status: course.status,
             groupid: course.groupid
         }));
 

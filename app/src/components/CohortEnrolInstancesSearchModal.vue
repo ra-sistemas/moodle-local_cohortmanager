@@ -32,7 +32,7 @@ const selectedCourses = ref<SelectedCourse[]>([]);
 // Available roles for the selected course
 const availableRoles = ref<Role[]>([]);
 const selectedRole = ref<number | null>(null);
-const selectedStatus = ref<'active' | 'inactive'>('active');
+const selectedStatus = ref<number>(0);
 
 // Available groups for the selected course
 const availableGroups = ref<Group[]>([]);
@@ -146,7 +146,7 @@ const removeSelectedCourse = (index: number) => {
 };
 
 // Update selected course status
-const updateCourseStatus = (index: number, status: 'active' | 'inactive') => {
+const updateCourseStatus = (index: number, status: number) => {
     if (selectedCourses.value[index]) {
         selectedCourses.value[index].status = status;
     }
@@ -191,7 +191,7 @@ const openModal = () => {
     searchResults.value = [];
     availableRoles.value = [];
     selectedRole.value = null;
-    selectedStatus.value = 'active';
+    selectedStatus.value = 0;
     availableGroups.value = [];
     selectedGroup.value = null;
     showGroupOptions.value = false;
@@ -205,7 +205,7 @@ const closeModal = () => {
     searchResults.value = [];
     availableRoles.value = [];
     selectedRole.value = null;
-    selectedStatus.value = 'active';
+    selectedStatus.value = 0;
     availableGroups.value = [];
     selectedGroup.value = null;
     showGroupOptions.value = false;
@@ -312,8 +312,8 @@ onBeforeUnmount(() => {
                                                     v-model="course.status"
                                                     @change="updateCourseStatus(index, course.status)"
                                                 >
-                                                    <option value="active">{{ stringsStore.getString('active') }}</option>
-                                                    <option value="inactive">{{ stringsStore.getString('inactive') }}</option>
+                                                    <option value=0>{{ stringsStore.getString('active') }}</option>
+                                                    <option value=1>{{ stringsStore.getString('inactive') }}</option>
                                                 </select>
                                             </td>
                                             <td>

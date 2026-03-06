@@ -314,7 +314,7 @@ export interface Group {
 export interface SelectedCourse {
  courseid: number;
  coursename: string;
- status: 'active' | 'inactive';
+ status: number;
  roleid: number;
  rolename: string;
  groupid?: number;
