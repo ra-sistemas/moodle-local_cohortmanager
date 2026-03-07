@@ -240,7 +240,6 @@ const goBack = () => {
               <th>{{ stringsStore.getString('roleid') }}</th>
               <th>{{ stringsStore.getString('rolename') }}</th>
               <th>{{ stringsStore.getString('roleshortname') }}</th>
-              <th>{{ stringsStore.getString('rolecustomname') }}</th>
               <th>{{ stringsStore.getString('rolearchetype') }}</th>
               <th class="text-center">{{ stringsStore.getString('roleactions') }}</th>
             </tr>

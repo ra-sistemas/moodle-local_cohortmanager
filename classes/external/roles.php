@@ -70,10 +70,6 @@ class roles extends external_api {
             'perpage' => $perpage
         ]);
 
-        $context = context_system::instance();
-        self::validate_context($context);
-        require_capability('moodle/role:manage', $context);
-
         // Get roles that can be assigned in user context.
         $roles = get_roles_for_contextlevels(CONTEXT_USER);
 
@@ -84,26 +80,20 @@ class roles extends external_api {
             ];
         }
 
-        list($insql, $inparams) = $DB->get_in_or_equal(array_keys($roles), SQL_PARAMS_NAMED);
+        list($insql, $inparams) = $DB->get_in_or_equal($roles, SQL_PARAMS_NAMED);
 
-        $sql = "SELECT r.id, r.shortname, r.name, r.description, r.sortorder, r.archetype,
-                       rn.name AS customname
+        $sql = "SELECT r.id, r.shortname, r.name, r.description, r.sortorder, r.archetype
                   FROM {role} r
-             LEFT JOIN {role_names} rn ON rn.roleid = r.id AND rn.contextid = :systemcontext
                  WHERE r.id {$insql}";
 
-        $params_sql = [
-            'systemcontext' => $context->id
-        ] + $inparams;
+        $params_sql = $inparams;
 
         // Add search condition if query is provided.
         if (!empty($params['query'])) {
             $sql .= " AND (" . $DB->sql_like('r.name', ':queryname', false, false) . "
-                       OR " . $DB->sql_like('r.shortname', ':queryshortname', false, false) . "
-                       OR " . $DB->sql_like('rn.name', ':querycustomname', false, false) . ")";
+                       OR " . $DB->sql_like('r.shortname', ':queryshortname', false, false) . ")";
             $params_sql['queryname'] = '%' . $params['query'] . '%';
             $params_sql['queryshortname'] = '%' . $params['query'] . '%';
-            $params_sql['querycustomname'] = '%' . $params['query'] . '%';
         }
 
         $sql .= " ORDER BY r.sortorder ASC";
@@ -111,7 +101,6 @@ class roles extends external_api {
         // Get total count.
         $countsql = "SELECT COUNT(*) FROM ({$sql}) AS countquery";
         $total = $DB->count_records_sql($countsql, $params_sql);
-
         // Get paginated records.
         $records = $DB->get_records_sql($sql, $params_sql, $page * $perpage, $perpage);
 
@@ -121,7 +110,6 @@ class roles extends external_api {
                 'id' => $record->id,
                 'shortname' => $record->shortname,
                 'name' => $record->name,
-                'customname' => $record->customname ?? $record->name,
                 'description' => $record->description,
                 'sortorder' => $record->sortorder,
                 'archetype' => $record->archetype
@@ -146,7 +134,6 @@ class roles extends external_api {
                     'id' => new external_value(PARAM_INT, 'Role ID'),
                     'shortname' => new external_value(PARAM_RAW, 'Role short name'),
                     'name' => new external_value(PARAM_RAW, 'Role name'),
-                    'customname' => new external_value(PARAM_RAW, 'Custom role name'),
                     'description' => new external_value(PARAM_RAW, 'Role description'),
                     'sortorder' => new external_value(PARAM_INT, 'Role sort order'),
                     'archetype' => new external_value(PARAM_RAW, 'Role archetype')
@@ -164,7 +151,6 @@ class roles extends external_api {
     public static function update_role_parameters() {
         return new external_function_parameters([
             'roleid' => new external_value(PARAM_INT, 'Role ID to update'),
-            'customname' => new external_value(PARAM_RAW, 'Custom name for the role', VALUE_DEFAULT, ''),
             'description' => new external_value(PARAM_RAW, 'Role description', VALUE_DEFAULT, '')
         ]);
     }
@@ -173,16 +159,14 @@ class roles extends external_api {
      * Update a role's custom name and description.
      *
      * @param int $roleid Role ID
-     * @param string $customname Custom name for the role
      * @param string $description Role description
      * @return array
      */
-    public static function update_role($roleid, $customname = '', $description = '') {
+    public static function update_role($roleid, $description = '') {
         global $DB;
 
         $params = self::validate_parameters(self::update_role_parameters(), [
             'roleid' => $roleid,
-            'customname' => $customname,
             'description' => $description
         ]);
 
@@ -204,25 +188,6 @@ class roles extends external_api {
             $DB->update_record('role', $role);
         }
 
-        // Update custom name (role_names table).
-        if ($params['customname'] !== '') {
-            $existingname = $DB->get_record('role_names', [
-                'roleid' => $role->id,
-                'contextid' => $context->id
-            ]);
-
-            if ($existingname) {
-                $existingname->name = $params['customname'];
-                $DB->update_record('role_names', $existingname);
-            } else {
-                $rolename = new \stdClass();
-                $rolename->roleid = $role->id;
-                $rolename->contextid = $context->id;
-                $rolename->name = $params['customname'];
-                $DB->insert_record('role_names', $rolename);
-            }
-        }
-
         // Clear cache.
         cache::make('core', 'roledefs')->delete('roles');
 
@@ -233,7 +198,6 @@ class roles extends external_api {
                 'id' => $role->id,
                 'shortname' => $role->shortname,
                 'name' => $role->name,
-                'customname' => $params['customname'] ?: ($existingname->name ?? $role->name),
                 'description' => $role->description,
                 'sortorder' => $role->sortorder,
                 'archetype' => $role->archetype
@@ -254,7 +218,6 @@ class roles extends external_api {
                 'id' => new external_value(PARAM_INT, 'Role ID'),
                 'shortname' => new external_value(PARAM_RAW, 'Role short name'),
                 'name' => new external_value(PARAM_RAW, 'Role name'),
-                'customname' => new external_value(PARAM_RAW, 'Custom role name'),
                 'description' => new external_value(PARAM_RAW, 'Role description'),
                 'sortorder' => new external_value(PARAM_INT, 'Role sort order'),
                 'archetype' => new external_value(PARAM_RAW, 'Role archetype')
@@ -325,7 +288,6 @@ class roles extends external_api {
                 'id' => $role->id,
                 'shortname' => $role->shortname,
                 'name' => $role->name,
-                'customname' => $role->name,
                 'description' => $role->description,
                 'sortorder' => $role->sortorder,
                 'archetype' => $role->archetype
@@ -346,7 +308,6 @@ class roles extends external_api {
                 'id' => new external_value(PARAM_INT, 'Role ID'),
                 'shortname' => new external_value(PARAM_RAW, 'Role short name'),
                 'name' => new external_value(PARAM_RAW, 'Role name'),
-                'customname' => new external_value(PARAM_RAW, 'Custom role name'),
                 'description' => new external_value(PARAM_RAW, 'Role description'),
                 'sortorder' => new external_value(PARAM_INT, 'Role sort order'),
                 'archetype' => new external_value(PARAM_RAW, 'Role archetype')
@@ -456,17 +417,10 @@ class roles extends external_api {
             throw new moodle_exception('rolenotfound', 'local_cohortmanager');
         }
 
-        // Get custom name.
-        $customname = $DB->get_field('role_names', 'name', [
-            'roleid' => $role->id,
-            'contextid' => $context->id
-        ]);
-
         return [
             'id' => $role->id,
             'shortname' => $role->shortname,
             'name' => $role->name,
-            'customname' => $customname ?: $role->name,
             'description' => $role->description,
             'sortorder' => $role->sortorder,
             'archetype' => $role->archetype
@@ -483,7 +437,6 @@ class roles extends external_api {
             'id' => new external_value(PARAM_INT, 'Role ID'),
             'shortname' => new external_value(PARAM_RAW, 'Role short name'),
             'name' => new external_value(PARAM_RAW, 'Role name'),
-            'customname' => new external_value(PARAM_RAW, 'Custom role name'),
             'description' => new external_value(PARAM_RAW, 'Role description'),
             'sortorder' => new external_value(PARAM_INT, 'Role sort order'),
             'archetype' => new external_value(PARAM_RAW, 'Role archetype')
