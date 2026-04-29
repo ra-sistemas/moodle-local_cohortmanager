@@ -17,7 +17,7 @@ const loading = ref(false);
 const searchQuery = ref('');
 const pagination = reactive<Pagination>({
   page: 1,
-  perpage: 10,
+  perpage: 5,
   total: 0
 });
 
