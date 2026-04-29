@@ -331,3 +331,17 @@ export interface Pagination {
   perpage: number;
   total: number;
 }
+
+export interface CohortRoleAssignment {
+  id: number;
+  userid: number;
+  userfullname: string;
+  useremail: string;
+  roleid: number;
+  rolename: string;
+  roleshortname: string;
+  cohortid: number;
+  cohortname: string;
+  timecreated: number;
+  timemodified: number;
+}

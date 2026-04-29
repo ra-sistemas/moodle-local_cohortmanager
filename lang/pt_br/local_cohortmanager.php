@@ -29,11 +29,11 @@ $string['pluginname'] = 'Gerenciador de Coortes';
 
 // App component strings
 $string['cohortmanager'] = 'Gerenciador de Coortes';
-$string['newcohort'] = 'Nova Coorte';
-$string['searchcohorts'] = 'Buscar coortes...';
-$string['loadingcohorts'] = 'Carregando coortes...';
+$string['newcohort'] = 'Nova';
+$string['searchcohorts'] = 'Buscar...';
+$string['loadingcohorts'] = 'Carregando...';
 $string['name'] = 'Nome';
-$string['idnumber'] = 'Número de ID';
+$string['idnumber'] = 'Nº ID';
 $string['description'] = 'Descrição';
 $string['visible'] = 'Visível';
 $string['hidden'] = 'Oculto';
@@ -43,80 +43,80 @@ $string['delete'] = 'Excluir';
 $string['id'] = 'ID';
 $string['page'] = 'Página';
 $string['of'] = 'de';
-$string['nocoortsfound'] = 'Nenhuma coorte encontrada';
-$string['nocoortsfounddesc'] = 'Nenhuma coorte encontrada correspondendo aos seus critérios de busca.';
-$string['createyourfirstcohort'] = 'Crie sua primeira coorte para começar.';
-$string['createnewcohort'] = 'Criar Nova Coorte';
+$string['nocoortsfound'] = 'Nenhuma encontrada';
+$string['nocoortsfounddesc'] = 'Nenhum resultado encontrado.';
+$string['createyourfirstcohort'] = 'Crie a primeira para começar.';
+$string['createnewcohort'] = 'Criar Nova';
 $string['cancel'] = 'Cancelar';
 $string['save'] = 'Salvar';
 $string['nodecription'] = 'Sem descrição';
 $string['nodescription'] = 'Sem descrição';
-$string['failedtoloadcohorts'] = 'Falha ao carregar coortes. Tente novamente.';
-$string['failedtodeletecohort'] = 'Falha ao excluir coorte. Tente novamente.';
-$string['failedtosavecohort'] = 'Falha ao salvar coorte. Tente novamente.';
+$string['failedtoloadcohorts'] = 'Falha ao carregar. Tente novamente.';
+$string['failedtodeletecohort'] = 'Falha ao excluir. Tente novamente.';
+$string['failedtosavecohort'] = 'Falha ao salvar. Tente novamente.';
 $string['deleteconfirmation'] = 'Tem certeza de que deseja excluir "%s"?';
-$string['deletethiscohort'] = 'Excluir esta coorte';
-$string['cohortdeletedsuccessfully'] = 'Coorte excluída com sucesso';
-$string['instanceexists'] = 'Já existe uma instância inscrita, no curso e com esta turma, com a função selecionada. Tente outra função.';
+$string['deletethiscohort'] = 'Excluir';
+$string['cohortdeletedsuccessfully'] = 'Excluída com sucesso';
+$string['instanceexists'] = 'Já existe uma instância de matrícula com esta coorte e função no curso. Tente outra função.';
 
 // CohortCreate component strings
 $string['basicinformation'] = 'Informações Básicas';
-$string['cohortnamedescription'] = 'O nome de exibição da coorte';
-$string['makecohortvisible'] = 'Tornar a coorte visível para os usuários';
+$string['cohortnamedescription'] = 'O nome de exibição';
+$string['makecohortvisible'] = 'Tornar visível para usuários';
 $string['theme'] = 'Tema';
 $string['settings'] = 'Configurações';
 $string['category'] = 'Categoria';
-$string['systemcategory'] = 'Categoria do Sistema';
-$string['coursecategorybyidnumber'] = 'Categoria de Curso por Número de ID';
-$string['coursecategorybyid'] = 'Categoria de Curso por ID';
-$string['entercoursecategoryidnumber'] = 'Digite o número de ID da categoria do curso';
-$string['entercoursecategoryid'] = 'Digite o ID da categoria do curso';
-$string['reset'] = 'Redefinir';
+$string['systemcategory'] = 'Sistema';
+$string['coursecategorybyidnumber'] = 'Por Nº ID';
+$string['coursecategorybyid'] = 'Por ID';
+$string['entercoursecategoryidnumber'] = 'Digite o nº ID da categoria';
+$string['entercoursecategoryid'] = 'Digite o ID da categoria';
+$string['reset'] = 'Limpar';
 $string['creating'] = 'Criando...';
-$string['createcohort'] = 'Criar Coorte';
-$string['failedtocreatecohort'] = 'Falha ao criar coorte. Tente novamente.';
-$string['resetform'] = 'Redefinir Formulário';
-$string['pleaseentercohortname'] = 'Por favor, digite um nome para a coorte';
-$string['pleaseenteridnumber'] = 'Por favor, digite um número de ID';
-$string['cohortcreatedsuccessfully'] = 'Coorte criada com sucesso';
-$string['cohortname'] = 'Nome da Coorte';
-$string['entercohortname'] = 'Digite o nome da coorte';
-$string['enteridnumber'] = 'Digite o número de ID';
-$string['idnumberdescription'] = 'O identificador único para a coorte';
-$string['entercohortdescription'] = 'Digite a descrição da coorte';
-$string['cohortdescription'] = 'Uma breve descrição da coorte';
+$string['createcohort'] = 'Criar';
+$string['failedtocreatecohort'] = 'Falha ao criar. Tente novamente.';
+$string['resetform'] = 'Limpar Formulário';
+$string['pleaseentercohortname'] = 'Digite um nome';
+$string['pleaseenteridnumber'] = 'Digite um nº ID';
+$string['cohortcreatedsuccessfully'] = 'Criada com sucesso';
+$string['cohortname'] = 'Nome';
+$string['entercohortname'] = 'Digite o nome';
+$string['enteridnumber'] = 'Digite o nº ID';
+$string['idnumberdescription'] = 'O identificador único';
+$string['entercohortdescription'] = 'Digite a descrição';
+$string['cohortdescription'] = 'Uma breve descrição';
 
 // CohortDetail component strings
-$string['loadingcohortdetails'] = 'Carregando detalhes da coorte...';
-$string['cohortnotfound'] = 'Coorte Não Encontrada';
-$string['failedtoloadcohortdetails'] = 'Falha ao carregar detalhes da coorte. Tente novamente.';
+$string['loadingcohortdetails'] = 'Carregando detalhes...';
+$string['cohortnotfound'] = 'Não Encontrada';
+$string['failedtoloadcohortdetails'] = 'Falha ao carregar detalhes. Tente novamente.';
 $string['backtolist'] = 'Voltar à Lista';
 $string['retry'] = 'Tentar Novamente';
-$string['cohortnotfounddetails'] = 'A coorte que você está procurando pode ter sido excluída ou não existe.';
+$string['cohortnotfounddetails'] = 'Pode ter sido excluída ou não existe.';
 $string['details'] = 'Detalhes';
 $string['members'] = 'Membros';
 $string['memberscount'] = 'membros';
-$string['enrolinstances'] = 'Instâncias de Matrícula';
+$string['enrolinstances'] = 'Matrículas';
 $string['visibility'] = 'Visibilidade';
 $string['nodescriptionprovided'] = 'Nenhuma descrição fornecida.';
 $string['customfields'] = 'Campos Personalizados';
-$string['cohortmembers'] = 'Membros da Coorte';
-$string['nomembersfound'] = 'Nenhum membro encontrado nesta coorte.';
-$string['backtocohortlist'] = 'Voltar à Lista de Coortes';
-$string['username'] = 'Nome de Usuário';
+$string['cohortmembers'] = 'Membros';
+$string['nomembersfound'] = 'Nenhum membro encontrado.';
+$string['backtocohortlist'] = 'Voltar à Lista';
+$string['username'] = 'Usuário';
 $string['email'] = 'E-mail';
 
 // CohortEdit component strings
-$string['loadingcohortdata'] = 'Carregando dados da coorte...';
-$string['failedtoloadcohortdata'] = 'Falha ao carregar dados da coorte. Tente novamente.';
-$string['editcohort'] = 'Editar Coorte';
-$string['failedtoupdatecohort'] = 'Falha ao atualizar coorte. Tente novamente.';
+$string['loadingcohortdata'] = 'Carregando dados...';
+$string['failedtoloadcohortdata'] = 'Falha ao carregar dados. Tente novamente.';
+$string['editcohort'] = 'Editar';
+$string['failedtoupdatecohort'] = 'Falha ao atualizar. Tente novamente.';
 $string['saving'] = 'Salvando...';
 $string['savechanges'] = 'Salvar Alterações';
-$string['cohortupdatedsuccessfully'] = 'Coorte atualizada com sucesso';
+$string['cohortupdatedsuccessfully'] = 'Atualizada com sucesso';
 
 // ThemeSelect component strings
-$string['themedescription'] = 'Selecione um tema para esta coorte';
+$string['themedescription'] = 'Selecione um tema';
 
 // ContextSelect component strings
 $string['context'] = 'Contexto';
@@ -124,15 +124,15 @@ $string['selectcontext'] = 'Selecionar contexto';
 $string['searchcontext'] = 'Buscar contextos...';
 $string['nocontextsfound'] = 'Nenhum contexto encontrado';
 $string['entercoursecontextid'] = 'Digite o ID do contexto do curso';
-$string['systemcontext'] = 'Contexto do Sistema';
+$string['systemcontext'] = 'Sistema';
 $string['loading'] = 'Carregando...';
 $string['search'] = 'Buscar';
 
 // CohortDelete component strings
-$string['deletecohort'] = 'Excluir coorte';
+$string['deletecohort'] = 'Excluir';
 
 // CohortCustomFieldsManagement component strings
-$string['customfieldsmanagement'] = 'Gerenciador de campos personalizados da coorte';
+$string['customfieldsmanagement'] = 'Gerenciador de Campos Personalizados';
 $string['back'] = 'Voltar';
 $string['backtohome'] = 'Voltar ao início';
 
@@ -147,30 +147,31 @@ $string['add'] = 'Adicionar';
 $string['membersadded'] = 'Membros adicionados com sucesso';
 
 // Delete membership confirmation strings
-$string['delete_membership_confirmation'] = 'Tem certeza de que deseja excluir os {$a} membros selecionados desta coorte?';
-$string['delete_membership_warning'] = 'Aviso: Esta ação é permanente e não pode ser desfeita. Os membros selecionados serão permanentemente removidos desta coorte.';
-$string['selected_members_list'] = 'Membros selecionados: {$a}';
+$string['delete_membership_confirmation'] = 'Tem certeza de que deseja remover os {$a} membros selecionados?';
+$string['delete_membership_warning'] = 'Aviso: Esta ação é permanente e irreversível.';
+$string['selected_members_list'] = 'Selecionados: {$a}';
 
 // CohortEnrolInstancesPartial component strings
-$string['addenrolinstance'] = 'Adicionar Instância de Matrícula';
-$string['cohortenrolinstances'] = 'Instâncias de Matrícula da Coorte';
-$string['instancescount'] = 'instâncias';
-$string['loadingenrolinstances'] = 'Carregando instâncias de matrícula...';
-$string['noenrolinstancesfound'] = 'Nenhuma Instância de Matrícula Encontrada';
-$string['noenrolinstancesfounddescription'] = 'Nenhuma instância de matrícula encontrada para esta coorte.';
-$string['enrolinstanceslist'] = 'Lista de Instâncias de Matrícula';
+$string['addenrolinstance'] = 'Adicionar Matrícula';
+$string['cohortenrolinstances'] = 'Matrículas';
+$string['instancescount'] = 'matrículas';
+$string['loadingenrolinstances'] = 'Carregando matrículas...';
+$string['noenrolinstancesfound'] = 'Nenhuma Matrícula Encontrada';
+$string['noenrolinstancesfounddescription'] = 'Nenhuma matrícula encontrada.';
+$string['enrolinstanceslist'] = 'Matrículas';
 $string['refresh'] = 'Atualizar';
 $string['course'] = 'Curso';
-$string['enrolmethod'] = 'Método de Matrícula';
+$string['enrolmethod'] = 'Método';
 $string['status'] = 'Status';
 $string['active'] = 'Ativo';
 $string['inactive'] = 'Inativo';
 $string['cohortenrol'] = 'Coorte';
 $string['view'] = 'Visualizar';
-$string['deleteenrolinstance'] = 'Excluir instância de matrícula';
-$string['deleteenrolinstanceconfirmation'] = 'Tem certeza de que deseja excluir a instância de matrícula para "%s"?';
+$string['deleteenrolinstance'] = 'Excluir matrícula';
+$string['deleteenrolinstanceconfirmation'] = 'Tem certeza de que deseja excluir a matrícula para "%s"?';
 $string['deleteenrolinstancewarning'] = 'Aviso: Isso removerá {$a} matrículas de usuários deste curso.';
-$string['enrolinstancedeletedsuccessfully'] = 'Instância de matrícula excluída com sucesso';
+$string['enrolinstancedeletedsuccessfully'] = 'Matrícula excluída com sucesso';
+
 // Roles management component strings
 $string['rolesmanagement'] = 'Administração de Funções';
 $string['usercontextroles'] = 'Funções no Contexto do Usuário';
@@ -179,30 +180,30 @@ $string['loadingroles'] = 'Carregando funções...';
 $string['rolename'] = 'Nome da Função';
 $string['roleshortname'] = 'Nome Curto';
 $string['roleid'] = 'ID';
-$string['rolesortorder'] = 'Ordem de Classificação';
+$string['rolesortorder'] = 'Ordem';
 $string['rolearchetype'] = 'Arquétipo';
 $string['roleactions'] = 'Ações';
 $string['editrole'] = 'Editar';
-$string['deleterole'] = 'Apagar';
+$string['deleterole'] = 'Excluir';
 $string['createnewrole'] = 'Criar Nova Função';
 $string['rolecreatedsuccessfully'] = 'Função criada com sucesso';
 $string['roleupdatedsuccessfully'] = 'Função atualizada com sucesso';
 $string['roledeletedsuccessfully'] = 'Função removida com sucesso';
 $string['rolenotfound'] = 'Função não encontrada';
 $string['roleexists'] = 'Já existe uma função com este nome curto';
-$string['noassignableroles'] = 'Atualmente não há funções que podem ser atribuídas no contexto do usuário.';
-$string['roledescriptionplaceholder'] = 'Digite a descrição da função (opcional)';
-$string['rolearchetypeplaceholder'] = 'Selecione o arquétipo da função (opcional)';
+$string['noassignableroles'] = 'Nenhuma função atribuível disponível no contexto do usuário.';
+$string['roledescriptionplaceholder'] = 'Digite a descrição (opcional)';
+$string['rolearchetypeplaceholder'] = 'Selecione o arquétipo (opcional)';
 $string['rolecreate'] = 'Criar Função';
 $string['roleupdate'] = 'Atualizar Função';
-$string['roledeleteconfirmation'] = 'Tem certeza que deseja apagar "%s"? Esta ação não pode ser desfeita.';
-$string['deletethisrole'] = 'Apagar esta função';
-$string['cannotdeletethisrole'] = 'Esta função não pode ser apagada pois é uma função do sistema.';
-$string['cannotdeleterolewithid'] = 'Não é possível apagar a função com ID {$a}.';
-$string['rolesearchplaceholder'] = 'Buscar funções por nome, nome curto ou nome personalizado...';
+$string['roledeleteconfirmation'] = 'Tem certeza que deseja excluir "%s"? Esta ação não pode ser desfeita.';
+$string['deletethisrole'] = 'Excluir esta função';
+$string['cannotdeletethisrole'] = 'Esta função não pode ser excluída pois é do sistema.';
+$string['cannotdeleterolewithid'] = 'Não é possível excluir a função com ID {$a}.';
+$string['rolesearchplaceholder'] = 'Buscar por nome, nome curto ou personalizado...';
 $string['rolescount'] = 'funções';
 $string['norolesfound'] = 'Nenhuma função encontrada';
-$string['norolesfounddesc'] = 'Nenhuma função encontrada que corresponda aos seus critérios de pesquisa.';
+$string['norolesfounddesc'] = 'Nenhuma função encontrada.';
 $string['createyourfirstrole'] = 'Crie sua primeira função para começar.';
 
 // DynamicCohortMembersTable component strings
@@ -219,7 +220,7 @@ $string['next'] = 'Próximo';
 $string['failedtofetchmembers'] = 'Falha ao buscar membros';
 $string['anerroroccurred'] = 'Ocorreu um erro';
 $string['unknown'] = 'Desconhecido';
-$string['errordeletingmembers'] = 'Ocorreu um erro ao excluir membros';
+$string['errordeletingmembers'] = 'Erro ao excluir membros';
 
 // CohortEnrolInstancesSearchModal component strings
 $string['searchcourses'] = 'Buscar cursos';
@@ -232,5 +233,36 @@ $string['noselectedcourses'] = 'Nenhum curso selecionado';
 $string['role'] = 'Função';
 $string['group'] = 'Grupo';
 $string['remove'] = 'Remover';
-$string['enrolinstanceadded'] = 'Instância de matrícula adicionada com sucesso';
-$string['errorcreatingenrolinstances'] = 'Erro ao criar instâncias de matrícula. Tente novamente.';
+$string['enrolinstanceadded'] = 'Matrícula adicionada com sucesso';
+$string['errorcreatingenrolinstances'] = 'Erro ao criar matrículas. Tente novamente.';
+
+// Cohort role assignments (tool_cohortroles integration) strings
+$string['cohortroles'] = 'Funções da Coorte';
+$string['cohortroleassignments'] = 'Atribuições';
+$string['cohortroleassignmentscount'] = 'atribuições';
+$string['loadingcohortroles'] = 'Carregando atribuições...';
+$string['noroughassignmentsfound'] = 'Nenhuma Atribuição Encontrada';
+$string['noroughassignmentsfounddescription'] = 'Nenhuma atribuição encontrada. Atribua usuários com funções para estabelecer hierarquia.';
+$string['createyourfirstassignment'] = 'Crie sua primeira atribuição para começar.';
+$string['addroleassignment'] = 'Adicionar Atribuição';
+$string['assigneduser'] = 'Usuário';
+$string['assignedrole'] = 'Função';
+$string['assignedcohort'] = 'Coorte';
+$string['assignedtime'] = 'Atribuído Em';
+$string['deleteassignment'] = 'Excluir atribuição';
+$string['deleteassignmentconfirmation'] = 'Tem certeza que deseja excluir esta atribuição? Será removida na próxima sincronização.';
+$string['cohortroleassignmentcreated'] = 'Atribuição criada. Entrará em vigor após a próxima sincronização.';
+$string['cohortroleassignmentdeleted'] = 'Atribuição excluída com sucesso.';
+$string['cohortroleassignmentexists'] = 'Esta atribuição já existe.';
+$string['backgroundsyncnote'] = 'Atribuições entram em vigor após a sincronização agendada.';
+$string['synclastsync'] = 'Última';
+$string['syncnextsync'] = 'Próxima';
+$string['syncnever'] = 'Nunca';
+$string['selectuser'] = 'Selecione um usuário';
+$string['searchusers'] = 'Buscar usuários...';
+$string['selectrole'] = 'Selecione uma função';
+$string['nousersfound'] = 'Nenhum usuário encontrado';
+$string['assignroletouser'] = 'Atribuir Função';
+$string['userrolecohortinfo'] = 'Atribui uma função de contexto de usuário sobre todos os membros.';
+$string['assignedon'] = 'Atribuído em';
+$string['deletethisassignment'] = 'Excluir esta atribuição';

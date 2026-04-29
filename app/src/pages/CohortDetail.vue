@@ -8,6 +8,7 @@ import CohortDelete from '../components/CohortDelete.vue';
 import CohortDetailsPartial from './partials/CohortDetailsPartial.vue';
 import CohortMembersPartial from './partials/CohortMembersPartial.vue';
 import CohortEnrolInstancesPartial from './partials/CohortEnrolInstancesPartial.vue';
+import CohortRoleAssignmentsPartial from './partials/CohortRoleAssignmentsPartial.vue';
 import type { Cohort } from '../types/interfaces';
 import Notification from 'core/notification';
 
@@ -110,6 +111,11 @@ onMounted(() => {
             {{ stringsStore.getString('enrolinstances') }}
           </button>
         </li>
+        <li class="nav-item">
+          <button :class="['nav-link', { active: activeTab === 'cohortroles' }]" @click="activeTab = 'cohortroles'">
+            {{ stringsStore.getString('cohortroles') }}
+          </button>
+        </li>
       </ul>
 
       <!-- Tab Content -->
@@ -122,6 +128,9 @@ onMounted(() => {
         
         <!-- Enrol Instances Tab -->
         <CohortEnrolInstancesPartial v-if="activeTab === 'enrolinstances'" :cohort="cohort" />
+
+        <!-- Cohort Roles Tab -->
+        <CohortRoleAssignmentsPartial v-if="activeTab === 'cohortroles'" :cohort="cohort" />
       </div>
     </div>
 

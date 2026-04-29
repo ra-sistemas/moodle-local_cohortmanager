@@ -239,6 +239,22 @@ $functions = [
         'type'       => 'write',
         'ajax' => true,
         'capabilities' => 'moodle/role:manage'
+    ],
+    'local_cohortmanager_list_cohort_role_assignments' => [
+        'classname'   => 'local_cohortmanager\\external\\cohortroles',
+        'methodname' => 'list_cohort_role_assignments',
+        'description' => 'List cohort role assignments with enriched data.',
+        'type'       => 'read',
+        'ajax' => true,
+        'capabilities' => 'moodle/role:manage'
+    ],
+    'local_cohortmanager_delete_cohort_role_assignment' => [
+        'classname'   => 'local_cohortmanager\\external\\cohortroles',
+        'methodname' => 'delete_cohort_role_assignment',
+        'description' => 'Delete a cohort role assignment.',
+        'type'       => 'write',
+        'ajax' => true,
+        'capabilities' => 'moodle/role:manage'
     ]
 ];
 
@@ -271,7 +287,9 @@ $services = [
             'local_cohortmanager_get_role',
             'local_cohortmanager_create_role',
             'local_cohortmanager_update_role',
-            'local_cohortmanager_delete_role'
+            'local_cohortmanager_delete_role',
+            'local_cohortmanager_list_cohort_role_assignments',
+            'local_cohortmanager_delete_cohort_role_assignment'
         ],
         'restrictedusers' => 0,
         'enabled' => 1,

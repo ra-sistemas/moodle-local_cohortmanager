@@ -252,6 +252,30 @@ const deleteRole = async (args: Object): Promise<any> => {
   return response;
 };
 
+const listCohortRoleAssignments = async (args: Object): Promise<any> => {
+  const response = await ajax('local_cohortmanager_list_cohort_role_assignments', args);
+  return response;
+};
+
+const deleteCohortRoleAssignment = async (args: Object): Promise<any> => {
+  const response = await ajax('local_cohortmanager_delete_cohort_role_assignment', args);
+  return response;
+};
+
+const showAddCohortRoleAssignmentForm = (cohortid: number, title: string, saveButtonText: string): ModalForm => {
+  const modalForm = new ModalForm({
+    formClass: 'local_cohortmanager\\form\\add_cohort_role_assignment_form',
+    saveButtonText: saveButtonText,
+    modalConfig: {
+      title: title,
+    },
+    args: {
+      cohortid: cohortid
+    }
+  });
+  return modalForm;
+};
+
 /**
  * Get cohort customfields
  */
@@ -456,5 +480,8 @@ export {
   getRole,
   createRole,
   updateRole,
-  deleteRole
+  deleteRole,
+  listCohortRoleAssignments,
+  deleteCohortRoleAssignment,
+  showAddCohortRoleAssignmentForm
 };
