@@ -35,21 +35,31 @@
             </button>
         </div>
 
-        <!-- Table -->
+        <!-- Loading State -->
         <div v-if="loading" class="text-center py-4">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">{{ stringsStore.getString('loading') }}</span>
-            </div>
+            <i class="fa fa-spinner fa-spin"></i> {{ stringsStore.getString('loading') }}
         </div>
 
+        <!-- Error State -->
         <div v-else-if="error" class="alert alert-danger">
             {{ error }}
         </div>
 
+        <!-- Content -->
         <div v-else>
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
+            <!-- Empty State -->
+            <div v-if="members.length === 0" class="text-center py-4">
+                <i class="fa fa-users fa-3x text-muted mb-3"></i>
+                <h5>{{ stringsStore.getString('nomembersfound') }}</h5>
+                <p class="text-muted">{{ stringsStore.getString('nomembersfounddescription') }}</p>
+            </div>
+
+            <!-- Members Table -->
+            <div v-else class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
                         <tr>
                             <th v-if="!isColumnHidden('select')">
                                 <input type="checkbox" @change="toggleSelectAll" :checked="allSelected"
@@ -109,6 +119,8 @@
                         </tr>
                     </tbody>
                 </table>
+                    </div>
+                </div>
             </div>
 
             <!-- Pagination -->
