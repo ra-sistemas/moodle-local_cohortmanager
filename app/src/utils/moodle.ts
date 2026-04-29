@@ -333,6 +333,24 @@ const showEditEnrolInstancesForm = (enrolinstanceid: number, title: string, save
 };
 
 /**
+ * Show create/edit role modal
+ */
+const showRoleForm = (roleid: number, title: string, saveButtonText: string): ModalForm => {
+
+  const modalForm = new ModalForm({
+    formClass: 'local_cohortmanager\\form\\role_form',
+    saveButtonText: saveButtonText,
+    modalConfig: {
+      title: title,
+    },
+    args: {
+      roleid: roleid
+    }
+  });
+  return modalForm;
+};
+
+/**
  *
  */
 const getCustomfieldTemplateConfig = async (component: string, area: string, itemid: number): Promise<any> => {
@@ -424,6 +442,7 @@ export {
   showAddMembersForm,
   showAddEnrolInstancesForm,
   showEditEnrolInstancesForm,
+  showRoleForm,
   countCohortMembers,
   deleteCohortMembers,
   getCohortEnrolInstances,

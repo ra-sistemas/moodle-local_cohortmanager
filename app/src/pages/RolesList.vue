@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { ref, onMounted, reactive, computed } from 'vue';
 import { useStringsStore } from '../stores/strings';
-import { getUserContextRoles, createRole, updateRole, deleteRole } from '../utils/moodle';
+import { getUserContextRoles, deleteRole, showRoleForm } from '../utils/moodle';
 import Notification from 'core/notification';
+import { add } from 'core/toast';
+import { deleteCancel } from 'core/notification';
 import type { RoleFormData, Pagination } from '../types/interfaces';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-// Initialize strings store
 const stringsStore = useStringsStore();
 
-// State management
 const roles = ref<RoleFormData[]>([]);
 const loading = ref(false);
 const searchQuery = ref('');
@@ -21,36 +21,10 @@ const pagination = reactive<Pagination>({
   total: 0
 });
 
-// Modal state
-const showModal = ref(false);
-const modalMode = ref<'create' | 'edit'>('create');
-const formData = reactive<RoleFormData>({
-  id: 0,
-  name: '',
-  shortname: '',
-  description: '',
-  archetype: ''
-});
-
-// Archetype options
-const archetypeOptions = [
-  { value: '', label: 'None' },
-  { value: 'user', label: 'User' },
-  { value: 'manager', label: 'Manager' },
-  { value: 'coursecreator', label: 'Course Creator' },
-  { value: 'editingteacher', label: 'Editing Teacher' },
-  { value: 'teacher', label: 'Teacher' },
-  { value: 'student', label: 'Student' },
-  { value: 'guest', label: 'Guest' },
-  { value: 'frontpage', label: 'Frontpage' }
-];
-
-// Initialize the component
 onMounted(async () => {
   await loadRoles();
 });
 
-// Load roles with pagination
 const loadRoles = async () => {
   loading.value = true;
 
@@ -69,13 +43,11 @@ const loadRoles = async () => {
   }
 };
 
-// Search roles
 const searchRoles = () => {
   pagination.page = 1;
   loadRoles();
 };
 
-// Pagination handlers
 const goToPage = (page: number) => {
   pagination.page = page;
   loadRoles();
@@ -94,84 +66,63 @@ const nextPage = () => {
   }
 };
 
-// Open create modal
-const openCreateModal = () => {
-  modalMode.value = 'create';
-  formData.id = 0;
-  formData.name = '';
-  formData.shortname = '';
-  formData.description = '';
-  formData.archetype = '';
-  showModal.value = true;
-};
+const openCreateModal = async () => {
+  const modalForm = showRoleForm(
+    0,
+    stringsStore.getString('createnewrole'),
+    stringsStore.getString('rolecreate'),
+  );
 
-// Open edit modal
-const openEditModal = async (role: RoleFormData) => {
-  modalMode.value = 'edit';
-  formData.id = role.id;
-  formData.name = role.name;
-  formData.shortname = role.shortname;
-  formData.description = role.description || '';
-  formData.archetype = role.archetype || '';
-  showModal.value = true;
-};
-
-// Close modal
-const closeModal = () => {
-  showModal.value = false;
-};
-
-// Submit form
-const submitForm = async () => {
-  try {
-    if (modalMode.value === 'create') {
-      await createRole({
-        shortname: formData.shortname,
-        name: formData.name,
-        description: formData.description,
-        archetype: formData.archetype
-      });
-      Notification.addNotification({
-        message: stringsStore.getString('rolecreatedsuccessfully'),
-        type: 'success'
-      });
-    } else {
-      await updateRole({
-        id: formData.id,
-        name: formData.name,
-        description: formData.description
-      });
-      Notification.addNotification({
-        message: stringsStore.getString('roleupdatedsuccessfully'),
-        type: 'success'
-      });
-    }
-    closeModal();
-    await loadRoles();
-  } catch (err) {
-    Notification.exception(err);
-  }
-};
-
-// Delete role
-const deleteRoleConfirm = async (role: RoleFormData) => {
-  if (!confirm(stringsStore.getString('roledeleteconfirmation').replace('%s', role.name))) {
-    return;
-  }
-
-  try {
-    await deleteRole({ id: role.id });
-    Notification.addNotification({
-      message: stringsStore.getString('roledeletedsuccessfully'),
+  modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, () => {
+    add(stringsStore.getString('rolecreatedsuccessfully'), {
       type: 'success'
     });
-    await loadRoles();
-  } catch (err) {
-    Notification.exception(err);
-  }
+    loadRoles();
+  });
+
+  await modalForm.show();
 };
 
-// Calculate pagination info
+const openEditModal = async (role: RoleFormData) => {
+  const modalForm = showRoleForm(
+    role.id,
+    stringsStore.getString('editrole'),
+    stringsStore.getString('roleupdate'),
+  );
+
+  modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, () => {
+    add(stringsStore.getString('roleupdatedsuccessfully'), {
+      type: 'success'
+    });
+    loadRoles();
+  });
+
+  await modalForm.show();
+};
+
+const deleteRoleConfirm = async (role: RoleFormData) => {
+  const title = stringsStore.getString('deleterole');
+  const message = stringsStore.getString('roledeleteconfirmation').replace('%s', role.name);
+  const deleteLabel = stringsStore.getString('delete');
+
+  await deleteCancel(
+    title,
+    message,
+    deleteLabel,
+    async () => {
+      try {
+        await deleteRole({ roleid: role.id });
+        add(stringsStore.getString('roledeletedsuccessfully'), {
+          type: 'success'
+        });
+        await loadRoles();
+      } catch (err) {
+        Notification.exception(err);
+      }
+    }
+  );
+};
+
 const paginationInfo = computed(() => {
   const start = (pagination.page - 1) * pagination.perpage + 1;
   const end = Math.min(pagination.page * pagination.perpage, pagination.total);
@@ -183,95 +134,125 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
 const goBack = () => {
   router.push('/');
 };
-
 </script>
 
 <template>
-  <div class="container-fluid p-4">
-    <!-- Header -->
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 pb-3 border-bottom">
-      <h1 class="h2 mb-2 mb-md-0">{{ stringsStore.getString('rolesmanagement') }}</h1>
-      <div class="d-flex gap-2 mt-2 mt-md-0">
-        <button @click="goBack" class="btn btn-secondary">
-          <i class="fa fa-arrow-left"></i> {{ stringsStore.getString('backtolist') }}
+  <div class="container-fluid px-3 px-md-4 py-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
+      <h1 class="h3 mb-2 mb-md-0 font-weight-bold">
+        <i class="fa fa-user-tag mr-2 text-muted"></i>{{ stringsStore.getString('rolesmanagement') }}
+      </h1>
+      <div class="d-flex flex-wrap gap-2 mt-2 mt-md-0">
+        <button @click="goBack" class="btn btn-outline-secondary">
+          <i class="fa fa-arrow-left mr-1"></i> {{ stringsStore.getString('backtolist') }}
         </button>
         <button class="btn btn-primary" @click="openCreateModal">
-          <i class="fa fa-plus"></i> {{ stringsStore.getString('createnewrole') }}
+          <i class="fa fa-plus mr-1"></i> {{ stringsStore.getString('createnewrole') }}
         </button>
       </div>
     </div>
 
-    <!-- Search bar -->
-    <div class="mb-4">
-      <div class="row">
-        <div class="col-md-8 col-lg-6">
-          <div class="input-group">
-            <input v-model="searchQuery" type="text" class="form-control"
-              :placeholder="stringsStore.getString('rolesearchplaceholder')" @keyup.enter="searchRoles" />
-            <button class="btn btn-secondary" @click="searchRoles">
-              <i class="fa fa-search"></i> {{ stringsStore.getString('search') }}
-            </button>
+    <div class="card shadow-sm mb-4">
+      <div class="card-body py-3">
+        <div class="row align-items-center">
+          <div class="col-md-6 col-lg-5">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text bg-white border-right-0">
+                  <i class="fa fa-search text-muted"></i>
+                </span>
+              </div>
+              <input v-model="searchQuery" type="text" class="form-control border-left-0"
+                :placeholder="stringsStore.getString('rolesearchplaceholder')" @keyup.enter="searchRoles" />
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" @click="searchRoles">
+                  {{ stringsStore.getString('search') }}
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-7 mt-2 mt-md-0">
+            <div class="d-flex justify-content-md-end align-items-center">
+              <span class="text-muted small" v-if="pagination.total > 0">
+                <i class="fa fa-list-ul mr-1"></i>
+                {{ pagination.total }} {{ stringsStore.getString('rolescount') }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Loading state -->
-    <div v-if="loading" class="text-center p-4">
-      {{ stringsStore.getString('loadingroles') }}
+    <div v-if="loading" class="text-center py-5">
+      <div class="spinner-border text-primary mb-3" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+      <p class="text-muted">{{ stringsStore.getString('loadingroles') }}</p>
     </div>
 
-    <!-- Empty state -->
-    <div v-else-if="roles.length === 0" class="text-center py-5 text-muted">
-      <i class="fa fa-user-tag fa-3x mb-3"></i>
-      <h3 class="mb-2">{{ stringsStore.getString('norolesfound') }}</h3>
-      <p>{{ stringsStore.getString('norolesfounddesc') }}</p>
-      <button class="btn btn-primary mt-3" @click="openCreateModal">
-        <i class="fa fa-plus"></i> {{ stringsStore.getString('createnewrole') }}
-      </button>
-    </div>
-
-    <!-- Roles table -->
-    <div v-else>
-      <div class="table-responsive">
-        <table class="table table-striped table-hover">
-          <thead class="thead-light">
-            <tr>
-              <th>{{ stringsStore.getString('roleid') }}</th>
-              <th>{{ stringsStore.getString('rolename') }}</th>
-              <th>{{ stringsStore.getString('roleshortname') }}</th>
-              <th>{{ stringsStore.getString('rolearchetype') }}</th>
-              <th class="text-center">{{ stringsStore.getString('roleactions') }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="role in roles" :key="role.id">
-              <td>{{ role.id }}</td>
-              <td><strong>{{ role.name }}</strong></td>
-              <td><code>{{ role.shortname }}</code></td>
-              <td>{{ role.archetype || '-' }}</td>
-              <td class="text-center">
-                <div class="btn-group btn-group-sm" role="group">
-                  <button class="btn btn-outline-primary" @click="openEditModal(role)"
-                    :title="stringsStore.getString('editrole')">
-                    <i class="fa fa-edit"></i>
-                  </button>
-                  <button class="btn btn-outline-danger" @click="deleteRoleConfirm(role)"
-                    :title="stringsStore.getString('deleterole')">
-                    <i class="fa fa-trash"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+    <div v-else-if="roles.length === 0" class="card shadow-sm">
+      <div class="card-body text-center py-5">
+        <div class="mb-3">
+          <i class="fa fa-user-tag fa-3x text-muted"></i>
+        </div>
+        <h4 class="text-muted mb-2">{{ stringsStore.getString('norolesfound') }}</h4>
+        <p class="text-muted mb-4">{{ stringsStore.getString('norolesfounddesc') }}</p>
+        <button class="btn btn-primary" @click="openCreateModal">
+          <i class="fa fa-plus mr-1"></i> {{ stringsStore.getString('createnewrole') }}
+        </button>
       </div>
     </div>
 
-    <!-- Pagination -->
+    <div v-else>
+      <div class="card shadow-sm">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="thead-light">
+              <tr>
+                <th class="border-top-0 py-3 pl-4" style="width: 60px;">{{ stringsStore.getString('roleid') }}</th>
+                <th class="border-top-0 py-3">{{ stringsStore.getString('rolename') }}</th>
+                <th class="border-top-0 py-3">{{ stringsStore.getString('roleshortname') }}</th>
+                <th class="border-top-0 py-3" style="width: 160px;">{{ stringsStore.getString('rolearchetype') }}</th>
+                <th class="border-top-0 py-3 text-center" style="width: 120px;">{{ stringsStore.getString('roleactions') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="role in roles" :key="role.id">
+                <td class="align-middle pl-4">
+                  <span class="badge badge-light text-muted font-weight-normal">{{ role.id }}</span>
+                </td>
+                <td class="align-middle">
+                  <span class="font-weight-bold">{{ role.name }}</span>
+                </td>
+                <td class="align-middle">
+                  <code class="p-1 rounded" style="background: #f8f9fa;">{{ role.shortname }}</code>
+                </td>
+                <td class="align-middle">
+                  <span v-if="role.archetype" class="badge badge-info">{{ role.archetype }}</span>
+                  <span v-else class="text-muted">&mdash;</span>
+                </td>
+                <td class="align-middle text-center">
+                  <div class="btn-group btn-group-sm" role="group">
+                    <button class="btn btn-outline-primary" @click="openEditModal(role)"
+                      :title="stringsStore.getString('editrole')">
+                      <i class="fa fa-edit"></i>
+                    </button>
+                    <button class="btn btn-outline-danger" @click="deleteRoleConfirm(role)"
+                      :title="stringsStore.getString('deleterole')">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <div v-if="totalPages > 1" class="mt-4">
       <nav aria-label="Roles pagination">
-        <ul class="pagination justify-content-center justify-content-md-start">
+        <ul class="pagination justify-content-center justify-content-md-start mb-0">
           <li class="page-item" :class="{ 'disabled': pagination.page === 1 }">
             <button class="page-link" @click="prevPage" :disabled="pagination.page === 1">
               <i class="fa fa-chevron-left"></i>
@@ -292,69 +273,5 @@ const goBack = () => {
         </ul>
       </nav>
     </div>
-
-    <!-- Modal for Create/Edit Role -->
-    <div v-if="showModal" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">
-              {{ modalMode === 'create' ? stringsStore.getString('createnewrole') : stringsStore.getString('editrole')
-              }}
-            </h5>
-            <button type="button" class="btn-close" @click="closeModal"></button>
-          </div>
-          <div class="modal-body">
-            <form @submit.prevent="submitForm">
-              <!-- Name field (only for create) -->
-              <div v-if="modalMode === 'create'" class="mb-3">
-                <label for="name" class="form-label">{{ stringsStore.getString('rolename') }}</label>
-                <input type="text" class="form-control" id="name" v-model="formData.name" required />
-              </div>
-
-              <!-- Shortname field (only for create) -->
-              <div v-if="modalMode === 'create'" class="mb-3">
-                <label for="shortname" class="form-label">{{ stringsStore.getString('roleshortname') }}</label>
-                <input type="text" class="form-control" id="shortname" v-model="formData.shortname" required />
-                <div class="form-text">A unique identifier for this role (no spaces, lowercase recommended)</div>
-              </div>
-
-              <!-- Description field -->
-              <div class="mb-3">
-                <label for="description" class="form-label">{{ stringsStore.getString('description') }}</label>
-                <textarea class="form-control" id="description" v-model="formData.description" rows="3"
-                  :placeholder="stringsStore.getString('roledescriptionplaceholder')"></textarea>
-              </div>
-
-              <!-- Archetype field (only for create) -->
-              <div v-if="modalMode === 'create'" class="mb-3">
-                <label for="archetype" class="form-label">{{ stringsStore.getString('rolearchetype') }}</label>
-                <select class="form-select" id="archetype" v-model="formData.archetype">
-                  <option v-for="option in archetypeOptions" :key="option.value" :value="option.value">
-                    {{ option.label }}
-                  </option>
-                </select>
-                <div class="form-text">{{ stringsStore.getString('rolearchetypeplaceholder') }}</div>
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="closeModal">
-              {{ stringsStore.getString('cancel') }}
-            </button>
-            <button type="button" class="btn btn-primary" @click="submitForm">
-              {{ modalMode === 'create' ? stringsStore.getString('rolecreate') : stringsStore.getString('roleupdate') }}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
-
-<style scoped>
-.modal {
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-</style>
