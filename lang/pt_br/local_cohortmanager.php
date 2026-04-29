@@ -204,3 +204,33 @@ $string['rolescount'] = 'funções';
 $string['norolesfound'] = 'Nenhuma função encontrada';
 $string['norolesfounddesc'] = 'Nenhuma função encontrada que corresponda aos seus critérios de pesquisa.';
 $string['createyourfirstrole'] = 'Crie sua primeira função para começar.';
+
+// DynamicCohortMembersTable component strings
+$string['searchmembers'] = 'Buscar membros...';
+$string['first'] = 'Primeiro';
+$string['last'] = 'Último';
+$string['columns'] = 'Colunas';
+$string['city'] = 'Cidade';
+$string['country'] = 'País';
+$string['showing'] = 'Exibindo';
+$string['to'] = 'a';
+$string['previous'] = 'Anterior';
+$string['next'] = 'Próximo';
+$string['failedtofetchmembers'] = 'Falha ao buscar membros';
+$string['anerroroccurred'] = 'Ocorreu um erro';
+$string['unknown'] = 'Desconhecido';
+$string['errordeletingmembers'] = 'Ocorreu um erro ao excluir membros';
+
+// CohortEnrolInstancesSearchModal component strings
+$string['searchcourses'] = 'Buscar cursos';
+$string['searchcoursesplaceholder'] = 'Buscar cursos...';
+$string['searching'] = 'Buscando...';
+$string['nocoursesfound'] = 'Nenhum curso encontrado';
+$string['selectedcourses'] = 'Cursos selecionados';
+$string['coursealreadyselected'] = 'Curso já selecionado';
+$string['noselectedcourses'] = 'Nenhum curso selecionado';
+$string['role'] = 'Função';
+$string['group'] = 'Grupo';
+$string['remove'] = 'Remover';
+$string['enrolinstanceadded'] = 'Instância de matrícula adicionada com sucesso';
+$string['errorcreatingenrolinstances'] = 'Erro ao criar instâncias de matrícula. Tente novamente.';

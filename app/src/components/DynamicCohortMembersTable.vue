@@ -3,20 +3,20 @@
         <!-- Search and filters -->
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div class="input-group" style="max-width: 300px;">
-                <input type="text" class="form-control" placeholder="Search members..." v-model="searchQuery"
+                <input type="text" class="form-control" :placeholder="stringsStore.getString('searchmembers')" v-model="searchQuery"
                     @input="handleSearch">
             </div>
 
             <!-- Letter filters -->
             <div class="col-2">
                 <div class="input-group input-group-sm">
-                    <span class="input-group-text">First</span>
+                    <span class="input-group-text">{{ stringsStore.getString('first') }}</span>
                     <input type="text" class="form-control" maxlength="1" v-model="firstInitial"
                         @input="handleLetterFilter">
                 </div>
 
                 <div class="input-group input-group-sm">
-                    <span class="input-group-text">Last</span>
+                    <span class="input-group-text">{{ stringsStore.getString('last') }}</span>
                     <input type="text" class="form-control" maxlength="1" v-model="lastInitial"
                         @input="handleLetterFilter">
                 </div>
@@ -25,20 +25,20 @@
 
         <div class="d-flex gap-2 mb-3 flex-wrap">
             <button class="btn btn-sm btn-outline-secondary" @click="toggleColumnVisibility">
-                <i class="bi bi-grid-3x3"></i> Columns
+                <i class="bi bi-grid-3x3"></i> {{ stringsStore.getString('columns') }}
             </button>
 
             <!-- Delete button - shown when users are selected -->
             <button v-if="selectedMembers.length > 0" class="btn btn-sm btn-outline-danger"
                 @click="showDeleteModal = true">
-                <i class="bi bi-trash"></i> Delete ({{ selectedMembers.length }})
+                <i class="bi bi-trash"></i> {{ stringsStore.getString('delete') }} ({{ selectedMembers.length }})
             </button>
         </div>
 
         <!-- Table -->
         <div v-if="loading" class="text-center py-4">
             <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
+                <span class="visually-hidden">{{ stringsStore.getString('loading') }}</span>
             </div>
         </div>
 
@@ -57,35 +57,35 @@
                             </th>
 
                             <th v-if="!isColumnHidden('fullname')" @click="toggleSort('fullname')">
-                                Name
+                                {{ stringsStore.getString('name') }}
                                 <span v-if="currentSortBy === 'fullname'">
                                     {{ currentSortOrder === 1 ? '↑' : '↓' }}
                                 </span>
                             </th>
 
                             <th v-if="!isColumnHidden('username')" @click="toggleSort('username')">
-                                Username
+                                {{ stringsStore.getString('username') }}
                                 <span v-if="currentSortBy === 'username'">
                                     {{ currentSortOrder === 1 ? '↑' : '↓' }}
                                 </span>
                             </th>
 
                             <th v-if="!isColumnHidden('email')" @click="toggleSort('email')">
-                                Email
+                                {{ stringsStore.getString('email') }}
                                 <span v-if="currentSortBy === 'email'">
                                     {{ currentSortOrder === 1 ? '↑' : '↓' }}
                                 </span>
                             </th>
 
                             <th v-if="!isColumnHidden('city')" @click="toggleSort('city')">
-                                City
+                                {{ stringsStore.getString('city') }}
                                 <span v-if="currentSortBy === 'city'">
                                     {{ currentSortOrder === 1 ? '↑' : '↓' }}
                                 </span>
                             </th>
 
                             <th v-if="!isColumnHidden('country')" @click="toggleSort('country')">
-                                Country
+                                {{ stringsStore.getString('country') }}
                                 <span v-if="currentSortBy === 'country'">
                                     {{ currentSortOrder === 1 ? '↑' : '↓' }}
                                 </span>
@@ -114,18 +114,18 @@
             <!-- Pagination -->
             <div class="d-flex justify-content-between align-items-center mt-3">
                 <div>
-                    Showing {{ (currentPage - 1) * pageSize + 1 }} to {{ Math.min(currentPage * pageSize, totalRows) }}
-                    of {{ totalRows }} members
+                    {{ stringsStore.getString('showing') }} {{ (currentPage - 1) * pageSize + 1 }} {{ stringsStore.getString('to') }} {{ Math.min(currentPage * pageSize, totalRows) }}
+                    {{ stringsStore.getString('of') }} {{ totalRows }} {{ stringsStore.getString('memberscount') }}
                 </div>
 
                 <div class="btn-group">
                     <button class="btn btn-sm btn-outline-secondary" :disabled="currentPage === 1"
                         @click="currentPage--">
-                        Previous
+                        {{ stringsStore.getString('previous') }}
                     </button>
 
                     <button class="btn btn-sm btn-outline-secondary" :disabled="!hasMore" @click="currentPage++">
-                        Next
+                        {{ stringsStore.getString('next') }}
                     </button>
                 </div>
             </div>
@@ -157,7 +157,7 @@ import type { CohortMember } from '@/types/interfaces';
 import { getCohortMembers, deleteCohortMembers } from '../utils/moodle';
 import ColumnVisibilityModal from './ColumnVisibilityModal.vue';
 import DeleteConfirmationModal from './DeleteConfirmationModal.vue';
-// import { useStringsStore } from '@/stores/strings';
+import { useStringsStore } from '@/stores/strings';
 
 // Define props
 const props = defineProps<{
@@ -165,7 +165,7 @@ const props = defineProps<{
 }>();
 
 // Initialize strings store
-// const stringsStore = useStringsStore();
+const stringsStore = useStringsStore();
 
 // State
 const members = ref<CohortMember[]>([]);
@@ -220,11 +220,11 @@ const fetchMembers = async () => {
         totalRows.value = response.totalrows;
 
         if (!response) {
-            throw new Error('Failed to fetch members');
+            throw new Error(stringsStore.getString('failedtofetchmembers'));
         }
         console.debug(response);
     } catch (err) {
-        error.value = err instanceof Error ? err.message : 'An error occurred';
+        error.value = err instanceof Error ? err.message : stringsStore.getString('anerroroccurred');
     } finally {
         loading.value = false;
     }
@@ -301,7 +301,7 @@ const isColumnHidden = (column: string): boolean => {
 // Helper function to get member fullname by ID
 const getMemberFullname = (memberId: number): string => {
     const member = members.value.find(m => m.id === memberId);
-    return member ? member.fullname : `Unknown (${memberId})`;
+    return member ? member.fullname : stringsStore.getString('unknown') + ` (${memberId})`;
 };
 
 const deleteSelectedMembers = async () => {
@@ -324,7 +324,7 @@ const deleteSelectedMembers = async () => {
         showDeleteModal.value = false;
         fetchMembers();
     } catch (err) {
-        error.value = err instanceof Error ? err.message : 'An error occurred while deleting members';
+        error.value = err instanceof Error ? err.message : stringsStore.getString('errordeletingmembers');
     } finally {
         deleting.value = false;
     }

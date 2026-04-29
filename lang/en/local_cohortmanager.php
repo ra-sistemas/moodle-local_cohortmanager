@@ -206,3 +206,33 @@ $string['norolesfounddesc'] = 'No roles found matching your search criteria.';
 $string['createyourfirstrole'] = 'Create your first role to get started.';
 $string['roleid'] = 'ID';
 $string['rolesortorder'] = 'Sort Order';
+
+// DynamicCohortMembersTable component strings
+$string['searchmembers'] = 'Search members...';
+$string['first'] = 'First';
+$string['last'] = 'Last';
+$string['columns'] = 'Columns';
+$string['city'] = 'City';
+$string['country'] = 'Country';
+$string['showing'] = 'Showing';
+$string['to'] = 'to';
+$string['previous'] = 'Previous';
+$string['next'] = 'Next';
+$string['failedtofetchmembers'] = 'Failed to fetch members';
+$string['anerroroccurred'] = 'An error occurred';
+$string['unknown'] = 'Unknown';
+$string['errordeletingmembers'] = 'An error occurred while deleting members';
+
+// CohortEnrolInstancesSearchModal component strings
+$string['searchcourses'] = 'Search courses';
+$string['searchcoursesplaceholder'] = 'Search courses...';
+$string['searching'] = 'Searching...';
+$string['nocoursesfound'] = 'No courses found';
+$string['selectedcourses'] = 'Selected courses';
+$string['coursealreadyselected'] = 'Course already selected';
+$string['noselectedcourses'] = 'No courses selected';
+$string['role'] = 'Role';
+$string['group'] = 'Group';
+$string['remove'] = 'Remove';
+$string['enrolinstanceadded'] = 'Enrol instance added successfully';
+$string['errorcreatingenrolinstances'] = 'Error creating enrol instances. Please try again.';
