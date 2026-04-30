@@ -49,10 +49,10 @@ class add_cohort_role_assignment_form extends dynamic_form
         $useroptions = [
             'ajax' => 'local_cohortmanager/form-cohort-members-selector',
             'cohortid' => $cohortid,
-            'multiple' => false
+            'multiple' => true
         ];
-        $mform->addElement('autocomplete', 'userid', get_string('assigneduser', 'local_cohortmanager'), [], $useroptions);
-        $mform->addRule('userid', get_string('required'), 'required', null, 'client');
+        $mform->addElement('autocomplete', 'userids', get_string('assigneduser', 'local_cohortmanager'), [], $useroptions);
+        $mform->addRule('userids', get_string('required'), 'required', null, 'client');
 
         $names = role_get_names();
         $roleoptions = [];
@@ -83,14 +83,18 @@ class add_cohort_role_assignment_form extends dynamic_form
 
         $errors = parent::validation($data, $files);
 
-        if (!empty($data['userid']) && !empty($data['roleid']) && !empty($data['cohortid'])) {
-            $exists = $DB->record_exists('tool_cohortroles', [
-                'userid' => $data['userid'],
-                'roleid' => $data['roleid'],
-                'cohortid' => $data['cohortid'],
-            ]);
-            if ($exists) {
-                $errors['userid'] = get_string('cohortroleassignmentexists', 'local_cohortmanager');
+        if (!empty($data['userids']) && !empty($data['roleid']) && !empty($data['cohortid'])) {
+            $userids = (array) $data['userids'];
+            foreach ($userids as $userid) {
+                $exists = $DB->record_exists('tool_cohortroles', [
+                    'userid' => $userid,
+                    'roleid' => $data['roleid'],
+                    'cohortid' => $data['cohortid'],
+                ]);
+                if ($exists) {
+                    $errors['userids'] = get_string('cohortroleassignmentexists', 'local_cohortmanager');
+                    break;
+                }
             }
         }
 
@@ -114,15 +118,24 @@ class add_cohort_role_assignment_form extends dynamic_form
     {
         $data = $this->get_data();
 
-        $record = (object)[
-            'userid' => $data->userid,
-            'roleid' => $data->roleid,
-            'cohortid' => $data->cohortid,
-        ];
+        $userids = (array) $data->userids;
+        $success = true;
+        foreach ($userids as $userid) {
+            $record = (object)[
+                'userid' => $userid,
+                'roleid' => $data->roleid,
+                'cohortid' => $data->cohortid,
+            ];
 
-        $result = \tool_cohortroles\api::create_cohort_role_assignment($record);
+            $result = \tool_cohortroles\api::create_cohort_role_assignment($record);
 
-        if (!$result) {
+            if (!$result) {
+                $success = false;
+                break;
+            }
+        }
+
+        if (!$success) {
             throw new moodle_exception('cohortroleassignmentexists', 'local_cohortmanager');
         }
 
