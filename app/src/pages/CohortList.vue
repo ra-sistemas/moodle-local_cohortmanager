@@ -171,7 +171,6 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
         </table>
       </div>
     </div>
-    </div>
 
     <!-- Pagination -->
     <div v-if="totalPages > 1" class="mt-4">
