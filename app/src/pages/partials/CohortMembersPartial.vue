@@ -51,7 +51,7 @@ let props = defineProps<{
   <div class="tab-pane fade show active">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h5 class="mb-0">{{ stringsStore.getString('cohortmembers') }}</h5>
-      <span class="badge bg-primary">{{ totalMembers }} {{ stringsStore.getString('memberscount') }}</span>
+      <span class="badge bg-primary my-2 p-2"><i class="fa fa-users me-1"></i>{{ totalMembers }} {{ stringsStore.getString('memberscount') }}</span>
     </div>
 
     <div class="d-flex justify-content-between align-items-center mb-3">

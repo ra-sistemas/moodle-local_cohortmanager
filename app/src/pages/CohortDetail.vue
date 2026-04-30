@@ -119,7 +119,7 @@ onMounted(() => {
       </ul>
 
       <!-- Tab Content -->
-      <div class="tab-content">
+      <div class="tab-content mb-2">
         <!-- Details Tab -->
         <CohortDetailsPartial v-if="activeTab === 'details'" :cohort="cohort" />
         
