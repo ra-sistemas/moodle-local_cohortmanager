@@ -204,34 +204,34 @@ const goBack = () => {
     </div>
 
     <div v-else>
-      <div class="card shadow-sm">
+      <div class="card">
         <div class="table-responsive">
           <table class="table table-hover mb-0">
-            <thead class="thead-light">
+            <thead class="table-light">
               <tr>
-                <th class="border-top-0 py-3 pl-4" style="width: 60px;">{{ stringsStore.getString('roleid') }}</th>
-                <th class="border-top-0 py-3">{{ stringsStore.getString('rolename') }}</th>
-                <th class="border-top-0 py-3">{{ stringsStore.getString('roleshortname') }}</th>
-                <th class="border-top-0 py-3" style="width: 160px;">{{ stringsStore.getString('rolearchetype') }}</th>
-                <th class="border-top-0 py-3 text-center" style="width: 120px;">{{ stringsStore.getString('roleactions') }}</th>
+                <th style="width: 60px;">{{ stringsStore.getString('roleid') }}</th>
+                <th>{{ stringsStore.getString('rolename') }}</th>
+                <th>{{ stringsStore.getString('roleshortname') }}</th>
+                <th style="width: 160px;">{{ stringsStore.getString('rolearchetype') }}</th>
+                <th class="text-center" style="width: 120px;">{{ stringsStore.getString('roleactions') }}</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="role in roles" :key="role.id">
-                <td class="align-middle pl-4">
-                  <span class="badge badge-light text-muted font-weight-normal">{{ role.id }}</span>
+                <td>
+                  <span class="badge badge-light text-muted">{{ role.id }}</span>
                 </td>
-                <td class="align-middle">
+                <td>
                   <span class="font-weight-bold">{{ role.name }}</span>
                 </td>
-                <td class="align-middle">
-                  <code class="p-1 rounded" style="background: #f8f9fa;">{{ role.shortname }}</code>
+                <td>
+                  <code class="p-1 rounded text-monospace"> {{ role.shortname }}</code>
                 </td>
-                <td class="align-middle">
+                <td>
                   <span v-if="role.archetype" class="badge badge-info">{{ role.archetype }}</span>
                   <span v-else class="text-muted">&mdash;</span>
                 </td>
-                <td class="align-middle text-center">
+                <td class="text-center">
                   <div class="btn-group btn-group-sm" role="group">
                     <button class="btn btn-outline-primary" @click="openEditModal(role)"
                       :title="stringsStore.getString('editrole')">

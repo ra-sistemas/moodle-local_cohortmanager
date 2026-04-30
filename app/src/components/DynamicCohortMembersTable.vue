@@ -124,23 +124,28 @@
             </div>
 
             <!-- Pagination -->
-            <div class="d-flex justify-content-between align-items-center mt-3">
-                <div>
-                    {{ stringsStore.getString('showing') }} {{ (currentPage - 1) * pageSize + 1 }} {{ stringsStore.getString('to') }} {{ Math.min(currentPage * pageSize, totalRows) }}
-                    {{ stringsStore.getString('of') }} {{ totalRows }} {{ stringsStore.getString('memberscount') }}
-                </div>
+            <nav aria-label="Members pagination">
+                <ul class="pagination justify-content-center justify-content-md-start mb-0">
+                    <li class="page-item" :class="{ 'disabled': currentPage === 1 }">
+                        <button class="page-link" @click="currentPage--">
+                            {{ stringsStore.getString('previous') }}
+                        </button>
+                    </li>
 
-                <div class="btn-group">
-                    <button class="btn btn-sm btn-outline-secondary" :disabled="currentPage === 1"
-                        @click="currentPage--">
-                        {{ stringsStore.getString('previous') }}
-                    </button>
+                    <li class="page-item active">
+                        <span class="page-link">
+                            {{ stringsStore.getString('showing') }} {{ (currentPage - 1) * pageSize + 1 }} {{ stringsStore.getString('to') }} {{ Math.min(currentPage * pageSize, totalRows) }}
+                            {{ stringsStore.getString('of') }} {{ totalRows }} {{ stringsStore.getString('memberscount') }}
+                        </span>
+                    </li>
 
-                    <button class="btn btn-sm btn-outline-secondary" :disabled="!hasMore" @click="currentPage++">
-                        {{ stringsStore.getString('next') }}
-                    </button>
-                </div>
-            </div>
+                    <li class="page-item" :class="{ 'disabled': !hasMore }">
+                        <button class="page-link" @click="currentPage++">
+                            {{ stringsStore.getString('next') }}
+                        </button>
+                    </li>
+                </ul>
+            </nav>
         </div>
 
         <!-- Column visibility modal -->

@@ -136,10 +136,10 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
     </div>
 
     <!-- Cohort table -->
-    <div v-else>
+    <div v-else class="card">
       <div class="table-responsive">
-        <table class="table table-striped table-hover">
-          <thead class="thead-light">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
             <tr>
               <th>{{ stringsStore.getString('name') }}</th>
               <th>{{ stringsStore.getString('id') }}</th>
@@ -170,6 +170,7 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
           </tbody>
         </table>
       </div>
+    </div>
     </div>
 
     <!-- Pagination -->
