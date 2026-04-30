@@ -100,6 +100,7 @@ let props = defineProps<{
                 <tr>
                   <th>{{ stringsStore.getString('assigneduser') }}</th>
                   <th>{{ stringsStore.getString('assignedrole') }}</th>
+                  <th class="text-center">{{ stringsStore.getString('assigneduserscount') }}</th>
                   <th>{{ stringsStore.getString('assignedtime') }}</th>
                   <th>{{ stringsStore.getString('actions') }}</th>
                 </tr>
@@ -115,6 +116,9 @@ let props = defineProps<{
                   </td>
                   <td>
                     {{ assignment.rolename }}
+                  </td>
+                  <td class="text-center">
+                    <span class="badge bg-info">{{ assignment.userroleassignmentscount }}</span>
                   </td>
                   <td>
                     {{ formatDate(assignment.timecreated) }}
