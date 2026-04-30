@@ -95,7 +95,7 @@ let props = defineProps<{
       <div v-else class="card">
         <div class="card-body p-0">
           <div class="table-responsive">
-            <table class="table table-hover mb-0">
+            <table class="table table-hover">
               <thead class="table-light">
                 <tr>
                   <th>{{ stringsStore.getString('assigneduser') }}</th>

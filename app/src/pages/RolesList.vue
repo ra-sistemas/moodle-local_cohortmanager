@@ -206,7 +206,7 @@ const goBack = () => {
     <div v-else>
       <div class="card">
         <div class="table-responsive">
-          <table class="table table-hover mb-0">
+          <table class="table table-hover">
             <thead class="table-light">
               <tr>
                 <th style="width: 60px;">{{ stringsStore.getString('roleid') }}</th>
@@ -252,7 +252,7 @@ const goBack = () => {
 
     <div v-if="totalPages > 1" class="mt-4">
       <nav aria-label="Roles pagination">
-        <ul class="pagination justify-content-center justify-content-md-start mb-0">
+        <ul class="pagination justify-content-center justify-content-md-start">
           <li class="page-item" :class="{ 'disabled': pagination.page === 1 }">
             <button class="page-link" @click="prevPage" :disabled="pagination.page === 1">
               <i class="fa fa-chevron-left"></i>

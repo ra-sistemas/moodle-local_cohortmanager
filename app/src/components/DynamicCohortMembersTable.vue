@@ -58,7 +58,7 @@
             <div v-else class="card">
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0">
+                        <table class="table table-hover">
                             <thead class="table-light">
                         <tr>
                             <th v-if="!isColumnHidden('select')">
@@ -124,28 +124,29 @@
             </div>
 
             <!-- Pagination -->
-            <nav aria-label="Members pagination">
-                <ul class="pagination justify-content-center justify-content-md-start mb-0">
-                    <li class="page-item" :class="{ 'disabled': currentPage === 1 }">
-                        <button class="page-link" @click="currentPage--">
-                            {{ stringsStore.getString('previous') }}
-                        </button>
-                    </li>
+            <div v-if="totalPages > 1" class="mt-4">
+                <nav aria-label="Members pagination">
+                    <ul class="pagination justify-content-center justify-content-md-start">
+                        <li class="page-item" :class="{ 'disabled': currentPage === 1 }">
+                            <button class="page-link" @click="prevPage" :disabled="currentPage === 1">
+                                <i class="fa fa-chevron-left"></i>
+                            </button>
+                        </li>
 
-                    <li class="page-item active">
-                        <span class="page-link">
-                            {{ stringsStore.getString('showing') }} {{ (currentPage - 1) * pageSize + 1 }} {{ stringsStore.getString('to') }} {{ Math.min(currentPage * pageSize, totalRows) }}
-                            {{ stringsStore.getString('of') }} {{ totalRows }} {{ stringsStore.getString('memberscount') }}
-                        </span>
-                    </li>
+                        <li class="page-item active">
+                            <span class="page-link">
+                                {{ paginationInfo }}
+                            </span>
+                        </li>
 
-                    <li class="page-item" :class="{ 'disabled': !hasMore }">
-                        <button class="page-link" @click="currentPage++">
-                            {{ stringsStore.getString('next') }}
-                        </button>
-                    </li>
-                </ul>
-            </nav>
+                        <li class="page-item" :class="{ 'disabled': currentPage === totalPages }">
+                            <button class="page-link" @click="nextPage" :disabled="currentPage === totalPages">
+                                <i class="fa fa-chevron-right"></i>
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
         </div>
 
         <!-- Column visibility modal -->
@@ -213,9 +214,13 @@ const partialSelected = computed(() =>
     selectedMembers.value.length > 0 &&
     selectedMembers.value.length < members.value.length
 );
-const hasMore = computed(() =>
-    (currentPage.value - 1) * pageSize.value + members.value.length < totalRows.value
-);
+
+const totalPages = computed(() => Math.ceil(totalRows.value / pageSize.value));
+const paginationInfo = computed(() => {
+    const start = (currentPage.value - 1) * pageSize.value + 1;
+    const end = Math.min(currentPage.value * pageSize.value, totalRows.value);
+    return `${start}-${end} of ${totalRows.value} ${stringsStore.getString('memberscount')}`;
+});
 
 // Methods
 const fetchMembers = async () => {
@@ -256,6 +261,24 @@ const toggleSort = (column: string) => {
         sortData.value = [{ sortby: column, sortorder: 1 }];
     }
     fetchMembers();
+};
+
+// Pagination handlers
+const goToPage = (page: number) => {
+    currentPage.value = page;
+    fetchMembers();
+};
+
+const prevPage = () => {
+    if (currentPage.value > 1) {
+        goToPage(currentPage.value - 1);
+    }
+};
+
+const nextPage = () => {
+    if (currentPage.value < totalPages.value) {
+        goToPage(currentPage.value + 1);
+    }
 };
 
 const handleSearch = () => {
