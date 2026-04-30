@@ -342,6 +342,7 @@ export interface CohortRoleAssignment {
   roleshortname: string;
   cohortid: number;
   cohortname: string;
+  userroleassignmentscount: number;
   timecreated: number;
   timemodified: number;
 }

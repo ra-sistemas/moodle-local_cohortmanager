@@ -95,6 +95,14 @@ class cohortroles extends external_api
             $user = $DB->get_record('user', ['id' => $userid], 'id, firstname, lastname, email', IGNORE_MISSING);
             $role = $DB->get_record('role', ['id' => $roleid], 'id, name, shortname', IGNORE_MISSING);
             $cohort = $DB->get_record('cohort', ['id' => $cohortid], 'id, name', IGNORE_MISSING);
+            $userroleassignments = $DB->count_records_sql(
+                'SELECT COUNT(DISTINCT ra.id)
+                FROM {role_assignments} ra
+                JOIN {context} ctx ON ctx.id = ra.contextid AND ctx.contextlevel = ?
+                JOIN {cohort_members} cm ON cm.userid = ctx.instanceid
+                WHERE cm.cohortid = ? AND ra.roleid = ? AND ra.userid = ? AND ra.component = ?',
+                [CONTEXT_USER, $cohortid, $roleid, $userid, 'tool_cohortroles']
+            );
 
             $result[] = [
                 'id' => $record->get('id'),
@@ -106,6 +114,7 @@ class cohortroles extends external_api
                 'roleshortname' => $role ? $role->shortname : '',
                 'cohortid' => $cohortid,
                 'cohortname' => $cohort ? $cohort->name : '',
+                'userroleassignmentscount' => $userroleassignments,
                 'timecreated' => $record->get('timecreated'),
             ];
         }
@@ -141,6 +150,7 @@ class cohortroles extends external_api
                     'roleshortname' => new external_value(PARAM_RAW, 'Role short name'),
                     'cohortid' => new external_value(PARAM_INT, 'Cohort ID'),
                     'cohortname' => new external_value(PARAM_RAW, 'Cohort name'),
+                    'userroleassignmentscount' => new external_value(PARAM_INT, 'Number of role assignments created for user by tool_cohortroles'),
                     'timecreated' => new external_value(PARAM_INT, 'Time created'),
                 ])
             ),

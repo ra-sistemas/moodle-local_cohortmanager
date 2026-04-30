@@ -268,3 +268,4 @@ $string['assignroletouser'] = 'Assign Role to User';
 $string['userrolecohortinfo'] = 'Assign a user-context role over all members.';
 $string['assignedon'] = 'Assigned on';
 $string['deletethisassignment'] = 'Delete this assignment';
+$string['assigneduserscount'] = 'Assignments';
