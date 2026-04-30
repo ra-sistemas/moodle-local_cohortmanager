@@ -149,7 +149,7 @@ const handleCustomFieldsResult = async (success: boolean, message: string) => {
 
 // Navigate back
 const goBack = () => {
-  router.push('/');
+  router.push(`/cohort/${props.id}`);
 };
 
 // Initialize the component

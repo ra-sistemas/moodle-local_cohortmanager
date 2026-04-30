@@ -4,7 +4,6 @@ import { useRouter } from 'vue-router';
 import { getCohorts } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
 import { add } from 'core/toast';
-import CohortDelete from '../components/CohortDelete.vue';
 import CohortDetailsPartial from './partials/CohortDetailsPartial.vue';
 import CohortMembersPartial from './partials/CohortMembersPartial.vue';
 import CohortEnrolInstancesPartial from './partials/CohortEnrolInstancesPartial.vue';
@@ -55,16 +54,6 @@ const goBack = () => {
   router.push('/');
 };
 
-// Edit cohort
-const editCohort = () => {
-  router.push(`/cohort/${props.id}/edit`);
-};
-
-// Handle cohort deletion success
-const handleDeleteSuccess = () => {
-  goBack();
-};
-
 // Initialize the component
 onMounted(() => {
   loadCohort();
@@ -82,16 +71,10 @@ onMounted(() => {
     <!-- Content -->
     <div v-else-if="cohort" class="mt-4">
       <!-- Header -->
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <div class="d-flex gap-2">
-          <button @click="goBack" class="btn btn-secondary">
-            <i class="fa fa-arrow-left"></i> {{ stringsStore.getString('backtolist') }}
-          </button>
-          <button @click="editCohort" class="btn btn-primary">
-            <i class="fa fa-edit"></i> {{ stringsStore.getString('edit') }}
-          </button>
-          <CohortDelete :cohort="cohort" @success="handleDeleteSuccess" />
-        </div>
+      <div class="d-flex justify-content-start mb-4">
+        <button @click="goBack" class="btn btn-secondary">
+          <i class="fa fa-arrow-left"></i> {{ stringsStore.getString('backtolist') }}
+        </button>
       </div>
 
       <!-- Tabs -->
@@ -121,7 +104,12 @@ onMounted(() => {
       <!-- Tab Content -->
       <div class="tab-content mb-2">
         <!-- Details Tab -->
-        <CohortDetailsPartial v-if="activeTab === 'details'" :cohort="cohort" />
+        <CohortDetailsPartial 
+          v-if="activeTab === 'details'" 
+          :cohort="cohort" 
+          :id="props.id"
+          @delete-success="goBack"
+        />
         
         <!-- Members Tab -->
         <CohortMembersPartial v-if="activeTab === 'members'" :cohort="cohort" />

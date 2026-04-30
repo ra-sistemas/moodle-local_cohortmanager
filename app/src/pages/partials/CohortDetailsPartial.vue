@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { useStringsStore } from '../../stores/strings';
-import type { Cohort, CohortEnrolInstance } from '../../types/interfaces';
 import { countCohortMembers, getCohortEnrolInstances, listCohortRoleAssignments } from '../../utils/moodle';
+import type { Cohort, CohortEnrolInstance } from '../../types/interfaces';
+import CohortDelete from '../../components/CohortDelete.vue';
 import Notification from 'core/notification';
 
 // Initialize strings store
@@ -11,7 +13,16 @@ const stringsStore = useStringsStore();
 // Props
 const props = defineProps<{
   cohort: Cohort;
+  id: number;
 }>();
+
+// Emits
+const emit = defineEmits<{
+  (e: 'delete-success'): void;
+}>();
+
+// Router
+const router = useRouter();
 
 // Statistics refs
 const totalMembers = ref(0);
@@ -50,10 +61,27 @@ const loadStatistics = async () => {
 onMounted(() => {
   loadStatistics();
 });
+
+// Edit cohort
+const editCohort = () => {
+  router.push(`/cohort/${props.id}/edit`);
+};
+
+// Handle cohort deletion success
+const handleDeleteSuccess = () => {
+  emit('delete-success');
+};
 </script>
 
 <template>
   <div class="tab-pane fade show active mb-2">
+    <div class="d-flex justify-content-end gap-2 mb-3">
+      <button @click="editCohort" class="btn btn-primary">
+        <i class="fa fa-edit"></i> {{ stringsStore.getString('edit') }}
+      </button>
+      <CohortDelete :cohort="props.cohort" @success="handleDeleteSuccess" />
+    </div>
+
     <!-- Cohort Portrait - Statistics Summary -->
     <div class="card mb-4">
       <div class="card-header">
@@ -100,22 +128,22 @@ onMounted(() => {
         <div class="row">
           <div class="col-md-6 mb-3">
             <label class="form-label">{{ stringsStore.getString('name') }}:</label>
-            <p class="form-control-plaintext">{{ cohort.name }}</p>
+            <p class="form-control-plaintext">{{ props.cohort.name }}</p>
           </div>
           <div class="col-md-6 mb-3">
             <label class="form-label">{{ stringsStore.getString('idnumber') }}:</label>
-            <p class="form-control-plaintext">{{ cohort.idnumber }}</p>
+            <p class="form-control-plaintext">{{ props.cohort.idnumber }}</p>
           </div>
           <div class="col-md-6 mb-3">
             <label class="form-label">{{ stringsStore.getString('visibility') }}:</label>
-            <span :class="['badge p-2 mx-2', cohort.visible ? 'bg-success' : 'bg-secondary']">
-              <i :class="['fa me-1', cohort.visible ? 'fa-eye' : 'fa-eye-slash']"></i>
-              {{ cohort.visible ? stringsStore.getString('visible') : stringsStore.getString('hidden') }}
+            <span :class="['badge p-2 mx-2', props.cohort.visible ? 'bg-success' : 'bg-secondary']">
+              <i :class="['fa me-1', props.cohort.visible ? 'fa-eye' : 'fa-eye-slash']"></i>
+              {{ props.cohort.visible ? stringsStore.getString('visible') : stringsStore.getString('hidden') }}
             </span>
           </div>
-          <div v-if="cohort.theme" class="col-md-6 mb-3">
+          <div v-if="props.cohort.theme" class="col-md-6 mb-3">
             <label class="form-label">{{ stringsStore.getString('theme') }}:</label>
-            <p class="form-control-plaintext">{{ cohort.theme }}</p>
+            <p class="form-control-plaintext">{{ props.cohort.theme }}</p>
           </div>
         </div>
       </div>
@@ -126,20 +154,20 @@ onMounted(() => {
         <h5 class="card-title mb-0">{{ stringsStore.getString('description') }}</h5>
       </div>
       <div class="card-body">
-        <div v-if="cohort.description" v-html="cohort.description"></div>
+        <div v-if="props.cohort.description" v-html="props.cohort.description"></div>
         <div v-else class="text-muted fst-italic">
           {{ stringsStore.getString('nodescriptionprovided') }}
         </div>
       </div>
     </div>
 
-    <div v-if="cohort.customfields && cohort.customfields.length > 0" class="card">
+    <div v-if="props.cohort.customfields && props.cohort.customfields.length > 0" class="card">
       <div class="card-header">
         <h5 class="card-title mb-0">{{ stringsStore.getString('customfields') }}</h5>
       </div>
       <div class="card-body">
         <div class="row">
-          <div v-for="field in cohort.customfields" :key="field.shortname" class="col-md-6 mb-3">
+          <div v-for="field in props.cohort.customfields" :key="field.shortname" class="col-md-6 mb-3">
             <label class="form-label">{{ field.name }}:</label>
             <p class="form-control-plaintext">{{ field.value }}</p>
           </div>
