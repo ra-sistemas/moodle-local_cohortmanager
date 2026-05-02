@@ -71,11 +71,14 @@ onMounted(() => {
     <!-- Content -->
     <div v-else-if="cohort" class="mt-4">
       <!-- Header -->
-      <div class="d-flex justify-content-start mb-4">
-        <button @click="goBack" class="btn btn-secondary"
-          :title="stringsStore.getString('backtolist')">
-          <i class="fa fa-arrow-left"></i> {{ stringsStore.getString('backtolist') }}
-        </button>
+      <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <h1 class="h2 mb-0">{{ cohort.name }}</h1>
+        <div class="d-flex gap-2">
+          <button @click="goBack" class="btn btn-outline-secondary"
+            :title="stringsStore.getString('back')">
+            <i class="fa fa-arrow-left"></i> {{ stringsStore.getString('back') }}
+          </button>
+        </div>
       </div>
 
       <!-- Tabs -->

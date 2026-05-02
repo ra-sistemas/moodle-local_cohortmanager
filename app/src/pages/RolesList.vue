@@ -137,80 +137,51 @@ const goBack = () => {
 </script>
 
 <template>
-  <div class="container-fluid px-3 px-md-4 py-4">
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
-      <h1 class="h3 mb-2 mb-md-0 font-weight-bold">
-        <i class="fa fa-user-tag mr-2 text-muted"></i>{{ stringsStore.getString('rolesmanagement') }}
-      </h1>
-      <div class="d-flex flex-wrap gap-2 mt-2 mt-md-0">
-        <button @click="goBack" class="btn btn-outline-secondary"
-          :title="stringsStore.getString('backtolist')">
-          <i class="fa fa-arrow-left mr-1"></i> {{ stringsStore.getString('backtolist') }}
-        </button>
+  <div class="container p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+      <h1 class="h2 mb-0">{{ stringsStore.getString('rolesmanagement') }}</h1>
+      <div class="d-flex">
         <button class="btn btn-primary" @click="openCreateModal"
           :title="stringsStore.getString('createnewrole')">
-          <i class="fa fa-plus mr-1"></i> {{ stringsStore.getString('createnewrole') }}
+          <i class="fa fa-plus"></i> {{ stringsStore.getString('createnewrole') }}
+        </button>
+        <button @click="goBack" class="btn btn-outline-secondary ml-2"
+          :title="stringsStore.getString('back')">
+          <i class="fa fa-arrow-left"></i> {{ stringsStore.getString('back') }}
         </button>
       </div>
     </div>
 
-    <div class="card shadow-sm mb-4">
-      <div class="card-body py-3">
-        <div class="row align-items-center">
-          <div class="col-md-6 col-lg-5">
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text bg-white border-right-0">
-                  <i class="fa fa-search text-muted"></i>
-                </span>
-              </div>
-              <input v-model="searchQuery" type="text" class="form-control border-left-0"
-                :placeholder="stringsStore.getString('rolesearchplaceholder')" @keyup.enter="searchRoles" />
-              <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" @click="searchRoles"
-                  :title="stringsStore.getString('search')">
-                  {{ stringsStore.getString('search') }}
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 col-lg-7 mt-2 mt-md-0">
-            <div class="d-flex justify-content-md-end align-items-center">
-              <span class="text-muted small" v-if="pagination.total > 0">
-                <i class="fa fa-list-ul mr-1"></i>
-                {{ pagination.total }} {{ stringsStore.getString('rolescount') }}
-              </span>
+    <div class="mb-4">
+      <div class="row">
+        <div class="col-12 col-md-6">
+          <div class="input-group mb-3">
+            <input v-model="searchQuery" type="text" class="form-control" :placeholder="stringsStore.getString('rolesearchplaceholder')" @keyup.enter="searchRoles" />
+            <div class="input-group-append">
+              <button class="btn btn-secondary" type="button" @click="searchRoles"
+                :title="stringsStore.getString('search')">
+                <i class="fa fa-search"></i> {{ stringsStore.getString('search') }}
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div v-if="loading" class="text-center py-5">
-      <div class="spinner-border text-primary mb-3" role="status">
-        <span class="sr-only">Loading...</span>
-      </div>
-      <p class="text-muted">{{ stringsStore.getString('loadingroles') }}</p>
+    <div v-if="loading" class="text-center p-4">
+      {{ stringsStore.getString('loadingroles') }}
     </div>
 
-    <div v-else-if="roles.length === 0" class="card shadow-sm">
-      <div class="card-body text-center py-5">
-        <div class="mb-3">
-          <i class="fa fa-user-tag fa-3x text-muted"></i>
-        </div>
-        <h4 class="text-muted mb-2">{{ stringsStore.getString('norolesfound') }}</h4>
-        <p class="text-muted mb-4">{{ stringsStore.getString('norolesfounddesc') }}</p>
-        <button class="btn btn-primary" @click="openCreateModal"
-          :title="stringsStore.getString('createnewrole')">
-          <i class="fa fa-plus mr-1"></i> {{ stringsStore.getString('createnewrole') }}
-        </button>
-      </div>
+    <div v-else-if="roles.length === 0" class="text-center py-5 text-muted">
+      <i class="fa fa-user-tag fa-3x mb-3"></i>
+      <h3 class="mb-2">{{ stringsStore.getString('norolesfound') }}</h3>
+      <p>{{ stringsStore.getString('norolesfounddesc') }}</p>
     </div>
 
     <div v-else>
       <div class="card">
         <div class="table-responsive">
-          <table class="table table-hover">
+          <table class="table table-hover mb-0">
             <thead class="table-light">
               <tr>
                 <th style="width: 60px;">{{ stringsStore.getString('roleid') }}</th>
