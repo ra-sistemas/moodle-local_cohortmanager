@@ -143,10 +143,12 @@ const goBack = () => {
         <i class="fa fa-user-tag mr-2 text-muted"></i>{{ stringsStore.getString('rolesmanagement') }}
       </h1>
       <div class="d-flex flex-wrap gap-2 mt-2 mt-md-0">
-        <button @click="goBack" class="btn btn-outline-secondary">
+        <button @click="goBack" class="btn btn-outline-secondary"
+          :title="stringsStore.getString('backtolist')">
           <i class="fa fa-arrow-left mr-1"></i> {{ stringsStore.getString('backtolist') }}
         </button>
-        <button class="btn btn-primary" @click="openCreateModal">
+        <button class="btn btn-primary" @click="openCreateModal"
+          :title="stringsStore.getString('createnewrole')">
           <i class="fa fa-plus mr-1"></i> {{ stringsStore.getString('createnewrole') }}
         </button>
       </div>
@@ -165,7 +167,8 @@ const goBack = () => {
               <input v-model="searchQuery" type="text" class="form-control border-left-0"
                 :placeholder="stringsStore.getString('rolesearchplaceholder')" @keyup.enter="searchRoles" />
               <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" @click="searchRoles">
+                <button class="btn btn-outline-secondary" type="button" @click="searchRoles"
+                  :title="stringsStore.getString('search')">
                   {{ stringsStore.getString('search') }}
                 </button>
               </div>
@@ -197,7 +200,8 @@ const goBack = () => {
         </div>
         <h4 class="text-muted mb-2">{{ stringsStore.getString('norolesfound') }}</h4>
         <p class="text-muted mb-4">{{ stringsStore.getString('norolesfounddesc') }}</p>
-        <button class="btn btn-primary" @click="openCreateModal">
+        <button class="btn btn-primary" @click="openCreateModal"
+          :title="stringsStore.getString('createnewrole')">
           <i class="fa fa-plus mr-1"></i> {{ stringsStore.getString('createnewrole') }}
         </button>
       </div>
@@ -254,7 +258,8 @@ const goBack = () => {
       <nav aria-label="Roles pagination">
         <ul class="pagination justify-content-center justify-content-md-start">
           <li class="page-item" :class="{ 'disabled': pagination.page === 1 }">
-            <button class="page-link" @click="prevPage" :disabled="pagination.page === 1">
+            <button class="page-link" @click="prevPage" :disabled="pagination.page === 1"
+              :title="stringsStore.getString('previouspage')">
               <i class="fa fa-chevron-left"></i>
             </button>
           </li>
@@ -266,7 +271,8 @@ const goBack = () => {
           </li>
 
           <li class="page-item" :class="{ 'disabled': pagination.page === totalPages }">
-            <button class="page-link" @click="nextPage" :disabled="pagination.page === totalPages">
+            <button class="page-link" @click="nextPage" :disabled="pagination.page === totalPages"
+              :title="stringsStore.getString('nextpage')">
               <i class="fa fa-chevron-right"></i>
             </button>
           </li>

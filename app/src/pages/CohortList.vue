@@ -94,29 +94,43 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
     <!-- Header -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 pb-3 border-bottom">
       <h1 class="h2 mb-2 mb-md-0">{{ stringsStore.getString('cohortmanager') }}</h1>
-      <div class="d-flex gap-2 mt-2 mt-md-0">
-        <router-link to="cohort/create" class="btn btn-primary">
+      <div class="d-flex mt-2 mt-md-0">
+        <router-link to="cohort/create" class="btn btn-primary mr-2"
+          :title="stringsStore.getString('newcohort')">
           <i class="fa fa-plus"></i> {{ stringsStore.getString('newcohort') }}
         </router-link>
-        <router-link to="roles" class="btn btn-info">
-          <i class="fa fa-user-tag"></i> {{ stringsStore.getString('rolesmanagement') }}
-        </router-link>
-        <router-link to="custom-fields" class="btn btn-secondary">
-          <i class="fa fa-cogs"></i> {{ stringsStore.getString('customfieldsmanagement') }}
-        </router-link>
+        <div class="dropdown">
+          <button class="btn btn-outline-secondary" type="button" id="managementDropdown"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+            :title="stringsStore.getString('actions')">
+            <i class="fa fa-ellipsis-v"></i>
+          </button>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="managementDropdown">
+            <router-link to="roles" class="dropdown-item"
+              :title="stringsStore.getString('rolesmanagement')">
+              <i class="fa fa-user-tag mr-2"></i> {{ stringsStore.getString('rolesmanagement') }}
+            </router-link>
+            <router-link to="custom-fields" class="dropdown-item"
+              :title="stringsStore.getString('customfieldsmanagement')">
+              <i class="fa fa-cogs mr-2"></i> {{ stringsStore.getString('customfieldsmanagement') }}
+            </router-link>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Search bar -->
     <div class="mb-4">
       <div class="row">
-        <div class="col-md-8 col-lg-6">
-          <div class="input-group">
-            <input v-model="searchQuery" type="text" class="form-control"
-              :placeholder="stringsStore.getString('searchcohorts')" @keyup.enter="searchCohorts" />
-            <button class="btn btn-secondary" @click="searchCohorts">
-              <i class="fa fa-search"></i> {{ stringsStore.getString('search') }}
-            </button>
+        <div class="col-md-6 col-lg-4">
+          <div class="input-group mb-3">
+            <input v-model="searchQuery" type="text" class="form-control" :placeholder="stringsStore.getString('searchcohorts')" @keyup.enter="searchCohorts" />
+            <div class="input-group-append">
+              <button class="btn btn-secondary" type="button" @click="searchCohorts"
+                :title="stringsStore.getString('search')">
+                <i class="fa fa-search"></i> {{ stringsStore.getString('search') }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -177,7 +191,8 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
       <nav aria-label="Cohort pagination">
         <ul class="pagination justify-content-center justify-content-md-start">
           <li class="page-item" :class="{ 'disabled': pagination.page === 1 }">
-            <button class="page-link" @click="prevPage" :disabled="pagination.page === 1">
+            <button class="page-link" @click="prevPage" :disabled="pagination.page === 1"
+              :title="stringsStore.getString('previouspage')">
               <i class="fa fa-chevron-left"></i>
             </button>
           </li>
@@ -189,7 +204,8 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
           </li>
 
           <li class="page-item" :class="{ 'disabled': pagination.page === totalPages }">
-            <button class="page-link" @click="nextPage" :disabled="pagination.page === totalPages">
+            <button class="page-link" @click="nextPage" :disabled="pagination.page === totalPages"
+              :title="stringsStore.getString('nextpage')">
               <i class="fa fa-chevron-right"></i>
             </button>
           </li>

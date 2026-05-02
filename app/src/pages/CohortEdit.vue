@@ -171,7 +171,8 @@ onMounted(() => {
       <div class="card-header d-flex justify-content-between align-items-center">
         <h1 class="h3 mb-0">{{ stringsStore.getString('editcohort') }}</h1>
         <div>
-          <button @click="goBack" class="btn btn-secondary">
+          <button @click="goBack" class="btn btn-secondary"
+            :title="stringsStore.getString('cancel')">
             <i class="fa fa-times"></i>
           </button>
         </div>
@@ -196,10 +197,12 @@ onMounted(() => {
 
         <!-- Form Actions -->
         <div class="card-footer d-flex justify-content-end gap-2">
-          <button type="button" @click="goBack" class="btn btn-secondary" :disabled="submitting">
+          <button type="button" @click="goBack" class="btn btn-secondary" :disabled="submitting"
+            :title="stringsStore.getString('cancel')">
             {{ stringsStore.getString('cancel') }}
           </button>
-          <button type="submit" class="btn btn-primary" :disabled="submitting">
+          <button type="submit" class="btn btn-primary" :disabled="submitting"
+            :title="submitting ? stringsStore.getString('saving') : stringsStore.getString('savechanges')">
             <i class="fa fa-save"></i>
             {{ submitting ? stringsStore.getString('saving') : stringsStore.getString('savechanges') }}
           </button>
@@ -212,7 +215,8 @@ onMounted(() => {
       <i class="fa fa-exclamation-triangle text-warning" style="font-size: 48px;"></i>
       <h3 class="mt-3">{{ stringsStore.getString('cohortnotfound') }}</h3>
       <p>{{ stringsStore.getString('cohortnotfound') + ' data.' }}</p>
-      <button @click="goBack" class="btn btn-primary">
+      <button @click="goBack" class="btn btn-primary"
+        :title="stringsStore.getString('backtocohortlist')">
         {{ stringsStore.getString('backtocohortlist') }}
       </button>
     </div>

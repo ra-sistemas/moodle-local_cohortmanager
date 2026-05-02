@@ -235,7 +235,8 @@ onBeforeUnmount(() => {
 <template>
     <div>
         <!-- Trigger button -->
-        <button class="btn btn-primary" @click="openModal">
+        <button class="btn btn-primary" @click="openModal"
+            :title="stringsStore.getString('addenrolinstance')">
             {{ stringsStore.getString('addenrolinstance') }}
         </button>
         
@@ -245,7 +246,8 @@ onBeforeUnmount(() => {
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">{{ modalTitle }}</h5>
-                        <button type="button" class="btn-close" @click="closeModal"></button>
+                        <button type="button" class="btn-close" @click="closeModal"
+                            :title="stringsStore.getString('close')"></button>
                     </div>
                     
                     <div class="modal-body">
@@ -339,10 +341,10 @@ onBeforeUnmount(() => {
                                                 </select>
                                             </td>
                                             <td>
-                                                <button 
+                                                <button
                                                     class="btn btn-sm btn-outline-danger"
                                                     @click="removeSelectedCourse(index)"
-                                                    title="{{ stringsStore.getString('remove') }}"
+                                                    :title="stringsStore.getString('remove')"
                                                 >
                                                     <i class="fa fa-trash"></i>
                                                 </button>
@@ -355,10 +357,12 @@ onBeforeUnmount(() => {
                     </div>
                     
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @click="closeModal">
+                        <button type="button" class="btn btn-secondary" @click="closeModal"
+                            :title="stringsStore.getString('cancel')">
                             {{ stringsStore.getString('cancel') }}
                         </button>
-                        <button type="button" class="btn btn-primary" @click="submitSelectedCourses">
+                        <button type="button" class="btn btn-primary" @click="submitSelectedCourses"
+                            :title="stringsStore.getString('add')">
                             {{ stringsStore.getString('add') }}
                         </button>
                     </div>

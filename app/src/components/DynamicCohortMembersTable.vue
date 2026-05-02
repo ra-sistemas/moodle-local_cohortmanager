@@ -24,13 +24,15 @@
         </div>
 
         <div class="d-flex gap-2 mb-3 flex-wrap">
-            <button class="btn btn-sm btn-outline-secondary" @click="toggleColumnVisibility">
+            <button class="btn btn-sm btn-outline-secondary" @click="toggleColumnVisibility"
+                :title="stringsStore.getString('columns')">
                 <i class="bi bi-grid-3x3"></i> {{ stringsStore.getString('columns') }}
             </button>
 
             <!-- Delete button - shown when users are selected -->
             <button v-if="selectedMembers.length > 0" class="btn btn-sm btn-outline-danger"
-                @click="showDeleteModal = true">
+                @click="showDeleteModal = true"
+                :title="stringsStore.getString('delete') + ' (' + selectedMembers.length + ')'">
                 <i class="bi bi-trash"></i> {{ stringsStore.getString('delete') }} ({{ selectedMembers.length }})
             </button>
         </div>
@@ -128,7 +130,8 @@
                 <nav aria-label="Members pagination">
                     <ul class="pagination justify-content-center justify-content-md-start">
                         <li class="page-item" :class="{ 'disabled': currentPage === 1 }">
-                            <button class="page-link" @click="prevPage" :disabled="currentPage === 1">
+                            <button class="page-link" @click="prevPage" :disabled="currentPage === 1"
+                                :title="stringsStore.getString('previouspage')">
                                 <i class="fa fa-chevron-left"></i>
                             </button>
                         </li>
@@ -140,7 +143,8 @@
                         </li>
 
                         <li class="page-item" :class="{ 'disabled': currentPage === totalPages }">
-                            <button class="page-link" @click="nextPage" :disabled="currentPage === totalPages">
+                            <button class="page-link" @click="nextPage" :disabled="currentPage === totalPages"
+                                :title="stringsStore.getString('nextpage')">
                                 <i class="fa fa-chevron-right"></i>
                             </button>
                         </li>

@@ -4,7 +4,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Column Visibility</h5>
-                    <button type="button" class="btn-close" @click="$emit('close')"></button>
+                    <button type="button" class="btn-close" @click="$emit('close')" :title="'Close'"></button>
                 </div>
                 <div class="modal-body">
                     <div class="form-check">
@@ -49,10 +49,10 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @click="$emit('close')">
+                    <button type="button" class="btn btn-secondary" @click="$emit('close')" :title="'Close'">
                         Close
                     </button>
-                    <button type="button" class="btn btn-primary" @click="saveColumnVisibility">
+                    <button type="button" class="btn btn-primary" @click="saveColumnVisibility" :title="'Save Changes'">
                         Save Changes
                     </button>
                 </div>

@@ -72,7 +72,8 @@ onMounted(() => {
     <div v-else-if="cohort" class="mt-4">
       <!-- Header -->
       <div class="d-flex justify-content-start mb-4">
-        <button @click="goBack" class="btn btn-secondary">
+        <button @click="goBack" class="btn btn-secondary"
+          :title="stringsStore.getString('backtolist')">
           <i class="fa fa-arrow-left"></i> {{ stringsStore.getString('backtolist') }}
         </button>
       </div>
@@ -80,22 +81,26 @@ onMounted(() => {
       <!-- Tabs -->
       <ul class="nav nav-tabs">
         <li class="nav-item">
-          <button :class="['nav-link', { active: activeTab === 'details' }]" @click="activeTab = 'details'">
+          <button :class="['nav-link', { active: activeTab === 'details' }]" @click="activeTab = 'details'"
+            :title="stringsStore.getString('details')">
             {{ stringsStore.getString('details') }}
           </button>
         </li>
         <li class="nav-item">
-          <button :class="['nav-link', { active: activeTab === 'members' }]" @click="activeTab = 'members'">
+          <button :class="['nav-link', { active: activeTab === 'members' }]" @click="activeTab = 'members'"
+            :title="stringsStore.getString('members')">
             {{ stringsStore.getString('members') }}
           </button>
         </li>
         <li class="nav-item">
-          <button :class="['nav-link', { active: activeTab === 'enrolinstances' }]" @click="activeTab = 'enrolinstances'">
+          <button :class="['nav-link', { active: activeTab === 'enrolinstances' }]" @click="activeTab = 'enrolinstances'"
+            :title="stringsStore.getString('enrolinstances')">
             {{ stringsStore.getString('enrolinstances') }}
           </button>
         </li>
         <li class="nav-item">
-          <button :class="['nav-link', { active: activeTab === 'cohortroles' }]" @click="activeTab = 'cohortroles'">
+          <button :class="['nav-link', { active: activeTab === 'cohortroles' }]" @click="activeTab = 'cohortroles'"
+            :title="stringsStore.getString('cohortroles')">
             {{ stringsStore.getString('cohortroles') }}
           </button>
         </li>
@@ -127,7 +132,8 @@ onMounted(() => {
       <i class="fa fa-exclamation-triangle fa-3x text-warning mb-3"></i>
       <h3>{{ stringsStore.getString('cohortnotfound') }}</h3>
       <p class="text-muted">{{ stringsStore.getString('cohortnotfounddetails') }}</p>
-      <button @click="goBack" class="btn btn-primary">
+      <button @click="goBack" class="btn btn-primary"
+        :title="stringsStore.getString('backtocohortlist')">
         {{ stringsStore.getString('backtocohortlist') }}
       </button>
     </div>

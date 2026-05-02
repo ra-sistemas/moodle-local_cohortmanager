@@ -34,5 +34,5 @@ const openModal = async () => {
 </script>
 
 <template>
-    <button class="btn btn-primary" @click="openModal">{{ stringsStore.getString('addroleassignment') }}</button>
+    <button class="btn btn-primary" @click="openModal" :title="stringsStore.getString('addroleassignment')">{{ stringsStore.getString('addroleassignment') }}</button>
 </template>

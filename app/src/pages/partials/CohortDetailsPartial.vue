@@ -76,7 +76,8 @@ const handleDeleteSuccess = () => {
 <template>
   <div class="tab-pane fade show active mb-2">
     <div class="d-flex justify-content-end gap-2 mb-3">
-      <button @click="editCohort" class="btn btn-primary">
+      <button @click="editCohort" class="btn btn-primary"
+        :title="stringsStore.getString('edit')">
         <i class="fa fa-edit"></i> {{ stringsStore.getString('edit') }}
       </button>
       <CohortDelete :cohort="props.cohort" @success="handleDeleteSuccess" />

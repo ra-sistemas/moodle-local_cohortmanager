@@ -48,7 +48,7 @@ onMounted(() => {
 
 <template>
   <div id="cohort-customfield-manager">
-    <button @click="goBack" class="btn btn-secondary" aria-label="{{ stringsStore.getString('backhome') }}">
+    <button @click="goBack" class="btn btn-secondary" :title="stringsStore.getString('backhome')">
       <i class="fa fa-arrow-left"></i>
       {{ stringsStore.getString('back') }}
     </button>

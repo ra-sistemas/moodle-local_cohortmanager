@@ -111,7 +111,8 @@ const goBack = () => {
     <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
       <h1 class="h3 mb-0">{{ stringsStore.getString('createnewcohort') }}</h1>
       <div>
-        <button @click="goBack" class="btn btn-secondary">
+        <button @click="goBack" class="btn btn-secondary"
+          :title="stringsStore.getString('cancel')">
           <i class="fa fa-times"></i>
         </button>
       </div>
@@ -138,10 +139,12 @@ const goBack = () => {
 
       <!-- Form Actions -->
       <div class="card-footer d-flex justify-content-end gap-2">
-        <button type="button" @click="resetForm" class="btn btn-secondary" :disabled="submitting">
+        <button type="button" @click="resetForm" class="btn btn-secondary" :disabled="submitting"
+          :title="stringsStore.getString('reset')">
           <i class="fa fa-undo"></i> {{ stringsStore.getString('reset') }}
         </button>
-        <button type="submit" class="btn btn-primary" :disabled="submitting">
+        <button type="submit" class="btn btn-primary" :disabled="submitting"
+          :title="submitting ? stringsStore.getString('creating') : stringsStore.getString('createcohort')">
           <i class="fa fa-plus"></i>
           {{ submitting ? stringsStore.getString('creating') : stringsStore.getString('createcohort') }}
         </button>

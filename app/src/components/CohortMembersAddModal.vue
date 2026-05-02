@@ -40,5 +40,5 @@ const openModal = async () => {
 
 </script>
 <template>
-    <button class="btn btn-primary" @click="openModal">{{ stringsStore.getString('addmembers') }}</button>
+    <button class="btn btn-primary" @click="openModal" :title="stringsStore.getString('addmembers')">{{ stringsStore.getString('addmembers') }}</button>
 </template>
