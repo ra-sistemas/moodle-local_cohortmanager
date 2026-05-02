@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import { getCohorts } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
@@ -8,25 +8,23 @@ import CohortDetailsPartial from './partials/CohortDetailsPartial.vue';
 import CohortMembersPartial from './partials/CohortMembersPartial.vue';
 import CohortEnrolInstancesPartial from './partials/CohortEnrolInstancesPartial.vue';
 import CohortRoleAssignmentsPartial from './partials/CohortRoleAssignmentsPartial.vue';
+import CohortDelete from '../components/CohortDelete.vue';
 import type { Cohort } from '../types/interfaces';
 import Notification from 'core/notification';
 
-// Initialize strings store
 const stringsStore = useStringsStore();
 
-// Props
 const props = defineProps<{
   id: number;
 }>();
 
-// State management
 const router = useRouter();
 const cohort = ref<Cohort | null>(null);
-
 const loading = ref(false);
 const activeTab = ref('details');
+const showDropdown = ref(false);
+const cohortDeleteRef = ref<InstanceType<typeof CohortDelete> | null>(null);
 
-// Load cohort details
 const loadCohort = async () => {
   loading.value = true;
 
@@ -49,14 +47,38 @@ const loadCohort = async () => {
   }
 };
 
-// Navigate back to list
 const goBack = () => {
   router.push('/');
 };
 
-// Initialize the component
+const editCohort = () => {
+  showDropdown.value = false;
+  router.push(`/cohort/${props.id}/edit`);
+};
+
+const triggerDelete = () => {
+  showDropdown.value = false;
+  cohortDeleteRef.value?.deleteCohort();
+};
+
+const toggleDropdown = () => {
+  showDropdown.value = !showDropdown.value;
+};
+
+const closeDropdown = (event: Event) => {
+  const target = event.target as HTMLElement;
+  if (!target.closest('.cohort-actions-dropdown')) {
+    showDropdown.value = false;
+  }
+};
+
 onMounted(() => {
   loadCohort();
+  document.addEventListener('click', closeDropdown);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', closeDropdown);
 });
 </script>
 
@@ -73,7 +95,23 @@ onMounted(() => {
       <!-- Header -->
       <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
         <h1 class="h2 mb-0">{{ cohort.name }}</h1>
-        <div class="d-flex gap-2">
+        <div class="d-flex align-items-center mr-2">
+          <div class="dropdown cohort-actions-dropdown">
+            <button class="btn btn-outline-secondary mr-2" type="button"
+              @click="toggleDropdown"
+              :aria-expanded="showDropdown"
+              :title="stringsStore.getString('actions')">
+              <i class="fa fa-ellipsis-v"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" :class="{ show: showDropdown }">
+              <button class="dropdown-item" type="button" @click="editCohort">
+                <i class="fa fa-edit"></i> {{ stringsStore.getString('edit') }}
+              </button>
+              <button class="dropdown-item text-danger" type="button" @click="triggerDelete">
+                <i class="fa fa-trash"></i> {{ stringsStore.getString('delete') }}
+              </button>
+            </div>
+          </div>
           <button @click="goBack" class="btn btn-outline-secondary"
             :title="stringsStore.getString('back')">
             <i class="fa fa-arrow-left"></i> {{ stringsStore.getString('back') }}
@@ -116,8 +154,10 @@ onMounted(() => {
           v-if="activeTab === 'details'" 
           :cohort="cohort" 
           :id="props.id"
-          @delete-success="goBack"
         />
+        
+        <!-- Hidden delete component -->
+        <CohortDelete ref="cohortDeleteRef" :cohort="cohort" @success="goBack" class="d-none" />
         
         <!-- Members Tab -->
         <CohortMembersPartial v-if="activeTab === 'members'" :cohort="cohort" />

@@ -1,37 +1,23 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
 import { useStringsStore } from '../../stores/strings';
 import { countCohortMembers, getCohortEnrolInstances, listCohortRoleAssignments } from '../../utils/moodle';
 import type { Cohort, CohortEnrolInstance } from '../../types/interfaces';
-import CohortDelete from '../../components/CohortDelete.vue';
 import Notification from 'core/notification';
 
-// Initialize strings store
 const stringsStore = useStringsStore();
 
-// Props
 const props = defineProps<{
   cohort: Cohort;
   id: number;
 }>();
 
-// Emits
-const emit = defineEmits<{
-  (e: 'delete-success'): void;
-}>();
-
-// Router
-const router = useRouter();
-
-// Statistics refs
 const totalMembers = ref(0);
 const totalEnrolInstances = ref(0);
 const totalEnrolments = ref(0);
 const totalRoleAssignments = ref(0);
 const loading = ref(false);
 
-// Load cohort statistics
 const loadStatistics = async () => {
   loading.value = true;
   try {
@@ -44,7 +30,6 @@ const loadStatistics = async () => {
     totalMembers.value = membersCount || 0;
     totalEnrolInstances.value = enrolInstancesData?.length || 0;
     
-    // Sum total enrolments from all instances
     const enrolmentsSum = (enrolInstancesData || []).reduce((sum: number, instance: CohortEnrolInstance) => {
       return sum + (instance.enroled || 0);
     }, 0);
@@ -61,28 +46,10 @@ const loadStatistics = async () => {
 onMounted(() => {
   loadStatistics();
 });
-
-// Edit cohort
-const editCohort = () => {
-  router.push(`/cohort/${props.id}/edit`);
-};
-
-// Handle cohort deletion success
-const handleDeleteSuccess = () => {
-  emit('delete-success');
-};
 </script>
 
 <template>
   <div class="tab-pane fade show active mb-2">
-    <div class="d-flex justify-content-end gap-2 mb-3">
-      <button @click="editCohort" class="btn btn-primary"
-        :title="stringsStore.getString('edit')">
-        <i class="fa fa-edit"></i> {{ stringsStore.getString('edit') }}
-      </button>
-      <CohortDelete :cohort="props.cohort" @success="handleDeleteSuccess" />
-    </div>
-
     <!-- Cohort Portrait - Statistics Summary -->
     <div class="card mb-4">
       <div class="card-header">
