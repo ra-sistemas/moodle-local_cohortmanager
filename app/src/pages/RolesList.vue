@@ -7,6 +7,7 @@ import { add } from 'core/toast';
 import { deleteCancel } from 'core/notification';
 import type { RoleFormData, Pagination } from '../types/interfaces';
 import { useRouter } from 'vue-router';
+import TablePagination from '../components/TablePagination.vue';
 
 const router = useRouter();
 
@@ -17,7 +18,7 @@ const loading = ref(false);
 const searchQuery = ref('');
 const pagination = reactive<Pagination>({
   page: 1,
-  perpage: 5,
+  perpage: 10,
   total: 0
 });
 
@@ -50,6 +51,12 @@ const searchRoles = () => {
 
 const goToPage = (page: number) => {
   pagination.page = page;
+  loadRoles();
+};
+
+const changePerPage = (value: number) => {
+  pagination.perpage = value;
+  pagination.page = 1;
   loadRoles();
 };
 
@@ -229,30 +236,15 @@ const goBack = () => {
       </div>
     </div>
 
-    <div v-if="totalPages > 1" class="mt-4">
-      <nav aria-label="Roles pagination">
-        <ul class="pagination justify-content-center justify-content-md-start">
-          <li class="page-item" :class="{ 'disabled': pagination.page === 1 }">
-            <button class="page-link" @click="prevPage" :disabled="pagination.page === 1"
-              :title="stringsStore.getString('previouspage')">
-              <i class="fa fa-chevron-left"></i>
-            </button>
-          </li>
-
-          <li class="page-item active">
-            <span class="page-link">
-              {{ paginationInfo }}
-            </span>
-          </li>
-
-          <li class="page-item" :class="{ 'disabled': pagination.page === totalPages }">
-            <button class="page-link" @click="nextPage" :disabled="pagination.page === totalPages"
-              :title="stringsStore.getString('nextpage')">
-              <i class="fa fa-chevron-right"></i>
-            </button>
-          </li>
-        </ul>
-      </nav>
-    </div>
+    <TablePagination
+      :visible="roles.length > 0"
+      :current-page="pagination.page"
+      :total-pages="totalPages"
+      :pagination-info="paginationInfo"
+      :per-page="pagination.perpage"
+      @update:per-page="changePerPage"
+      @prev="prevPage"
+      @next="nextPage"
+    />
   </div>
 </template>

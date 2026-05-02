@@ -1,34 +1,69 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useStringsStore } from '../../stores/strings';
-import type { Cohort, CohortRoleAssignment } from '../../types/interfaces';
+import type { Cohort, CohortRoleAssignment, Pagination } from '../../types/interfaces';
 import { listCohortRoleAssignments } from '../../utils/moodle';
 import Notification from 'core/notification';
 import CohortRoleAssignmentAddModal from '../../components/CohortRoleAssignmentAddModal.vue';
 import CohortRoleAssignmentDelete from '../../components/CohortRoleAssignmentDelete.vue';
+import TablePagination from '../../components/TablePagination.vue';
 
 const stringsStore = useStringsStore();
 
 const assignments = ref<CohortRoleAssignment[]>([]);
-const assignmentsCount = ref(0);
 const loading = ref(false);
 const lastSyncTime = ref(0);
 const nextSyncTime = ref(0);
+const pagination = ref<Pagination>({
+  page: 1,
+  perpage: 10,
+  total: 0
+});
+
+const totalPages = computed(() => Math.ceil(pagination.value.total / pagination.value.perpage));
+
+const paginationInfo = computed(() => {
+  const start = (pagination.value.page - 1) * pagination.value.perpage + 1;
+  const end = Math.min(pagination.value.page * pagination.value.perpage, pagination.value.total);
+  return `${start}-${end} of ${pagination.value.total}`;
+});
 
 const loadAssignments = async () => {
   loading.value = true;
   try {
     const response = await listCohortRoleAssignments({
-      cohortid: props.cohort.id
+      cohortid: props.cohort.id,
+      page: (pagination.value.page - 1),
+      perpage: pagination.value.perpage
     });
     assignments.value = response?.assignments || [];
-    assignmentsCount.value = response?.total || 0;
+    pagination.value.total = response?.total || 0;
     lastSyncTime.value = response?.lastruntime || 0;
     nextSyncTime.value = response?.nextruntime || 0;
   } catch (err) {
     Notification.exception(err);
   } finally {
     loading.value = false;
+  }
+};
+
+const changePerPage = (value: number) => {
+  pagination.value.perpage = value;
+  pagination.value.page = 1;
+  loadAssignments();
+};
+
+const prevPage = () => {
+  if (pagination.value.page > 1) {
+    pagination.value.page--;
+    loadAssignments();
+  }
+};
+
+const nextPage = () => {
+  if (pagination.value.page < totalPages.value) {
+    pagination.value.page++;
+    loadAssignments();
   }
 };
 
@@ -60,7 +95,7 @@ let props = defineProps<{
   <div class="tab-pane fade show active">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h5 class="mb-0">{{ stringsStore.getString('cohortroleassignments') }}</h5>
-      <span class="badge bg-primary my-2 p-2"><i class="fa fa-sitemap me-1"></i>{{ assignmentsCount }} {{ stringsStore.getString('cohortroleassignmentscount') }}</span>
+      <span class="badge bg-primary my-2 p-2"><i class="fa fa-sitemap me-1"></i>{{ pagination.total }} {{ stringsStore.getString('cohortroleassignmentscount') }}</span>
     </div>
 
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -134,6 +169,17 @@ let props = defineProps<{
           </div>
         </div>
       </div>
+
+      <TablePagination
+        :visible="assignments.length > 0"
+        :current-page="pagination.page"
+        :total-pages="totalPages"
+        :pagination-info="paginationInfo"
+        :per-page="pagination.perpage"
+        @update:per-page="changePerPage"
+        @prev="prevPage"
+        @next="nextPage"
+      />
     </div>
   </div>
 </template>

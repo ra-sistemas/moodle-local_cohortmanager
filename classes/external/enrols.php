@@ -42,7 +42,9 @@ class enrols extends external_api
     public static function get_cohort_enrol_instances_parameters()
     {
         return new external_function_parameters([
-            'cohortid' => new external_value(PARAM_INT, 'ID of the cohort')
+            'cohortid' => new external_value(PARAM_INT, 'ID of the cohort'),
+            'page' => new external_value(PARAM_INT, 'Page number (0-indexed)', VALUE_DEFAULT, 0),
+            'perpage' => new external_value(PARAM_INT, 'Records per page', VALUE_DEFAULT, 25),
         ]);
     }
 
@@ -52,23 +54,29 @@ class enrols extends external_api
      * @param int $cohortid ID of the cohort
      * @return array Array of enrol instances
      */
-    public static function get_cohort_enrol_instances($cohortid)
+    public static function get_cohort_enrol_instances($cohortid, $page, $perpage)
     {
         global $DB;
 
-        // Validate parameters
         $params = self::validate_parameters(self::get_cohort_enrol_instances_parameters(), [
-            'cohortid' => $cohortid
+            'cohortid' => $cohortid,
+            'page' => $page,
+            'perpage' => $perpage,
         ]);
 
-        // Get cohort enrol instances where customint1 equals the cohortid
         $sql = "SELECT e.*, c.fullname, c.shortname
                   FROM {enrol} e
                   JOIN {course} c ON e.courseid = c.id
                  WHERE e.enrol = 'cohort' AND e.customint1 = :cohortid
                  ORDER BY c.fullname";
 
-        $enrolinstances = $DB->get_records_sql($sql, ['cohortid' => $params['cohortid']]);
+        $total = $DB->count_records_sql(
+            "SELECT COUNT(*) FROM {enrol} WHERE enrol = 'cohort' AND customint1 = :cohortid",
+            ['cohortid' => $params['cohortid']]
+        );
+
+        $enrolinstances = $DB->get_records_sql($sql, ['cohortid' => $params['cohortid']],
+            $params['page'] * $params['perpage'], $params['perpage']);
 
         $result = [];
         foreach ($enrolinstances as $instance) {
@@ -111,34 +119,40 @@ class enrols extends external_api
             ];
         }
 
-        return $result;
+        return [
+            'instances' => $result,
+            'total' => $total,
+        ];
     }
 
     /**
      * Returns description of method result value
      *
-     * @return external_multiple_structure
+     * @return external_single_structure
      */
     public static function get_cohort_enrol_instances_returns()
     {
-        return new external_multiple_structure(
-            new external_single_structure([
-                'id' => new external_value(PARAM_INT, 'ID of the enrol instance'),
-                'courseid' => new external_value(PARAM_INT, 'ID of the course'),
-                'coursefullname' => new external_value(PARAM_RAW, 'Name of the course'),
-                'courseshortname' => new external_value(PARAM_RAW, 'Short name of the course'),
-                'roleid' => new external_value(PARAM_INT, 'ID of the role'),
-                'rolename' => new external_value(PARAM_RAW, 'Name of the role'),
-                'status' => new external_value(PARAM_INT, 'Status of the enrol instance'),
-                'cohortid' => new external_value(PARAM_INT, 'Custom integer 1 (cohort ID)'),
-                'enroled' => new external_value(PARAM_INT, 'Counter of users enroled in instances'),
-                'groupid' => new external_value(PARAM_INT, 'Custom integer 2 (group ID)'),
-                'groupname' => new external_value(PARAM_RAW, 'Group name'),
-                'groupmembers' => new external_value(PARAM_INT, 'Group members counter'),
-                'timecreated' => new external_value(PARAM_INT, 'Time created'),
-                'timemodified' => new external_value(PARAM_INT, 'Time modified'),
-            ])
-        );
+        return new external_single_structure([
+            'instances' => new external_multiple_structure(
+                new external_single_structure([
+                    'id' => new external_value(PARAM_INT, 'ID of the enrol instance'),
+                    'courseid' => new external_value(PARAM_INT, 'ID of the course'),
+                    'coursefullname' => new external_value(PARAM_RAW, 'Name of the course'),
+                    'courseshortname' => new external_value(PARAM_RAW, 'Short name of the course'),
+                    'roleid' => new external_value(PARAM_INT, 'ID of the role'),
+                    'rolename' => new external_value(PARAM_RAW, 'Name of the role'),
+                    'status' => new external_value(PARAM_INT, 'Status of the enrol instance'),
+                    'cohortid' => new external_value(PARAM_INT, 'Custom integer 1 (cohort ID)'),
+                    'enroled' => new external_value(PARAM_INT, 'Counter of users enroled in instances'),
+                    'groupid' => new external_value(PARAM_INT, 'Custom integer 2 (group ID)'),
+                    'groupname' => new external_value(PARAM_RAW, 'Group name'),
+                    'groupmembers' => new external_value(PARAM_INT, 'Group members counter'),
+                    'timecreated' => new external_value(PARAM_INT, 'Time created'),
+                    'timemodified' => new external_value(PARAM_INT, 'Time modified'),
+                ])
+            ),
+            'total' => new external_value(PARAM_INT, 'Total number of enrol instances'),
+        ]);
     }
 
     /**

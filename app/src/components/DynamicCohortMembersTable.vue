@@ -126,31 +126,16 @@
             </div>
 
             <!-- Pagination -->
-            <div v-if="totalPages > 1" class="mt-4">
-                <nav aria-label="Members pagination">
-                    <ul class="pagination justify-content-center justify-content-md-start">
-                        <li class="page-item" :class="{ 'disabled': currentPage === 1 }">
-                            <button class="page-link" @click="prevPage" :disabled="currentPage === 1"
-                                :title="stringsStore.getString('previouspage')">
-                                <i class="fa fa-chevron-left"></i>
-                            </button>
-                        </li>
-
-                        <li class="page-item active">
-                            <span class="page-link">
-                                {{ paginationInfo }}
-                            </span>
-                        </li>
-
-                        <li class="page-item" :class="{ 'disabled': currentPage === totalPages }">
-                            <button class="page-link" @click="nextPage" :disabled="currentPage === totalPages"
-                                :title="stringsStore.getString('nextpage')">
-                                <i class="fa fa-chevron-right"></i>
-                            </button>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+            <TablePagination
+                :visible="members.length > 0"
+                :current-page="currentPage"
+                :total-pages="totalPages"
+                :pagination-info="paginationInfo"
+                :per-page="pageSize"
+                @update:per-page="changePerPage"
+                @prev="prevPage"
+                @next="nextPage"
+            />
         </div>
 
         <!-- Column visibility modal -->
@@ -179,6 +164,7 @@ import type { CohortMember } from '@/types/interfaces';
 import { getCohortMembers, deleteCohortMembers } from '../utils/moodle';
 import ColumnVisibilityModal from './ColumnVisibilityModal.vue';
 import DeleteConfirmationModal from './DeleteConfirmationModal.vue';
+import TablePagination from './TablePagination.vue';
 import { useStringsStore } from '@/stores/strings';
 
 // Define props
@@ -195,7 +181,7 @@ const totalRows = ref(0);
 const loading = ref(false);
 const error = ref<string | null>(null);
 const currentPage = ref(1);
-const pageSize = ref(20);
+const pageSize = ref(10);
 const sortData = ref<{ sortby: string, sortorder: number }[]>([]);
 const filters = ref<{ name: string, value: string }[]>([]);
 const searchQuery = ref('');
@@ -283,6 +269,12 @@ const nextPage = () => {
     if (currentPage.value < totalPages.value) {
         goToPage(currentPage.value + 1);
     }
+};
+
+const changePerPage = (value: number) => {
+    pageSize.value = value;
+    currentPage.value = 1;
+    fetchMembers();
 };
 
 const handleSearch = () => {

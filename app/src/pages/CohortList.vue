@@ -5,6 +5,7 @@ import { searchCohorts as searchCohortsApi } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
 import Notification from 'core/notification';
 import type { Cohort, Pagination } from '../types/interfaces';
+import TablePagination from '../components/TablePagination.vue';
 
 // Initialize strings store
 const stringsStore = useStringsStore();
@@ -18,7 +19,7 @@ const loading = ref(false);
 const searchQuery = ref('');
 const pagination = reactive<Pagination>({
   page: 1,
-  perpage: 5,
+  perpage: 10,
   total: 0
 });
 
@@ -55,6 +56,12 @@ const searchCohorts = () => {
 // Pagination handlers
 const goToPage = (page: number) => {
   pagination.page = page;
+  loadCohorts();
+};
+
+const changePerPage = (value: number) => {
+  pagination.perpage = value;
+  pagination.page = 1;
   loadCohorts();
 };
 
@@ -159,8 +166,8 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
         <table class="table table-hover mb-0">
           <thead class="table-light">
             <tr>
-              <th>{{ stringsStore.getString('name') }}</th>
               <th>{{ stringsStore.getString('id') }}</th>
+              <th>{{ stringsStore.getString('name') }}</th>
               <th>{{ stringsStore.getString('members') }}</th>
               <th>{{ stringsStore.getString('cohortenrolinstances') }}</th>
               <th class="text-center">{{ stringsStore.getString('actions') }}</th>
@@ -168,12 +175,12 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
           </thead>
           <tbody>
             <tr v-for="cohort in cohorts" :key="cohort.id">
+              <td>{{ cohort.id }}</td>
               <td>
                 <a href="#" class="text-decoration-none" @click.prevent="viewCohort(cohort)">
                   <strong>{{ cohort.name }}</strong>
                 </a>
               </td>
-              <td>{{ cohort.id }}</td>
               <td>{{ cohort.members }}</td>
               <td>{{ cohort.enrols }}</td>
               <td class="text-center">
@@ -191,31 +198,16 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
     </div>
 
     <!-- Pagination -->
-    <div v-if="totalPages > 1" class="mt-4">
-      <nav aria-label="Cohort pagination">
-        <ul class="pagination justify-content-center justify-content-md-start">
-          <li class="page-item" :class="{ 'disabled': pagination.page === 1 }">
-            <button class="page-link" @click="prevPage" :disabled="pagination.page === 1"
-              :title="stringsStore.getString('previouspage')">
-              <i class="fa fa-chevron-left"></i>
-            </button>
-          </li>
-
-          <li class="page-item active">
-            <span class="page-link">
-              {{ paginationInfo }}
-            </span>
-          </li>
-
-          <li class="page-item" :class="{ 'disabled': pagination.page === totalPages }">
-            <button class="page-link" @click="nextPage" :disabled="pagination.page === totalPages"
-              :title="stringsStore.getString('nextpage')">
-              <i class="fa fa-chevron-right"></i>
-            </button>
-          </li>
-        </ul>
-      </nav>
-    </div>
+    <TablePagination
+      :visible="cohorts.length > 0"
+      :current-page="pagination.page"
+      :total-pages="totalPages"
+      :pagination-info="paginationInfo"
+      :per-page="pagination.perpage"
+      @update:per-page="changePerPage"
+      @prev="prevPage"
+      @next="nextPage"
+    />
   </div>
 </template>
 

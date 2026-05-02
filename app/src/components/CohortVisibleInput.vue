@@ -19,15 +19,15 @@ const updateValue = (e: Event) => {
 
 <template>
   <div class="mb-3">
-    <div class="form-check">
-      <input 
-        :checked="modelValue" 
+    <div class="custom-control custom-checkbox">
+      <input
+        :checked="modelValue"
         @change="updateValue"
-        type="checkbox" 
-        class="form-check-input" 
-        id="visible" 
+        type="checkbox"
+        class="custom-control-input"
+        id="visible"
       />
-      <label class="form-check-label" for="visible">{{ stringsStore.getString('visible') }}</label>
+      <label class="custom-control-label" for="visible">{{ stringsStore.getString('visible') }}</label>
     </div>
     <div class="form-text">{{ stringsStore.getString('makecohortvisible') }}</div>
   </div>

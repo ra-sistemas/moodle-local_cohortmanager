@@ -157,28 +157,27 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="mb-4">
+  <div class="mb-3">
     <label class="form-label">{{ stringsStore.getString('context') }}</label>
-    
-    <!-- Searchable Select Dropdown -->
+
     <div class="context-select-dropdown position-relative">
       <div
-        class="form-control d-flex justify-content-between align-items-center"
+        class="custom-select d-flex justify-content-between align-items-center"
         @click="toggleDropdown"
         :class="{ 'active': isDropdownOpen }"
+        style="cursor: pointer;"
       >
-        <span v-if="selectedOption" class="flex-grow-1">
+        <span v-if="selectedOption" class="text-truncate flex-grow-1">
+          <i class="fa mr-1" :class="selectedOption.type !== 'system' ? 'fa-book text-info' : 'fa-desktop text-secondary'"></i>
           {{ selectedOption.label }}
         </span>
         <span v-else class="text-muted">
           {{ stringsStore.getString('selectcontext') }}
         </span>
-        <i class="fa fa-chevron-down ms-2"></i>
+        <i class="fa fa-chevron-down ml-2 small"></i>
       </div>
-      
-      <!-- Dropdown Menu -->
-      <div v-if="isDropdownOpen" class="dropdown-menu show w-100">
-        <!-- Search Input -->
+
+      <div v-if="isDropdownOpen" class="dropdown-menu show w-100 shadow-sm">
         <div class="px-3 py-2 border-bottom">
           <input
             type="text"
@@ -188,31 +187,29 @@ onMounted(() => {
             @click.stop
           />
         </div>
-        
-        <!-- Options List -->
-        <div class="dropdown-list" style="max-height: 200px; overflow-y: auto;">         
-          <!-- Context List Options -->
+
+        <div class="dropdown-list" style="max-height: 200px; overflow-y: auto;">
           <template v-if="filteredContextList.length > 0">
-            <div
+            <button
+              type="button"
               v-for="context in filteredContextList"
               :key="context.value"
-              class="dropdown-item cursor-pointer"
+              class="dropdown-item d-flex align-items-center"
+              :class="{ 'active': selectedOption && selectedOption.value === context.value }"
               @click="selectOption(context)"
             >
-              <i class="fa me-2" :class="context.type != 'system' ? 'fa-book' : 'fa-desktop'"></i>
+              <i class="fa mr-2" :class="context.type !== 'system' ? 'fa-book text-info' : 'fa-desktop text-secondary'"></i>
               {{ context.label }}
-            </div>
+            </button>
           </template>
-          
-          <!-- No Results -->
+
           <div v-else class="dropdown-item text-muted text-center py-3">
-            {{ stringsStore.getString('nocontextsfound') }}
+            <i class="fa fa-search mr-1"></i> {{ stringsStore.getString('nocontextsfound') }}
           </div>
         </div>
       </div>
     </div>
-    
-    <!-- Description for non-system contexts -->
+
     <div v-if="contextType !== 'system'" class="form-text">
       {{ stringsStore.getString('entercoursecontextid') }}
     </div>
@@ -220,33 +217,28 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.context-select-dropdown .form-control {
-  cursor: pointer;
-  border: 1px solid #ced4da;
-  transition: border-color 0.15s ease-in-out;
+.context-select-dropdown .custom-select {
+  padding: 0.375rem 0.75rem;
+  height: auto;
+  min-height: calc(1.5em + 0.75rem + 2px);
 }
 
-.context-select-dropdown .form-control:hover,
-.context-select-dropdown .form-control.active {
+.context-select-dropdown .custom-select:hover {
+  border-color: #80bdff;
+}
+
+.context-select-dropdown .custom-select.active {
   border-color: #80bdff;
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-.dropdown-item {
-  padding: 0.5rem 1rem;
-  border-bottom: 1px solid #f1f1f1;
+.dropdown-item.active,
+.dropdown-item:active {
+  background-color: #e9ecef;
+  color: #212529;
 }
 
 .dropdown-item:hover {
   background-color: #f8f9fa;
-}
-
-.dropdown-item i {
-  color: #6c757d;
-}
-
-.dropdown-list {
-  border: 1px solid #ced4da;
-  border-top: none;
 }
 </style>

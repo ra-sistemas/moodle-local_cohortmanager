@@ -28,9 +28,9 @@ const loadStatistics = async () => {
     ]);
 
     totalMembers.value = membersCount || 0;
-    totalEnrolInstances.value = enrolInstancesData?.length || 0;
-    
-    const enrolmentsSum = (enrolInstancesData || []).reduce((sum: number, instance: CohortEnrolInstance) => {
+    totalEnrolInstances.value = enrolInstancesData?.total || 0;
+
+    const enrolmentsSum = (enrolInstancesData?.instances || []).reduce((sum: number, instance: CohortEnrolInstance) => {
       return sum + (instance.enroled || 0);
     }, 0);
     totalEnrolments.value = enrolmentsSum;

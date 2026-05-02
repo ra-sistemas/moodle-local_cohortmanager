@@ -54,16 +54,15 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="mb-4">
+  <div class="mb-3">
     <label for="theme" class="form-label">{{ stringsStore.getString('theme') }}</label>
 
-    <!-- Error state -->
-    <div v-if="error" class="alert alert-warning">
+    <div v-if="error" class="alert alert-warning py-2 small">
       {{ error }}
     </div>
 
-    <!-- Select dropdown -->
-    <select v-else id="theme" v-model="selectedTheme" class="form-select">
+    <select v-else id="theme" v-model="selectedTheme" class="custom-select">
+      <option value="">-</option>
       <option v-for="option in themeOptions" :key="option.value" :value="option.value">
         {{ option.label }}
       </option>
