@@ -284,3 +284,4 @@ $string['assignedon'] = 'Assigned on';
 $string['deletethisassignment'] = 'Delete this assignment';
 $string['assigneduserscount'] = 'Assignments';
 $string['perpage'] = 'Per page';
+$string['formvalidationerror'] = 'Please correct the errors in the form.';
