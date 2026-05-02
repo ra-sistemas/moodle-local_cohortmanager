@@ -212,6 +212,11 @@ const deleteCohortEnrolInstance = async (args: Object): Promise<any> => {
   return response;
 };
 
+const toggleCohortEnrolInstanceStatus = async (args: Object): Promise<any> => {
+  const response = await ajax('local_cohortmanager_toggle_cohort_enrol_instance_status', args);
+  return response;
+};
+
 /**
  * Get user context roles with treatment
  */
@@ -476,6 +481,7 @@ export {
   createCohortEnrolInstances,
   getCourseGroups,
   deleteCohortEnrolInstance,
+  toggleCohortEnrolInstanceStatus,
   getUserContextRoles,
   getRole,
   createRole,

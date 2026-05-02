@@ -95,57 +95,57 @@ onBeforeUnmount(() => {
       <!-- Header -->
       <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
         <h1 class="h2 mb-0">{{ cohort.name }}</h1>
-        <div class="d-flex align-items-center mr-2">
-          <div class="dropdown cohort-actions-dropdown">
-            <button class="btn btn-outline-secondary mr-2" type="button"
-              @click="toggleDropdown"
-              :aria-expanded="showDropdown"
-              :title="stringsStore.getString('actions')">
-              <i class="fa fa-ellipsis-v"></i>
-            </button>
-            <div class="dropdown-menu dropdown-menu-right" :class="{ show: showDropdown }">
-              <button class="dropdown-item" type="button" @click="editCohort">
-                <i class="fa fa-edit"></i> {{ stringsStore.getString('edit') }}
-              </button>
-              <button class="dropdown-item text-danger" type="button" @click="triggerDelete">
-                <i class="fa fa-trash"></i> {{ stringsStore.getString('delete') }}
-              </button>
-            </div>
-          </div>
-          <button @click="goBack" class="btn btn-outline-secondary"
-            :title="stringsStore.getString('back')">
-            <i class="fa fa-arrow-left"></i> {{ stringsStore.getString('back') }}
-          </button>
-        </div>
+        <button @click="goBack" class="btn btn-outline-secondary"
+          :title="stringsStore.getString('back')">
+          <i class="fa fa-arrow-left"></i> {{ stringsStore.getString('back') }}
+        </button>
       </div>
 
       <!-- Tabs -->
-      <ul class="nav nav-tabs">
-        <li class="nav-item">
-          <button :class="['nav-link', { active: activeTab === 'details' }]" @click="activeTab = 'details'"
-            :title="stringsStore.getString('details')">
-            {{ stringsStore.getString('details') }}
+      <div class="d-flex justify-content-between align-items-center">
+        <ul class="nav nav-tabs flex-grow-1">
+          <li class="nav-item">
+            <button :class="['nav-link', { active: activeTab === 'details' }]" @click="activeTab = 'details'"
+              :title="stringsStore.getString('details')">
+              {{ stringsStore.getString('details') }}
+            </button>
+          </li>
+          <li class="nav-item">
+            <button :class="['nav-link', { active: activeTab === 'members' }]" @click="activeTab = 'members'"
+              :title="stringsStore.getString('members')">
+              {{ stringsStore.getString('members') }}
+            </button>
+          </li>
+          <li class="nav-item">
+            <button :class="['nav-link', { active: activeTab === 'enrolinstances' }]" @click="activeTab = 'enrolinstances'"
+              :title="stringsStore.getString('enrolinstances')">
+              {{ stringsStore.getString('enrolinstances') }}
+            </button>
+          </li>
+          <li class="nav-item">
+            <button :class="['nav-link', { active: activeTab === 'cohortroles' }]" @click="activeTab = 'cohortroles'"
+              :title="stringsStore.getString('cohortroles')">
+              {{ stringsStore.getString('cohortroles') }}
+            </button>
+          </li>
+        </ul>
+        <div class="dropdown cohort-actions-dropdown ml-2 mb-1">
+          <button class="btn btn-outline-secondary" type="button"
+            @click="toggleDropdown"
+            :aria-expanded="showDropdown"
+            :title="stringsStore.getString('actions')">
+            <i class="fa fa-ellipsis-v"></i>
           </button>
-        </li>
-        <li class="nav-item">
-          <button :class="['nav-link', { active: activeTab === 'members' }]" @click="activeTab = 'members'"
-            :title="stringsStore.getString('members')">
-            {{ stringsStore.getString('members') }}
-          </button>
-        </li>
-        <li class="nav-item">
-          <button :class="['nav-link', { active: activeTab === 'enrolinstances' }]" @click="activeTab = 'enrolinstances'"
-            :title="stringsStore.getString('enrolinstances')">
-            {{ stringsStore.getString('enrolinstances') }}
-          </button>
-        </li>
-        <li class="nav-item">
-          <button :class="['nav-link', { active: activeTab === 'cohortroles' }]" @click="activeTab = 'cohortroles'"
-            :title="stringsStore.getString('cohortroles')">
-            {{ stringsStore.getString('cohortroles') }}
-          </button>
-        </li>
-      </ul>
+          <div class="dropdown-menu dropdown-menu-right" :class="{ show: showDropdown }">
+            <button class="dropdown-item" type="button" @click="editCohort">
+              <i class="fa fa-edit"></i> {{ stringsStore.getString('edit') }}
+            </button>
+            <button class="dropdown-item text-danger" type="button" @click="triggerDelete">
+              <i class="fa fa-trash"></i> {{ stringsStore.getString('delete') }}
+            </button>
+          </div>
+        </div>
+      </div>
 
       <!-- Tab Content -->
       <div class="tab-content mb-2">

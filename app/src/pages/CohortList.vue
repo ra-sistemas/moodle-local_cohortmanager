@@ -94,11 +94,16 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
       <h1 class="h2 mb-0">{{ stringsStore.getString('cohortmanager') }}</h1>
-      <div class="d-flex gap-2">
-        <router-link to="cohort/create" class="btn btn-primary mr-2"
-          :title="stringsStore.getString('newcohort')">
-          <i class="fa fa-plus"></i> {{ stringsStore.getString('newcohort') }}
-        </router-link>
+    </div>
+
+    <!-- Add cohort button -->
+    <div v-if="!loading" class="mb-3">
+      <div class="d-flex justify-content-between">
+        <div>
+          <router-link to="cohort/create" class="btn btn-primary mr-2" :title="stringsStore.getString('addcohort')">
+            {{ stringsStore.getString('addcohort') }}
+          </router-link>
+        </div>
         <div class="dropdown">
           <button class="btn btn-outline-secondary" type="button" id="managementDropdown"
             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
@@ -136,7 +141,6 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
       </div>
     </div>
 
-
     <!-- Loading state -->
     <div v-if="loading" class="text-center p-4">
       {{ stringsStore.getString('loading') }}
@@ -150,7 +154,7 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
     </div>
 
     <!-- Cohort table -->
-    <div v-else class="card">
+    <div v-if="cohorts.length > 0" class="card">
       <div class="table-responsive">
         <table class="table table-hover mb-0">
           <thead class="table-light">

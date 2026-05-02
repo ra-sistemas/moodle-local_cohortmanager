@@ -30,6 +30,7 @@ $string['pluginname'] = 'Cohort Manager';
 // App component strings
 $string['cohortmanager'] = 'Cohort Manager';
 $string['newcohort'] = 'New Cohort';
+$string['addcohort'] = 'Add cohort';
 $string['searchcohorts'] = 'Search...';
 $string['loadingcohorts'] = 'Loading...';
 $string['name'] = 'Name';
@@ -175,6 +176,13 @@ $string['deleteenrolinstance'] = 'Delete enrol instance';
 $string['deleteenrolinstanceconfirmation'] = 'Are you sure you want to delete the enrol instance for "%s"?';
 $string['deleteenrolinstancewarning'] = 'Warning: This will remove {$a} user enrolments from this course.';
 $string['enrolinstancedeletedsuccessfully'] = 'Enrol instance deleted successfully';
+$string['searchenrolinstances'] = 'Search enrol instances...';
+$string['filterbystatus'] = 'Filter by status';
+$string['all'] = 'All';
+$string['togglestatus'] = 'Toggle status';
+$string['enrolinstancestatusupdated'] = 'Enrol instance status updated successfully';
+$string['errortogglingstatus'] = 'Error updating enrol instance status';
+$string['enrolinstanceupdated'] = 'Enrol instance updated successfully';
 
 // Roles management component strings
 $string['rolesmanagement'] = 'Roles Management';
@@ -188,6 +196,7 @@ $string['roleactions'] = 'Actions';
 $string['editrole'] = 'Edit';
 $string['deleterole'] = 'Delete';
 $string['createnewrole'] = 'Create New Role';
+$string['addnewrole'] = 'Add new role';
 $string['rolecreatedsuccessfully'] = 'Role created successfully';
 $string['roleupdatedsuccessfully'] = 'Role updated successfully';
 $string['roledeletedsuccessfully'] = 'Role deleted successfully';

@@ -30,6 +30,7 @@ $string['pluginname'] = 'Gerenciador de Coortes';
 // App component strings
 $string['cohortmanager'] = 'Gerenciador de Coortes';
 $string['newcohort'] = 'Nova';
+$string['addcohort'] = 'Adicionar coorte';
 $string['searchcohorts'] = 'Buscar...';
 $string['loadingcohorts'] = 'Carregando...';
 $string['name'] = 'Nome';
@@ -175,6 +176,13 @@ $string['deleteenrolinstance'] = 'Excluir matrícula';
 $string['deleteenrolinstanceconfirmation'] = 'Tem certeza de que deseja excluir a matrícula para "%s"?';
 $string['deleteenrolinstancewarning'] = 'Aviso: Isso removerá {$a} matrículas de usuários deste curso.';
 $string['enrolinstancedeletedsuccessfully'] = 'Matrícula excluída com sucesso';
+$string['searchenrolinstances'] = 'Buscar matrículas...';
+$string['filterbystatus'] = 'Filtrar por status';
+$string['all'] = 'Todos';
+$string['togglestatus'] = 'Alternar status';
+$string['enrolinstancestatusupdated'] = 'Status da matrícula atualizado com sucesso';
+$string['errortogglingstatus'] = 'Erro ao atualizar status da matrícula';
+$string['enrolinstanceupdated'] = 'Matrícula atualizada com sucesso';
 
 // Roles management component strings
 $string['rolesmanagement'] = 'Administração de Papéis';
@@ -190,6 +198,7 @@ $string['roleactions'] = 'Ações';
 $string['editrole'] = 'Editar';
 $string['deleterole'] = 'Excluir';
 $string['createnewrole'] = 'Criar Novo Papel';
+$string['addnewrole'] = 'Adicionar novo papel';
 $string['rolecreatedsuccessfully'] = 'Papel criado com sucesso';
 $string['roleupdatedsuccessfully'] = 'Papel atualizado com sucesso';
 $string['roledeletedsuccessfully'] = 'Papel removido com sucesso';

@@ -664,4 +664,53 @@ class enrols extends external_api
             'message' => new external_value(PARAM_TEXT, 'Success or error message'),
         ]);
     }
+
+    public static function toggle_cohort_enrol_instance_status_parameters()
+    {
+        return new external_function_parameters([
+            'enrolinstanceid' => new external_value(PARAM_INT, 'The enrol instance id to toggle status'),
+        ]);
+    }
+
+    public static function toggle_cohort_enrol_instance_status($enrolinstanceid)
+    {
+        global $DB;
+
+        $params = self::validate_parameters(self::toggle_cohort_enrol_instance_status_parameters(), [
+            'enrolinstanceid' => $enrolinstanceid
+        ]);
+
+        $instance = $DB->get_record('enrol', [
+            'id' => $params['enrolinstanceid'],
+            'enrol' => 'cohort'
+        ]);
+
+        if (!$instance) {
+            throw new moodle_exception('invalidinstance', 'enrol_cohort', '', $params['enrolinstanceid']);
+        }
+
+        $context = context_course::instance($instance->courseid);
+        self::validate_context($context);
+        require_capability('enrol/cohort:config', $context);
+
+        $newstatus = $instance->status ? 0 : 1;
+        $instance->status = $newstatus;
+        $instance->timemodified = time();
+        $DB->update_record('enrol', $instance);
+
+        return [
+            'success' => true,
+            'status' => $newstatus,
+            'message' => get_string('enrolinstancestatusupdated', 'local_cohortmanager')
+        ];
+    }
+
+    public static function toggle_cohort_enrol_instance_status_returns()
+    {
+        return new external_single_structure([
+            'success' => new external_value(PARAM_BOOL, 'Whether the toggle was successful'),
+            'status' => new external_value(PARAM_INT, 'The new status value (0=inactive, 1=active)'),
+            'message' => new external_value(PARAM_TEXT, 'Success or error message'),
+        ]);
+    }
 }

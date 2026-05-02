@@ -1,22 +1,45 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useStringsStore } from '../../stores/strings';
 import type { Cohort, CohortEnrolInstance } from '../../types/interfaces';
-import { getCohortEnrolInstances, countCohortEnrolInstances } from '../../utils/moodle';
-// import { add } from 'core/toast';
+import { getCohortEnrolInstances, countCohortEnrolInstances, toggleCohortEnrolInstanceStatus } from '../../utils/moodle';
 import Notification from 'core/notification';
+import { add } from 'core/toast';
 import CohortEnrolInstancesAddModal from '../../components/CohortEnrolInstancesAddModal.vue';
 import CohortEnrolInstancesEditModal from '../../components/CohortEnrolInstancesEditModal.vue';
 import CohortEnrolInstancesDelete from '../../components/CohortEnrolInstancesDelete.vue';
 
-// Initialize strings store
 const stringsStore = useStringsStore();
 
 const enrolInstances = ref<CohortEnrolInstance[]>([]);
 const enrolInstancesCount = ref(0);
 const loading = ref(false);
+const searchQuery = ref('');
+const statusFilter = ref<'all' | 'active' | 'inactive'>('all');
+const togglingIds = ref<Set<number>>(new Set());
 
-// Load enrol instances
+const filteredInstances = computed(() => {
+  let result = enrolInstances.value;
+
+  if (statusFilter.value === 'active') {
+    result = result.filter(i => i.status);
+  } else if (statusFilter.value === 'inactive') {
+    result = result.filter(i => !i.status);
+  }
+
+  if (searchQuery.value.trim()) {
+    const q = searchQuery.value.trim().toLowerCase();
+    result = result.filter(i =>
+      (i.coursefullname || '').toLowerCase().includes(q) ||
+      (i.courseshortname || '').toLowerCase().includes(q) ||
+      (i.rolename || '').toLowerCase().includes(q) ||
+      (i.groupname || '').toLowerCase().includes(q)
+    );
+  }
+
+  return result;
+});
+
 const loadEnrolInstances = async () => {
   loading.value = true;
   try {
@@ -35,31 +58,44 @@ const loadEnrolInstances = async () => {
   }
 };
 
-// Handle added enrol instances event
+const toggleStatus = async (instance: CohortEnrolInstance) => {
+  togglingIds.value.add(instance.id);
+  try {
+    const response = await toggleCohortEnrolInstanceStatus({
+      enrolinstanceid: instance.id
+    });
+    if (response.success) {
+      add(response.message, { type: 'success' });
+      await loadEnrolInstances();
+    }
+  } catch (err) {
+    add(stringsStore.getString('errortogglingstatus'), { type: 'danger' });
+    Notification.exception(err);
+  } finally {
+    togglingIds.value.delete(instance.id);
+  }
+};
+
 const handleAddedEnrolInstances = (result: boolean) => {
   if (result) {
     loadEnrolInstances();
   }
 };
 
-// Handle updated enrol instance event
 const handleUpdatedEnrolInstance = (result: boolean) => {
   if (result) {
     loadEnrolInstances();
   }
 };
 
-// Handle deleted enrol instance event
 const handleDeletedEnrolInstance = () => {
   loadEnrolInstances();
 };
 
-// Initialize the component
 onMounted(() => {
   loadEnrolInstances();
 });
 
-// Props
 let props = defineProps<{
   cohort: Cohort;
 }>();
@@ -76,21 +112,33 @@ let props = defineProps<{
       <CohortEnrolInstancesAddModal :cohortid="cohort.id" @added:enrolinstances="handleAddedEnrolInstances" />
     </div>
 
-    <!-- Loading State -->
+    <div class="d-flex flex-wrap align-items-center mb-3" style="gap: 0.75rem;">
+      <input type="text" class="form-control" style="max-width: 300px;" :placeholder="stringsStore.getString('searchenrolinstances')" v-model="searchQuery" />
+
+      <div class="btn-group btn-group-sm" role="group">
+        <button class="btn" :class="statusFilter === 'all' ? 'btn-primary' : 'btn-outline-secondary'" @click="statusFilter = 'all'">
+          {{ stringsStore.getString('all') }}
+        </button>
+        <button class="btn" :class="statusFilter === 'active' ? 'btn-success' : 'btn-outline-success'" @click="statusFilter = 'active'">
+          {{ stringsStore.getString('active') }}
+        </button>
+        <button class="btn" :class="statusFilter === 'inactive' ? 'btn-secondary' : 'btn-outline-secondary'" @click="statusFilter = 'inactive'">
+          {{ stringsStore.getString('inactive') }}
+        </button>
+      </div>
+    </div>
+
     <div v-if="loading" class="text-center py-4">
       <i class="fa fa-spinner fa-spin"></i> {{ stringsStore.getString('loadingenrolinstances') }}
     </div>
 
-    <!-- Content -->
     <div v-else>
-      <!-- Empty State -->
-      <div v-if="enrolInstances.length === 0" class="text-center py-4">
+      <div v-if="filteredInstances.length === 0" class="text-center py-4">
         <i class="fa fa-link fa-3x text-muted mb-3"></i>
         <h5>{{ stringsStore.getString('noenrolinstancesfound') }}</h5>
         <p class="text-muted">{{ stringsStore.getString('noenrolinstancesfounddescription') }}</p>
       </div>
 
-      <!-- Enrol Instances List -->
       <div v-else class="card">
         <div class="card-body p-0">
           <div class="table-responsive">
@@ -99,6 +147,7 @@ let props = defineProps<{
                 <tr>
                   <th>{{ stringsStore.getString('course') }}</th>
                   <th>{{ stringsStore.getString('role') }}</th>
+                  <th>{{ stringsStore.getString('status') }}</th>
                   <th>{{ stringsStore.getString('enroled') }}</th>
                   <th>{{ stringsStore.getString('group') }}</th>
                   <th>{{ stringsStore.getString('groupmembers') }}</th>
@@ -106,7 +155,7 @@ let props = defineProps<{
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="instance in enrolInstances" :key="instance.id">
+                <tr v-for="instance in filteredInstances" :key="instance.id">
                   <td>
                     <div>
                       <strong>{{ instance.coursefullname || instance.courseshortname }}</strong>
@@ -115,9 +164,19 @@ let props = defineProps<{
                     </div>
                   </td>
                   <td>
-                    <span>
-                      {{ instance.rolename }}
-                    </span>
+                    {{ instance.rolename }}
+                  </td>
+                  <td>
+                    <button
+                      class="btn btn-sm"
+                      :class="instance.status ? 'btn-outline-success' : 'btn-outline-secondary'"
+                      :disabled="togglingIds.has(instance.id)"
+                      :title="stringsStore.getString('togglestatus')"
+                      @click="toggleStatus(instance)"
+                    >
+                      <i v-if="togglingIds.has(instance.id)" class="fa fa-spinner fa-spin me-1"></i>
+                      {{ instance.status ? stringsStore.getString('active') : stringsStore.getString('inactive') }}
+                    </button>
                   </td>
                   <td>
                     {{ instance.enroled }}

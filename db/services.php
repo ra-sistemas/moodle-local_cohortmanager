@@ -200,6 +200,14 @@ $functions = [
         'ajax' => true,
         'capabilities' => 'enrol/cohort:config'
     ],
+    'local_cohortmanager_toggle_cohort_enrol_instance_status' => [
+        'classname'   => 'local_cohortmanager\\external\\enrols',
+        'methodname' => 'toggle_cohort_enrol_instance_status',
+        'description' => 'Toggle the status (active/inactive) of a cohort enrol instance.',
+        'type'       => 'write',
+        'ajax' => true,
+        'capabilities' => 'enrol/cohort:config'
+    ],
     'local_cohortmanager_get_user_context_roles' => [
         'classname'   => 'local_cohortmanager\\external\\roles',
         'methodname' => 'get_user_context_roles',
@@ -283,6 +291,7 @@ $services = [
             'local_cohortmanager_create_cohort_enrol_instances',
             'local_cohortmanager_get_course_groups',
             'local_cohortmanager_delete_cohort_enrol_instance',
+            'local_cohortmanager_toggle_cohort_enrol_instance_status',
             'local_cohortmanager_get_user_context_roles',
             'local_cohortmanager_get_role',
             'local_cohortmanager_create_role',

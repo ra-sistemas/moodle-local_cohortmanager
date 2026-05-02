@@ -141,15 +141,19 @@ const goBack = () => {
     <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
       <h1 class="h2 mb-0">{{ stringsStore.getString('rolesmanagement') }}</h1>
       <div class="d-flex">
-        <button class="btn btn-primary" @click="openCreateModal"
-          :title="stringsStore.getString('createnewrole')">
-          <i class="fa fa-plus"></i> {{ stringsStore.getString('createnewrole') }}
-        </button>
-        <button @click="goBack" class="btn btn-outline-secondary ml-2"
+        <button @click="goBack" class="btn btn-outline-secondary"
           :title="stringsStore.getString('back')">
           <i class="fa fa-arrow-left"></i> {{ stringsStore.getString('back') }}
         </button>
       </div>
+    </div>
+
+    <!-- Add role button -->
+    <div v-if="!loading" class="mb-3">
+      <button class="btn btn-primary" @click="openCreateModal"
+        :title="stringsStore.getString('addnewrole')">
+        {{ stringsStore.getString('addnewrole') }}
+      </button>
     </div>
 
     <div class="mb-4">

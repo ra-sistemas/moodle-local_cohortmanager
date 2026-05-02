@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component    = 'local_cohortmanager';
 $plugin->release      = '1.0';
-$plugin->version      = 2026042902;
+$plugin->version      = 2026050200;
 $plugin->requires     = 2024100700;
 $plugin->supported    = [405, 501];
 $plugin->maturity     = MATURITY_STABLE;
