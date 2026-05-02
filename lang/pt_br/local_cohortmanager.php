@@ -279,6 +279,7 @@ $string['assignroletouser'] = 'Atribuir Papel';
 $string['userrolecohortinfo'] = 'Atribui um papel de contexto de usuário sobre todos os membros.';
 $string['assignedon'] = 'Atribuído em';
 $string['deletethisassignment'] = 'Excluir esta atribuição';
+$string['assigneduserscount'] = 'Atribuições';
 $string['formvalidationerror'] = 'Por favor, corrija os erros no formulário.';
 
 $string['enroled'] = 'Inscritos';

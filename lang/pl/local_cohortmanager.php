@@ -282,4 +282,5 @@ $string['userrolecohortinfo'] = 'Przypisuje rolę w kontekście użytkownika wsz
 $string['assignedon'] = 'Przydzielono';
 $string['deletethisassignment'] = 'Usuń ten przydział';
 $string['assigneduserscount'] = 'Przydziały';
+$string['perpage'] = 'Na stronę';
 $string['formvalidationerror'] = 'Proszę poprawić błędy w formularzu.';

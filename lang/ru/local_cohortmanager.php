@@ -282,4 +282,5 @@ $string['userrolecohortinfo'] = 'Назначает роль в контекст
 $string['assignedon'] = 'Назначено';
 $string['deletethisassignment'] = 'Удалить это назначение';
 $string['assigneduserscount'] = 'Назначения';
+$string['perpage'] = 'На странице';
 $string['formvalidationerror'] = 'Пожалуйста, исправьте ошибки в форме.';

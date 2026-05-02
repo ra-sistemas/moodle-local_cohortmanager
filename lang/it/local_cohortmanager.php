@@ -282,4 +282,5 @@ $string['userrolecohortinfo'] = 'Assegna un ruolo nel contesto utente a tutti i 
 $string['assignedon'] = 'Assegnato il';
 $string['deletethisassignment'] = 'Elimina questa assegnazione';
 $string['assigneduserscount'] = 'Assegnazioni';
+$string['perpage'] = 'Per pagina';
 $string['formvalidationerror'] = 'Per favore, correggi gli errori nel modulo.';

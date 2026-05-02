@@ -282,4 +282,5 @@ $string['userrolecohortinfo'] = '为所有成员分配用户上下文角色。';
 $string['assignedon'] = '分配于';
 $string['deletethisassignment'] = '删除此分配';
 $string['assigneduserscount'] = '分配数';
+$string['perpage'] = '每页';
 $string['formvalidationerror'] = '请更正表单中的错误。';

@@ -662,7 +662,7 @@ class enrols extends external_api
 
         return [
             'success' => true,
-            'message' => get_string('enrolinstancedeleted', 'local_cohortmanager')
+            'message' => get_string('enrolinstancedeletedsuccessfully', 'local_cohortmanager')
         ];
     }
 

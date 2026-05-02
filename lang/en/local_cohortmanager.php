@@ -285,3 +285,5 @@ $string['deletethisassignment'] = 'Delete this assignment';
 $string['assigneduserscount'] = 'Assignments';
 $string['perpage'] = 'Per page';
 $string['formvalidationerror'] = 'Please correct the errors in the form.';
+$string['close'] = 'Close';
+$string['editenrolinstance'] = 'Edit enrolment instance';

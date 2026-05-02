@@ -282,4 +282,5 @@ $string['userrolecohortinfo'] = 'Weist eine Rolle im Benutzerkontext für alle M
 $string['assignedon'] = 'Zugewiesen am';
 $string['deletethisassignment'] = 'Diese Zuweisung löschen';
 $string['assigneduserscount'] = 'Zuweisungen';
+$string['perpage'] = 'Pro Seite';
 $string['formvalidationerror'] = 'Bitte korrigieren Sie die Fehler im Formular.';

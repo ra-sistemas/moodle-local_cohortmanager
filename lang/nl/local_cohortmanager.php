@@ -282,4 +282,5 @@ $string['userrolecohortinfo'] = 'Wijst een gebruikerscontextrol toe aan alle led
 $string['assignedon'] = 'Toegewezen op';
 $string['deletethisassignment'] = 'Verwijder deze toewijzing';
 $string['assigneduserscount'] = 'Toewijzingen';
+$string['perpage'] = 'Per pagina';
 $string['formvalidationerror'] = 'Corrigeer de fouten in het formulier.';
