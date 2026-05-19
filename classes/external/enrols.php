@@ -75,8 +75,12 @@ class enrols extends external_api
             ['cohortid' => $params['cohortid']]
         );
 
-        $enrolinstances = $DB->get_records_sql($sql, ['cohortid' => $params['cohortid']],
-            $params['page'] * $params['perpage'], $params['perpage']);
+        $enrolinstances = $DB->get_records_sql(
+            $sql,
+            ['cohortid' => $params['cohortid']],
+            $params['page'] * $params['perpage'],
+            $params['perpage']
+        );
 
         $result = [];
         foreach ($enrolinstances as $instance) {
