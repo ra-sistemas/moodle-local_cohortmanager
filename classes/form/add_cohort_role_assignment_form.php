@@ -47,8 +47,7 @@ class add_cohort_role_assignment_form extends dynamic_form
         }
 
         $useroptions = [
-            'ajax' => 'local_cohortmanager/form-cohort-members-selector',
-            'cohortid' => $cohortid,
+            'ajax' => 'core_user/form_user_selector',
             'multiple' => true
         ];
         $mform->addElement('autocomplete', 'userids', get_string('assigneduser', 'local_cohortmanager'), [], $useroptions);
