@@ -549,13 +549,16 @@ class enrols extends external_api
 
             $course = $DB->get_record('course', ['id' => $course_data['courseid']]);
             if (!$course) {
-                $errors[] = "Course ID {$course_data['courseid']} not found";
+                $errors[] = get_string('errorcoursenotfound', 'local_cohortmanager', $course_data['courseid']);
                 continue;
             }
 
             $context = context_course::instance($course_data['courseid']);
             if (!$DB->record_exists('role', ['id' => $course_data['roleid']])) {
-                $errors[] = "Role ID {$course_data['roleid']} not found for course {$course_data['courseid']}";
+                $a = new \stdClass();
+                $a->roleid = $course_data['roleid'];
+                $a->courseid = $course_data['courseid'];
+                $errors[] = get_string('errorrolenotfoundforcourse', 'local_cohortmanager', $a);
                 continue;
             }
 
@@ -567,7 +570,10 @@ class enrols extends external_api
             ]);
 
             if ($existing_enrol) {
-                $errors[] = "Enrol instance already exists for course {$course_data['courseid']} with role {$course_data['roleid']}";
+                $a = new \stdClass();
+                $a->courseid = $course_data['courseid'];
+                $a->roleid = $course_data['roleid'];
+                $errors[] = get_string('errorenrolinstancealreadyexists', 'local_cohortmanager', $a);
                 continue;
             }
 
@@ -584,7 +590,7 @@ class enrols extends external_api
             if ($instanceid) {
                 $created_count++;
             } else {
-                $errors[] = "Failed to create enrol instance for course {$course_data['courseid']}";
+                $errors[] = get_string('errorfailedtocreateenrolinstance', 'local_cohortmanager', $course_data['courseid']);
             }
         }
 
