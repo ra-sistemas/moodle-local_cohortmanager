@@ -292,11 +292,26 @@ export interface Course {
 }
 
 /**
-* Role interface for course roles
-*/
+ * Role interface for course roles
+ */
 export interface Role {
  id: number;
  name: string;
+}
+
+export interface RoleFormData extends Role {
+  shortname: string;
+  description: string;
+  archetype: string;
+}
+
+/**
+ * Group interface for course groups
+ */
+export interface Group {
+ id: number;
+ name: string;
+ courseid: number;
 }
 
 /**
@@ -305,7 +320,29 @@ export interface Role {
 export interface SelectedCourse {
  courseid: number;
  coursename: string;
- status: 'active' | 'inactive';
+ status: number;
  roleid: number;
  rolename: string;
+ groupid?: number;
+ groupname?: string;
+}
+export interface Pagination {
+  page: number;
+  perpage: number;
+  total: number;
+}
+
+export interface CohortRoleAssignment {
+  id: number;
+  userid: number;
+  userfullname: string;
+  useremail: string;
+  roleid: number;
+  rolename: string;
+  roleshortname: string;
+  cohortid: number;
+  cohortname: string;
+  userroleassignmentscount: number;
+  timecreated: number;
+  timemodified: number;
 }

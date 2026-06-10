@@ -19,15 +19,15 @@ const updateValue = (e: Event) => {
 
 <template>
   <div class="mb-3">
-    <label for="name" class="form-label">{{ stringsStore.getString('cohortname') }} *</label>
-    <input 
-      id="name" 
-      :value="modelValue" 
+    <label for="name" class="form-label">{{ stringsStore.getString('cohortname') }} <span class="text-danger">*</span></label>
+    <input
+      id="name"
+      :value="modelValue"
       @input="updateValue"
-      type="text" 
+      type="text"
       class="form-control"
-      :placeholder="stringsStore.getString('entercohortname')" 
-      required 
+      :placeholder="stringsStore.getString('entercohortname')"
+      required
     />
     <div class="form-text">{{ stringsStore.getString('cohortnamedescription') }}</div>
   </div>

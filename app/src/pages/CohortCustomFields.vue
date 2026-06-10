@@ -47,11 +47,16 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="cohort-customfield-manager">
-    <button @click="goBack" class="btn btn-secondary" aria-label="{{ stringsStore.getString('backhome') }}">
-      <i class="fa fa-arrow-left"></i>
-      {{ stringsStore.getString('back') }}
-    </button>
+  <div class="container p-4" id="cohort-customfield-manager">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+      <h1 class="h2 mb-0">{{ stringsStore.getString('customfieldsmanagement') }}</h1>
+      <div class="d-flex gap-2">
+        <button @click="goBack" class="btn btn-outline-secondary"
+          :title="stringsStore.getString('back')">
+          <i class="fa fa-arrow-left"></i> {{ stringsStore.getString('back') }}
+        </button>
+      </div>
+    </div>
     <div id="cohort-customfield-manager-html" v-html="template.html"></div>
   </div>
 </template>

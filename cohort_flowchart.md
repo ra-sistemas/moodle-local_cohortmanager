@@ -6,7 +6,7 @@ Os recursos no Moodle 4.5 são:
 * Personalizar o tema visualizado com base na coorte do usuário
 * Campos customizáveis de coortes estão disponíveis
 
-```mermaid
+```{.mermaid theme=dark width=1200}
 flowchart TD
 
     subgraph Moodle

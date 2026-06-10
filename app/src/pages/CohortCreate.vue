@@ -106,42 +106,60 @@ const goBack = () => {
 </script>
 
 <template>
-  <div class="container">
+  <div class="container p-4">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
-      <h1 class="h3 mb-0">{{ stringsStore.getString('createnewcohort') }}</h1>
-      <div>
-        <button @click="goBack" class="btn btn-secondary">
-          <i class="fa fa-times"></i>
-        </button>
-      </div>
+      <h1 class="h2 mb-0">{{ stringsStore.getString('createnewcohort') }}</h1>
+      <button @click="goBack" class="btn btn-outline-secondary"
+        :title="stringsStore.getString('back')">
+        <i class="fa fa-arrow-left"></i> {{ stringsStore.getString('back') }}
+      </button>
     </div>
 
-
     <!-- Form -->
-    <form @submit.prevent="submitForm" class="card">
-      <div class="card-body">
-        <h2 class="h5 mb-4">{{ stringsStore.getString('basicinformation') }}</h2>
-
-        <CohortNameInput v-model="formData.name" />
-        <CohortIdNumberInput v-model="formData.idnumber" />
-        <CohortDescriptionInput v-model="formData.description" />
+    <form @submit.prevent="submitForm">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="card-title mb-0">{{ stringsStore.getString('basicinformation') }}</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <CohortNameInput v-model="formData.name" />
+            </div>
+            <div class="col-md-6">
+              <CohortIdNumberInput v-model="formData.idnumber" />
+            </div>
+          </div>
+          <CohortDescriptionInput v-model="formData.description" />
+        </div>
       </div>
 
-      <div class="card-body">
-        <h2 class="h5 mb-4">{{ stringsStore.getString('settings') }}</h2>
-
-        <CohortVisibleInput v-model="formData.visible" />
-        <ThemeSelect v-if="appStore.isAllowCohortThemesEnabled()" v-model="formData.theme" />
-        <ContextSelect v-model="formData.categorytype" />
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="card-title mb-0">{{ stringsStore.getString('settings') }}</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <ContextSelect v-model="formData.categorytype" />
+            </div>
+            <div class="col-md-6" v-if="appStore.isAllowCohortThemesEnabled()">
+              <ThemeSelect v-model="formData.theme" />
+            </div>
+          </div>
+          <CohortVisibleInput v-model="formData.visible" />
+        </div>
       </div>
 
       <!-- Form Actions -->
-      <div class="card-footer d-flex justify-content-end gap-2">
-        <button type="button" @click="resetForm" class="btn btn-secondary" :disabled="submitting">
+      <div class="d-flex justify-content-end">
+        <button type="button" @click="resetForm" class="btn btn-outline-secondary mr-2" :disabled="submitting"
+          :title="stringsStore.getString('reset')">
           <i class="fa fa-undo"></i> {{ stringsStore.getString('reset') }}
         </button>
-        <button type="submit" class="btn btn-primary" :disabled="submitting">
+        <button type="submit" class="btn btn-primary" :disabled="submitting"
+          :title="submitting ? stringsStore.getString('creating') : stringsStore.getString('createcohort')">
           <i class="fa fa-plus"></i>
           {{ submitting ? stringsStore.getString('creating') : stringsStore.getString('createcohort') }}
         </button>

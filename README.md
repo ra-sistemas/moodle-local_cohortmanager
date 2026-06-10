@@ -1,138 +1,172 @@
-# Cohort Manager - Routing Configuration
+# Cohort Manager for Moodle
 
-This document provides instructions for configuring routing support for the Vue.js frontend in the Cohort Manager plugin.
+**A unified, reactive interface for managing everything about Moodle cohorts — in a single plugin.**
 
-## Overview
+Moodle ships cohort management scattered across multiple screens: one page to create cohorts, another to assign members, a separate admin section for cohort sync enrolments, and yet another for cohort-based role assignments (via `tool_cohortroles`). **Cohort Manager** brings all of these workflows into one modern, fast, single-page application built with Vue 3 + TypeScript + Pinia and served directly inside Moodle.
 
-The Cohort Manager plugin uses Vue Router for client-side routing. To ensure that all routes work properly, you need to configure your web server (Apache or Nginx) to handle Vue Router routes by falling back to the main PHP file when a route doesn't correspond to a physical file.
+## Why Cohort Manager?
 
-## Prerequisites
+| Without this plugin | With Cohort Manager |
+|---|---|
+| Cohort CRUD lives under **Site administration > Users > Cohorts** | Full CRUD with search, pagination, and instant navigation — one click from the Moodle nav menu |
+| Adding members means navigating away from the cohort page | Add/remove members with a searchable modal, inline, without losing context |
+| Cohort sync enrolments are buried per-course under **Enrolment methods** | View, create, edit, delete, and toggle enrol instances for **all courses** from a single tab |
+| `tool_cohortroles` role assignments live in a separate admin page | Manage role assignments with sync status visible directly on the cohort detail view |
+| Custom fields require visiting the core custom fields manager | Access custom fields management from the plugin's own navigation |
+| No role management for user-context roles tied to cohorts | Create, edit, and delete user-context roles from within the plugin |
 
-- Vue Router is configured with base path `/local/cohortmanager/`
-- The application uses HTML5 History mode
-- Static assets are served from the same directory structure
+## Key Features
 
-## Nginx Configuration
+### Cohort Management (Full CRUD)
+- **List** all cohorts with real-time search and server-side pagination
+- **Create** cohorts with name, ID number, description (TinyMCE rich-text editor), visibility toggle, context/category selector, and optional theme assignment
+- **Edit** any cohort inline with pre-populated forms
+- **Delete** cohorts with confirmation dialogs
+- **Cohort Portrait** — at-a-glance dashboard showing member count, enrol instance count, total enrolments, and role assignment count
 
-Add the following location block to your Nginx server configuration:
+### Member Management
+- **Add members** via a searchable user-picker modal
+- **Remove members** individually or in bulk with confirmation
+- **Dynamic members table** with sortable columns (name, username, email, city, country), configurable column visibility, and pagination
+
+### Cohort Sync Enrol Instances
+- **View** all enrol instances linked to a cohort across every course — with course name, role, status, enrolled user count, group, and group member count
+- **Create** enrol instances in multiple courses at once: search and select courses, pick a role, and optionally assign to a group (or auto-create a new one)
+- **Edit** existing enrol instances (change role, group)
+- **Toggle** enrol instance status (active/inactive) with one click
+- **Delete** enrol instances with warnings about affected user enrolments
+- **Filter** enrol instances by status (all / active / inactive) and search by course name
+
+### Cohort Role Assignments (`tool_cohortroles` Integration)
+- **List** all role assignments for a cohort with user info, role name, and assignment count
+- **Assign** users to cohort roles with a searchable user/role picker
+- **Delete** role assignments (takes effect after next scheduled sync)
+- **Sync status** — last and next sync times displayed with a note about background processing
+
+### Roles Management
+- **List** all user-context assignable roles with search and pagination
+- **Create** new roles scoped to user context
+- **Edit** role descriptions
+- **Delete** roles (with system-role protection)
+
+### Custom Fields
+- Direct access to Moodle's custom field manager for cohorts, embedded within the plugin's navigation
+
+### Cohort Themes
+- When `Allow cohort themes` is enabled, a theme selector appears on cohort create/edit forms
+
+## Architecture
+
+Cohort Manager is a **progressive SPA** that boots inside Moodle's standard page layout:
+
+```
+index.php → Moodle page shell → Vue 3 app mounts on #cohort-manager-app
+```
+
+- **Frontend**: Vue 3.5 + TypeScript + Pinia + Vue Router (HTML5 History mode), built with Vite 7
+- **Backend**: 30+ Moodle Web Service APIs (AJAX) exposed through `db/services.php`
+- **Integration points**: `core_cohort` APIs, `enrol_cohort` plugin, `tool_cohortroles` API, `core_customfield`
+- **State management**: Pinia stores for app configuration and i18n strings (loaded from Moodle's language system)
+- **Transitions**: Smooth fade transitions between routes
+
+## Requirements
+
+- **Moodle 4.5** (supported: `[405, 405]`)
+- **PHP 8.1+**
+- PHP extensions: `ext-zip`, `ext-zlib`
+- Required plugins:
+  - `enrol_cohort` (ships with Moodle core)
+  - `tool_cohortroles` (ships with Moodle core)
+
+## Installation
+
+```bash
+cd /path/to/moodle/local/
+git clone <repository-url> cohortmanager
+```
+
+Then visit Moodle's notifications page to complete the installation.
+
+After installation, the plugin appears under **Site administration > Users > Cohort Manager** and in the navigation under **Accounts**.
+
+## Building the Frontend
+
+The Vue application source lives in `app/` and builds to `amd/build/`:
+
+```bash
+cd app/
+npm install
+npm run build
+```
+
+For development:
+
+```bash
+npm run dev
+```
+
+## Web Server Configuration
+
+Because the app uses Vue Router with HTML5 History mode, the web server must route non-file requests to `index.php`.
+
+### Apache
+
+A `.htaccess` file is included at the plugin root with the required rewrite rules. No additional configuration is needed when `mod_rewrite` is enabled.
+
+### Nginx
+
+Add the following to your server block:
 
 ```nginx
-# Handle Vue Router for cohortmanager
 location /local/cohortmanager/ {
     try_files $uri $uri/ /local/cohortmanager/index.php?$query_string;
 
-    # Cache static assets
     location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
         expires 1y;
         add_header Cache-Control "public, immutable";
     }
 }
 
-# Handle PHP requests for cohortmanager
 location /local/cohortmanager/index.php {
-    fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;  # Adjust path as needed
+    fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
     fastcgi_index index.php;
     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
     include fastcgi_params;
 }
 ```
 
-### Configuration Notes
+## Routes
 
-- The `try_files` directive ensures that non-existent routes fall back to `index.php`
-- Static assets are cached for 1 year to improve performance
-- Adjust the `fastcgi_pass` path to match your PHP-FPM socket configuration
+| Route | Description |
+|---|---|
+| `/local/cohortmanager/` | Cohort list with search and pagination |
+| `/local/cohortmanager/cohort/{id}` | Cohort detail — tabs for Details, Members, Enrol Instances, Role Assignments |
+| `/local/cohortmanager/cohort/{id}/edit` | Edit cohort |
+| `/local/cohortmanager/cohort/create` | Create new cohort |
+| `/local/cohortmanager/custom-fields` | Custom fields manager |
+| `/local/cohortmanager/roles` | User-context roles management |
 
-## Apache Configuration
+## Multilingual Support
 
-The plugin includes a pre-configured `.htaccess` file at the root directory (`local/cohortmanager/.htaccess`). This file provides the necessary routing configuration for Apache.
+Ships with language packs for **13 languages**: Arabic, German, English, Spanish, French, Hindi, Italian, Korean, Dutch, Polish, Brazilian Portuguese, Russian, and Simplified Chinese.
 
-### Manual Configuration (if needed)
+Strings are loaded dynamically from Moodle's language system via a dedicated Web Service API, so any Moodle-supported language works automatically.
 
-If you need to configure Apache manually, add the following to your Apache configuration or `.htaccess` file:
+## Capabilities
 
-```apache
-# Handle Vue Router for cohortmanager
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    
-    # If the requested file or directory exists, serve it directly
-    RewriteCond %{REQUEST_FILENAME} -f [OR]
-    RewriteCond %{REQUEST_FILENAME} -d
-    RewriteRule ^ - [L]
-    
-    # Otherwise, redirect to index.php to let Vue Router handle it
-    RewriteRule ^(.*)$ index.php?$1 [L,QSA]
-</IfModule>
+The plugin respects standard Moodle capabilities:
 
-# Handle static assets caching
-<IfModule mod_expires.c>
-    ExpiresActive On
-    
-    # Cache static assets for 1 year
-    ExpiresByType application/javascript "access plus 1 year"
-    ExpiresByType text/css "access plus 1 year"
-    ExpiresByType image/png "access plus 1 year"
-    ExpiresByType image/jpg "access plus 1 year"
-    ExpiresByType image/jpeg "access plus 1 year"
-    ExpiresByType image/gif "access plus 1 year"
-    ExpiresByType image/ico "access plus 1 year"
-    ExpiresByType image/svg+xml "access plus 1 year"
-    ExpiresByType font/woff "access plus 1 year"
-    ExpiresByType font/woff2 "access plus 1 year"
-    ExpiresByType font/ttf "access plus 1 year"
-    ExpiresByType font/eot "access plus 1 year"
-</IfModule>
+- `moodle/cohort:manage` — create, edit, delete cohorts
+- `moodle/cohort:assign` — add/remove members
+- `moodle/cohort:view` — view cohorts and members
+- `enrol/cohort:config` — manage cohort sync enrol instances
+- `moodle/role:manage` — manage roles and cohort role assignments
 
-# Add cache control headers for static assets
-<IfModule mod_headers.c>
-    <FilesMatch "\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$">
-        Header set Cache-Control "public, immutable"
-    </FilesMatch>
-</IfModule>
-```
+## License
 
-## Available Routes
+GNU GPL v3 or later — same as Moodle core.
 
-The application supports the following routes:
+## Credits
 
-- `/local/cohortmanager/` - Cohort List (main page)
-- `/local/cohortmanager/cohort/{id}` - Cohort Details
-- `/local/cohortmanager/cohort/{id}/edit` - Edit Cohort
-- `/local/cohortmanager/cohort/create` - Create New Cohort
-- `/local/cohortmanager/custom-fields` - Custom Fields Management
-
-## Troubleshooting
-
-### Common Issues
-
-1. **404 Errors on Vue Routes**
-   - Ensure the server configuration is properly applied
-   - Check that the `try_files` (Nginx) or `RewriteRule` (Apache) is correctly configured
-   - Verify that the base path matches the Vue Router configuration
-
-2. **Static Assets Not Loading**
-   - Check file permissions
-   - Verify that the static asset paths are correct
-   - Ensure caching headers are not causing issues in development
-
-3. **PHP-FPM Connection Issues (Nginx)**
-   - Verify the PHP-FPM socket path is correct
-   - Check PHP-FPM service status
-   - Ensure proper permissions on the socket file
-
-### Testing Configuration
-
-After applying the configuration, test the following:
-
-1. Access the main page: `/local/cohortmanager/`
-2. Navigate to a cohort detail: `/local/cohortmanager/cohort/1`
-3. Test creating a new cohort: `/local/cohortmanager/cohort/create`
-4. Verify static assets load correctly (check browser dev tools)
-
-## Additional Notes
-
-- The configuration assumes the plugin is installed in the standard Moodle directory structure
-- Adjust paths if your Moodle installation is in a non-standard location
-- Development environments may need different caching settings
-- Always test configuration changes in a development environment before applying to production
+- **Author**: Davison Almeida
+- **Copyright**: 2025 Davison Almeida <ramosdealmeidasistemas@gmail.com>

@@ -189,6 +189,99 @@ const getCohortCourseRoles = async (args: Object): Promise<any> => {
 };
 
 /**
+ * Create cohort enrol instances with treatment
+ */
+const createCohortEnrolInstances = async (args: Object): Promise<any> => {
+  const response = await ajax('local_cohortmanager_create_cohort_enrol_instances', args);
+  return response;
+};
+
+/**
+ * Get course groups with treatment
+ */
+const getCourseGroups = async (args: Object): Promise<any> => {
+  const response = await ajax('local_cohortmanager_get_course_groups', args);
+  return response;
+};
+
+/**
+ * Delete cohort enrol instance with treatment
+ */
+const deleteCohortEnrolInstance = async (args: Object): Promise<any> => {
+  const response = await ajax('local_cohortmanager_delete_cohort_enrol_instance', args);
+  return response;
+};
+
+const toggleCohortEnrolInstanceStatus = async (args: Object): Promise<any> => {
+  const response = await ajax('local_cohortmanager_toggle_cohort_enrol_instance_status', args);
+  return response;
+};
+
+/**
+ * Get user context roles with treatment
+ */
+const getUserContextRoles = async (args: Object): Promise<any> => {
+  const response = await ajax('local_cohortmanager_get_user_context_roles', args);
+  return response;
+};
+
+/**
+ * Get single role with treatment
+ */
+const getRole = async (args: Object): Promise<any> => {
+  const response = await ajax('local_cohortmanager_get_role', args);
+  return response;
+};
+
+/**
+ * Create role with treatment
+ */
+const createRole = async (args: Object): Promise<any> => {
+  const response = await ajax('local_cohortmanager_create_role', args);
+  return response;
+};
+
+/**
+ * Update role with treatment
+ */
+const updateRole = async (args: Object): Promise<any> => {
+  const response = await ajax('local_cohortmanager_update_role', args);
+  return response;
+};
+
+/**
+ * Delete role with treatment
+ */
+const deleteRole = async (args: Object): Promise<any> => {
+  const response = await ajax('local_cohortmanager_delete_role', args);
+  return response;
+};
+
+const listCohortRoleAssignments = async (args: Object): Promise<any> => {
+  const response = await ajax('local_cohortmanager_list_cohort_role_assignments', args);
+  return response;
+};
+
+const deleteCohortRoleAssignment = async (args: Object): Promise<any> => {
+  const response = await ajax('local_cohortmanager_delete_cohort_role_assignment', args);
+  return response;
+};
+
+const showAddCohortRoleAssignmentForm = (cohortid: number, title: string, saveButtonText: string): ModalForm => {
+  const modalForm = new ModalForm({
+    formClass: 'local_cohortmanager\\form\\add_cohort_role_assignment_form',
+    saveButtonText: saveButtonText,
+    modalConfig: {
+      title: title,
+    },
+    args: {
+      cohortid: cohortid
+    }
+  });
+  return modalForm;
+};
+
+/**
  * Get cohort customfields
  */
 const getCohortCustomfieldForm = async (cohortid: number): Promise<Template> => {
@@ -263,6 +356,24 @@ const showEditEnrolInstancesForm = (enrolinstanceid: number, title: string, save
     },
     args: {
       id: enrolinstanceid
+    }
+  });
+  return modalForm;
+};
+
+/**
+ * Show create/edit role modal
+ */
+const showRoleForm = (roleid: number, title: string, saveButtonText: string): ModalForm => {
+
+  const modalForm = new ModalForm({
+    formClass: 'local_cohortmanager\\form\\role_form',
+    saveButtonText: saveButtonText,
+    modalConfig: {
+      title: title,
+    },
+    args: {
+      roleid: roleid
     }
   });
   return modalForm;
@@ -360,10 +471,23 @@ export {
   showAddMembersForm,
   showAddEnrolInstancesForm,
   showEditEnrolInstancesForm,
+  showRoleForm,
   countCohortMembers,
   deleteCohortMembers,
   getCohortEnrolInstances,
   countCohortEnrolInstances,
   getPotentialCohortCourses,
-  getCohortCourseRoles
+  getCohortCourseRoles,
+  createCohortEnrolInstances,
+  getCourseGroups,
+  deleteCohortEnrolInstance,
+  toggleCohortEnrolInstanceStatus,
+  getUserContextRoles,
+  getRole,
+  createRole,
+  updateRole,
+  deleteRole,
+  listCohortRoleAssignments,
+  deleteCohortRoleAssignment,
+  showAddCohortRoleAssignmentForm
 };

@@ -147,8 +147,7 @@ class members extends external_api
                 $direction = $sort['sortorder'] == 1 ? 'ASC' : 'DESC';
                 $sortclauses[] = $sort['sortby'] == 'fullname'
                     ? "u.firstname {$direction}, u.lastname {$direction}"
-                    : "u.{$sort['sortby']} {$direction}"
-                ;
+                    : "u.{$sort['sortby']} {$direction}";
             }
             $orderby = "ORDER BY " . implode(', ', $sortclauses);
         } else {
@@ -270,22 +269,27 @@ class members extends external_api
             )
         );
 
-        $users = array_values($potentialuserselector->find_users($params['query']));
-
-        if (!isset($users[0])) {
+        $foundusers = $potentialuserselector->find_users($params['query']);
+        if (empty($foundusers) || !is_array($foundusers)) {
             return [];
         }
 
-        foreach ($users[0] as $user) {
+        $users = array_values($foundusers);
 
-            $useroption = (object)[
+        if (!isset($users[0]) || !is_array($users[0])) {
+            return [];
+        }
+
+        $useroptions = [];
+
+        foreach ($users[0] as $user) {
+            $useroptions[] = (object)[
                 'id' => $user->id,
                 'fullname' => fullname($user)
             ];
-            $useroptions[$user->id] = $useroption;
         }
 
-        return $useroptions;
+        return array_values($useroptions);
     }
 
     /**
@@ -343,6 +347,6 @@ class members extends external_api
      */
     public static function count_cohort_members_returns()
     {
-        return new external_value(PARAM_INT, 'The cohort id that was counted');
+        return new external_value(PARAM_INT, 'The number of members in the cohort');
     }
 }

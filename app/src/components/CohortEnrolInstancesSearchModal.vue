@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useStringsStore } from '../stores/strings';
-import { getPotentialCohortCourses, getCohortCourseRoles } from '../utils/moodle';
-import type { Course, Role, SelectedCourse } from '../types/interfaces';
+import { getPotentialCohortCourses, getCohortCourseRoles, getCourseGroups } from '../utils/moodle';
+import type { Course, Role, SelectedCourse, Group } from '../types/interfaces';
 import { add } from 'core/toast';
 import Notification from 'core/notification';
 
@@ -32,7 +32,12 @@ const selectedCourses = ref<SelectedCourse[]>([]);
 // Available roles for the selected course
 const availableRoles = ref<Role[]>([]);
 const selectedRole = ref<number | null>(null);
-const selectedStatus = ref<'active' | 'inactive'>('active');
+const selectedStatus = ref<number>(0);
+
+// Available groups for the selected course
+const availableGroups = ref<Group[]>([]);
+const selectedGroup = ref<number | null>(null);
+const showGroupOptions = ref<boolean>(false);
 
 // Watch for search query changes
 watch(searchQuery, (newQuery) => {
@@ -50,6 +55,10 @@ watch(searchQuery, (newQuery) => {
     }, 300);
 });
 
+const getExcludeCourseIds = () => {
+    return selectedCourses.value.map(course => course.courseid);
+};
+
 // Search for courses
 const searchCourses = async (query: string) => {
     if (!query.trim()) {
@@ -57,11 +66,13 @@ const searchCourses = async (query: string) => {
         return;
     }
     
+    const excludeCourseIds = getExcludeCourseIds();
     isSearching.value = true;
     try {
         const response = await getPotentialCohortCourses({
             cohortid: props.cohortid,
-            query: query.trim()
+            query: query.trim(),
+            excludecourseids: excludeCourseIds
         });
         searchResults.value = response || [];
     } catch (error) {
@@ -96,13 +107,30 @@ const handleCourseSelect = async (course: Course) => {
         selectedRole.value = null;
     }
     
+    // Get available groups for this course
+    try {
+        const response = await getCourseGroups({
+            courseid: course.id
+        });
+        availableGroups.value = response || [];
+        selectedGroup.value = availableGroups.value.length > 0 ? availableGroups.value[0]?.id ?? null : null;
+        showGroupOptions.value = true;
+    } catch (error) {
+        Notification.exception(error);
+        availableGroups.value = [];
+        selectedGroup.value = null;
+        showGroupOptions.value = false;
+    }
+    
     // Add course to selected list with default values
     const newSelectedCourse: SelectedCourse = {
         courseid: course.id,
         coursename: course.fullname,
         status: selectedStatus.value,
         roleid: selectedRole.value || 0,
-        rolename: selectedRole.value ? availableRoles.value.find(r => r.id === selectedRole.value)?.name || '' : ''
+        rolename: selectedRole.value ? availableRoles.value.find(r => r.id === selectedRole.value)?.name || '' : '',
+        groupid: selectedGroup.value || undefined,
+        groupname: selectedGroup.value ? availableGroups.value.find(g => g.id === selectedGroup.value)?.name || '' : undefined
     };
     
     selectedCourses.value.push(newSelectedCourse);
@@ -118,7 +146,7 @@ const removeSelectedCourse = (index: number) => {
 };
 
 // Update selected course status
-const updateCourseStatus = (index: number, status: 'active' | 'inactive') => {
+const updateCourseStatus = (index: number, status: number) => {
     if (selectedCourses.value[index]) {
         selectedCourses.value[index].status = status;
     }
@@ -130,6 +158,15 @@ const updateCourseRole = (index: number, roleid: number) => {
         const role = availableRoles.value.find(r => r.id === roleid);
         selectedCourses.value[index].roleid = roleid;
         selectedCourses.value[index].rolename = role?.name || '';
+    }
+};
+
+// Update selected course group
+const updateCourseGroup = (index: number, groupid: number | undefined) => {
+    if (selectedCourses.value[index]) {
+        const group = availableGroups.value.find(g => g.id === groupid);
+        selectedCourses.value[index].groupid = groupid || undefined;
+        selectedCourses.value[index].groupname = group?.name || undefined;
     }
 };
 
@@ -154,7 +191,10 @@ const openModal = () => {
     searchResults.value = [];
     availableRoles.value = [];
     selectedRole.value = null;
-    selectedStatus.value = 'active';
+    selectedStatus.value = 0;
+    availableGroups.value = [];
+    selectedGroup.value = null;
+    showGroupOptions.value = false;
 };
 
 // Close modal
@@ -165,7 +205,10 @@ const closeModal = () => {
     searchResults.value = [];
     availableRoles.value = [];
     selectedRole.value = null;
-    selectedStatus.value = 'active';
+    selectedStatus.value = 0;
+    availableGroups.value = [];
+    selectedGroup.value = null;
+    showGroupOptions.value = false;
 };
 
 // Handle escape key
@@ -192,7 +235,8 @@ onBeforeUnmount(() => {
 <template>
     <div>
         <!-- Trigger button -->
-        <button class="btn btn-primary" @click="openModal">
+        <button class="btn btn-primary" @click="openModal"
+            :title="stringsStore.getString('addenrolinstance')">
             {{ stringsStore.getString('addenrolinstance') }}
         </button>
         
@@ -202,33 +246,34 @@ onBeforeUnmount(() => {
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">{{ modalTitle }}</h5>
-                        <button type="button" class="btn-close" @click="closeModal"></button>
+                        <button type="button" class="btn-close" @click="closeModal"
+                            :title="stringsStore.getString('close')"></button>
                     </div>
                     
                     <div class="modal-body">
                         <!-- Search Section -->
                         <div class="mb-4">
                             <label class="form-label">{{ stringsStore.getString('searchcourses') }}</label>
-                            <div class="input-group">
-                                <input 
-                                    type="text" 
-                                    class="form-control" 
-                                    v-model="searchQuery"
-                                    :placeholder="stringsStore.getString('searchcoursesplaceholder')"
-                                    autocomplete="off"
-                                />
-                                <span class="input-group-text">
-                                    <i class="fa fa-search"></i>
-                                </span>
-                            </div>
-                            
-                            <!-- Search Results -->
-                            <div v-if="searchQuery && searchResults.length > 0" class="dropdown-menu show w-100 mt-1">
-                                <div v-for="course in searchResults" :key="course.id" 
-                                     class="dropdown-item cursor-pointer"
-                                     @click="handleCourseSelect(course)">
-                                    <div class="fw-bold">{{ course.fullname }}</div>
-                                    <small class="text-muted">ID: {{ course.id }}</small>
+                            <div class="position-relative">
+                                <div class="input-group">
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        v-model="searchQuery"
+                                        :placeholder="stringsStore.getString('searchcoursesplaceholder')"
+                                        autocomplete="off"
+                                    />
+                                    
+                                </div>
+                                
+                                <!-- Search Results -->
+                                <div v-if="searchQuery && searchResults.length > 0" class="dropdown-menu show w-100">
+                                    <div v-for="course in searchResults" :key="course.id" 
+                                         class="dropdown-item cursor-pointer"
+                                         @click="handleCourseSelect(course)">
+                                        <div class="fw-bold">{{ course.fullname }}</div>
+                                        <small class="text-muted">ID: {{ course.id }}</small>
+                                    </div>
                                 </div>
                             </div>
                             
@@ -253,6 +298,7 @@ onBeforeUnmount(() => {
                                             <th>{{ stringsStore.getString('course') }}</th>
                                             <th>{{ stringsStore.getString('status') }}</th>
                                             <th>{{ stringsStore.getString('role') }}</th>
+                                            <th>{{ stringsStore.getString('group') }}</th>
                                             <th>{{ stringsStore.getString('actions') }}</th>
                                         </tr>
                                     </thead>
@@ -268,12 +314,12 @@ onBeforeUnmount(() => {
                                                     v-model="course.status"
                                                     @change="updateCourseStatus(index, course.status)"
                                                 >
-                                                    <option value="active">{{ stringsStore.getString('active') }}</option>
-                                                    <option value="inactive">{{ stringsStore.getString('inactive') }}</option>
+                                                    <option value=0>{{ stringsStore.getString('active') }}</option>
+                                                    <option value=1>{{ stringsStore.getString('inactive') }}</option>
                                                 </select>
                                             </td>
                                             <td>
-                                                <select 
+                                                <select
                                                     class="form-select form-select-sm"
                                                     v-model="course.roleid"
                                                     @change="updateCourseRole(index, course.roleid)"
@@ -284,10 +330,21 @@ onBeforeUnmount(() => {
                                                 </select>
                                             </td>
                                             <td>
-                                                <button 
+                                                <select
+                                                    class="form-select form-select-sm"
+                                                    v-model="course.groupid"
+                                                    @change="updateCourseGroup(index, course.groupid)"
+                                                >
+                                                    <option v-for="group in availableGroups" :key="group.id" :value="group.id">
+                                                        {{ group.name }}
+                                                    </option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <button
                                                     class="btn btn-sm btn-outline-danger"
                                                     @click="removeSelectedCourse(index)"
-                                                    title="{{ stringsStore.getString('remove') }}"
+                                                    :title="stringsStore.getString('remove')"
                                                 >
                                                     <i class="fa fa-trash"></i>
                                                 </button>
@@ -300,10 +357,12 @@ onBeforeUnmount(() => {
                     </div>
                     
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @click="closeModal">
+                        <button type="button" class="btn btn-secondary" @click="closeModal"
+                            :title="stringsStore.getString('cancel')">
                             {{ stringsStore.getString('cancel') }}
                         </button>
-                        <button type="button" class="btn btn-primary" @click="submitSelectedCourses">
+                        <button type="button" class="btn btn-primary" @click="submitSelectedCourses"
+                            :title="stringsStore.getString('add')">
                             {{ stringsStore.getString('add') }}
                         </button>
                     </div>

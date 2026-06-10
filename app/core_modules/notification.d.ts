@@ -8,4 +8,5 @@ declare module 'core/notification' {
         cancelCallback?: () => void,
         options?: { triggerElement?: HTMLElement }
     ): Promise<any>;
+    export function addNotification(notification: Object);
 }

@@ -4,19 +4,13 @@ import { useRouter } from 'vue-router';
 import { searchCohorts as searchCohortsApi } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
 import Notification from 'core/notification';
-import CohortDelete from '../components/CohortDelete.vue';
-import type { Cohort } from '../types/interfaces';
+import type { Cohort, Pagination } from '../types/interfaces';
+import TablePagination from '../components/TablePagination.vue';
 
 // Initialize strings store
 const stringsStore = useStringsStore();
 
 // Define types
-
-interface Pagination {
-  page: number;
-  perpage: number;
-  total: number;
-}
 
 // State management
 const router = useRouter();
@@ -25,7 +19,7 @@ const loading = ref(false);
 const searchQuery = ref('');
 const pagination = reactive<Pagination>({
   page: 1,
-  perpage: 5,
+  perpage: 10,
   total: 0
 });
 
@@ -65,6 +59,12 @@ const goToPage = (page: number) => {
   loadCohorts();
 };
 
+const changePerPage = (value: number) => {
+  pagination.perpage = value;
+  pagination.page = 1;
+  loadCohorts();
+};
+
 const prevPage = () => {
   if (pagination.page > 1) {
     goToPage(pagination.page - 1);
@@ -78,10 +78,6 @@ const nextPage = () => {
   }
 };
 
-// Handle cohort deletion success
-const handleDeleteSuccess = () => {
-  loadCohorts();
-};
 
 // View cohort details
 const viewCohort = (cohort: Cohort) => {
@@ -89,10 +85,6 @@ const viewCohort = (cohort: Cohort) => {
   router.push(`cohort/${cohort.id}`);
 };
 
-// Navigation functions
-const navigateToEdit = (cohort: Cohort) => {
-  router.push(`/cohort/${cohort.id}/edit`);
-};
 
 // Calculate pagination info
 const paginationInfo = computed(() => {
@@ -105,35 +97,56 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
 </script>
 
 <template>
-  <div class="container-fluid p-4">
+  <div class="container p-4">
     <!-- Header -->
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 pb-3 border-bottom">
-      <h1 class="h2 mb-2 mb-md-0">{{ stringsStore.getString('cohortmanager') }}</h1>
-      <div class="d-flex gap-2 mt-2 mt-md-0">
-        <router-link to="cohort/create" class="btn btn-primary">
-          <i class="fa fa-plus"></i> {{ stringsStore.getString('newcohort') }}
-        </router-link>
-        <router-link to="custom-fields" class="btn btn-secondary">
-          <i class="fa fa-cogs"></i> {{ stringsStore.getString('customfieldsmanagement') }}
-        </router-link>
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+      <h1 class="h2 mb-0">{{ stringsStore.getString('cohortmanager') }}</h1>
+    </div>
+
+    <!-- Add cohort button -->
+    <div v-if="!loading" class="mb-3">
+      <div class="d-flex justify-content-between">
+        <div>
+          <router-link to="cohort/create" class="btn btn-primary mr-2" :title="stringsStore.getString('addcohort')">
+            {{ stringsStore.getString('addcohort') }}
+          </router-link>
+        </div>
+        <div class="dropdown">
+          <button class="btn btn-outline-secondary" type="button" id="managementDropdown"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+            :title="stringsStore.getString('actions')">
+            <i class="fa fa-ellipsis-v"></i>
+          </button>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="managementDropdown">
+            <router-link to="roles" class="dropdown-item"
+              :title="stringsStore.getString('rolesmanagement')">
+              <i class="fa fa-user-tag mr-2"></i> {{ stringsStore.getString('rolesmanagement') }}
+            </router-link>
+            <router-link to="custom-fields" class="dropdown-item"
+              :title="stringsStore.getString('customfieldsmanagement')">
+              <i class="fa fa-cogs mr-2"></i> {{ stringsStore.getString('customfieldsmanagement') }}
+            </router-link>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Search bar -->
     <div class="mb-4">
       <div class="row">
-        <div class="col-md-8 col-lg-6">
-          <div class="input-group">
-            <input v-model="searchQuery" type="text" class="form-control"
-              :placeholder="stringsStore.getString('searchcohorts')" @keyup.enter="searchCohorts" />
-            <button class="btn btn-secondary" @click="searchCohorts">
-              <i class="fa fa-search"></i> {{ stringsStore.getString('search') }}
-            </button>
+        <div class="col-12 col-md-6">
+          <div class="input-group mb-3">
+            <input v-model="searchQuery" type="text" class="form-control" :placeholder="stringsStore.getString('searchcohorts')" @keyup.enter="searchCohorts" />
+            <div class="input-group-append">
+              <button class="btn btn-secondary" type="button" @click="searchCohorts"
+                :title="stringsStore.getString('search')">
+                <i class="fa fa-search"></i> {{ stringsStore.getString('search') }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-
 
     <!-- Loading state -->
     <div v-if="loading" class="text-center p-4">
@@ -148,13 +161,13 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
     </div>
 
     <!-- Cohort table -->
-    <div v-else>
+    <div v-if="cohorts.length > 0" class="card">
       <div class="table-responsive">
-        <table class="table table-striped table-hover">
-          <thead class="thead-light">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
             <tr>
-              <th>{{ stringsStore.getString('name') }}</th>
               <th>{{ stringsStore.getString('id') }}</th>
+              <th>{{ stringsStore.getString('name') }}</th>
               <th>{{ stringsStore.getString('members') }}</th>
               <th>{{ stringsStore.getString('cohortenrolinstances') }}</th>
               <th class="text-center">{{ stringsStore.getString('actions') }}</th>
@@ -162,21 +175,20 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
           </thead>
           <tbody>
             <tr v-for="cohort in cohorts" :key="cohort.id">
+              <td>{{ cohort.id }}</td>
               <td>
                 <a href="#" class="text-decoration-none" @click.prevent="viewCohort(cohort)">
                   <strong>{{ cohort.name }}</strong>
                 </a>
               </td>
-              <td>{{ cohort.id }}</td>
               <td>{{ cohort.members }}</td>
-               <td>{{ cohort.enrols }}</td>
+              <td>{{ cohort.enrols }}</td>
               <td class="text-center">
                 <div class="btn-group btn-group-sm" role="group">
-                  <button class="btn btn-outline-primary" @click="navigateToEdit(cohort)"
-                    :title="stringsStore.getString('editcohort')">
-                    <i class="fa fa-edit"></i>
+                  <button class="btn btn-outline-primary" @click="viewCohort(cohort)"
+                    :title="stringsStore.getString('view') + ' ' + stringsStore.getString('Cohort')">
+                    <i class="fa fa-info"></i>
                   </button>
-                  <CohortDelete :cohort="cohort" @success="handleDeleteSuccess" />
                 </div>
               </td>
             </tr>
@@ -186,29 +198,16 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
     </div>
 
     <!-- Pagination -->
-    <div v-if="totalPages > 1" class="mt-4">
-      <nav aria-label="Cohort pagination">
-        <ul class="pagination justify-content-center justify-content-md-start">
-          <li class="page-item" :class="{ 'disabled': pagination.page === 1 }">
-            <button class="page-link" @click="prevPage" :disabled="pagination.page === 1">
-              <i class="fa fa-chevron-left"></i>
-            </button>
-          </li>
-
-          <li class="page-item active">
-            <span class="page-link">
-              {{ paginationInfo }}
-            </span>
-          </li>
-
-          <li class="page-item" :class="{ 'disabled': pagination.page === totalPages }">
-            <button class="page-link" @click="nextPage" :disabled="pagination.page === totalPages">
-              <i class="fa fa-chevron-right"></i>
-            </button>
-          </li>
-        </ul>
-      </nav>
-    </div>
+    <TablePagination
+      :visible="cohorts.length > 0"
+      :current-page="pagination.page"
+      :total-pages="totalPages"
+      :pagination-info="paginationInfo"
+      :per-page="pagination.perpage"
+      @update:per-page="changePerPage"
+      @prev="prevPage"
+      @next="nextPage"
+    />
   </div>
 </template>
 

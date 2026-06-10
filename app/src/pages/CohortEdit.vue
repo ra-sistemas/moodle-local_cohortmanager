@@ -149,7 +149,7 @@ const handleCustomFieldsResult = async (success: boolean, message: string) => {
 
 // Navigate back
 const goBack = () => {
-  router.push('/');
+  router.push(`/cohort/${props.id}`);
 };
 
 // Initialize the component
@@ -159,47 +159,70 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="container">
+  <div class="container p-4">
     <!-- Loading State -->
     <div v-if="loading" class="text-center py-4">
       <i class="fa fa-spinner fa-spin"></i> {{ stringsStore.getString('loadingcohortdata') }}
     </div>
 
     <!-- Form -->
-    <div v-else-if="cohort" class="card">
+    <div v-else-if="cohort">
       <!-- Header -->
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <h1 class="h3 mb-0">{{ stringsStore.getString('editcohort') }}</h1>
-        <div>
-          <button @click="goBack" class="btn btn-secondary">
-            <i class="fa fa-times"></i>
-          </button>
-        </div>
+      <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <h1 class="h2 mb-0">{{ stringsStore.getString('editcohort') }}</h1>
+        <button @click="goBack" class="btn btn-outline-secondary"
+          :title="stringsStore.getString('back')">
+          <i class="fa fa-arrow-left"></i> {{ stringsStore.getString('back') }}
+        </button>
       </div>
 
       <!-- Form Content -->
-      <form @submit.prevent="submitForm" class="card-body">
-        <div class="form-section">
-          <h2 class="h4">{{ stringsStore.getString('basicinformation') }}</h2>
-
-          <CohortNameInput v-model="formData.name" />
-          <ContextSelect v-model="formData.contextinfo" />
-          <CohortIdNumberInput v-model="formData.idnumber" />
-          <CohortVisibleInput v-model="formData.visible" />
-          <CohortDescriptionInput v-model="formData.description" />
-          <ThemeSelect v-if="appStore.isAllowCohortThemesEnabled()" v-model="formData.theme" />
+      <form @submit.prevent="submitForm">
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="card-title mb-0">{{ stringsStore.getString('basicinformation') }}</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <CohortNameInput v-model="formData.name" />
+              </div>
+              <div class="col-md-6">
+                <CohortIdNumberInput v-model="formData.idnumber" />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <ContextSelect v-model="formData.contextinfo" />
+              </div>
+              <div class="col-md-6" v-if="appStore.isAllowCohortThemesEnabled()">
+                <ThemeSelect v-model="formData.theme" />
+              </div>
+            </div>
+            <CohortVisibleInput v-model="formData.visible" />
+            <CohortDescriptionInput v-model="formData.description" />
+          </div>
         </div>
 
         <!-- Custom Fields Section -->
-        <CohortCustomFields v-if="cohort && cohort.customfields && cohort.customfields.length > 0" :cohortid="cohort.id"
-          :submitting="submitting" @submit:customFields:result="handleCustomFieldsResult" />
+        <div v-if="cohort && cohort.customfields && cohort.customfields.length > 0" class="card mb-4">
+          <div class="card-header">
+            <h5 class="card-title mb-0">{{ stringsStore.getString('customfields') }}</h5>
+          </div>
+          <div class="card-body">
+            <CohortCustomFields :cohortid="cohort.id"
+              :submitting="submitting" @submit:customFields:result="handleCustomFieldsResult" />
+          </div>
+        </div>
 
         <!-- Form Actions -->
-        <div class="card-footer d-flex justify-content-end gap-2">
-          <button type="button" @click="goBack" class="btn btn-secondary" :disabled="submitting">
+        <div class="d-flex justify-content-end">
+          <button type="button" @click="goBack" class="btn btn-outline-secondary mr-2" :disabled="submitting"
+            :title="stringsStore.getString('cancel')">
             {{ stringsStore.getString('cancel') }}
           </button>
-          <button type="submit" class="btn btn-primary" :disabled="submitting">
+          <button type="submit" class="btn btn-primary" :disabled="submitting"
+            :title="submitting ? stringsStore.getString('saving') : stringsStore.getString('savechanges')">
             <i class="fa fa-save"></i>
             {{ submitting ? stringsStore.getString('saving') : stringsStore.getString('savechanges') }}
           </button>
@@ -209,10 +232,10 @@ onMounted(() => {
 
     <!-- Not Found State -->
     <div v-else class="text-center py-4">
-      <i class="fa fa-exclamation-triangle text-warning" style="font-size: 48px;"></i>
-      <h3 class="mt-3">{{ stringsStore.getString('cohortnotfound') }}</h3>
-      <p>{{ stringsStore.getString('cohortnotfound') + ' data.' }}</p>
-      <button @click="goBack" class="btn btn-primary">
+      <i class="fa fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+      <h3>{{ stringsStore.getString('cohortnotfound') }}</h3>
+      <p class="text-muted">{{ stringsStore.getString('cohortnotfounddetails') }}</p>
+      <button @click="goBack" class="btn btn-primary" :title="stringsStore.getString('backtocohortlist')">
         {{ stringsStore.getString('backtocohortlist') }}
       </button>
     </div>

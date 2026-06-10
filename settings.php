@@ -47,7 +47,7 @@ if ($hassiteconfig) {
     $ADMIN->add(
         'accounts',
         new admin_externalpage(
-            'local_offermanager/index',
+            'local_cohortmanager/index',
             get_string('pluginname', 'local_cohortmanager'),
             new moodle_url('/local/cohortmanager'),
             'moodle/cohort:manage'

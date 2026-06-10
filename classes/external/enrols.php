@@ -21,8 +21,6 @@ use core_external\external_function_parameters;
 use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use core_external\external_value;
-use core_external\external_format_value;
-use context;
 use moodle_exception;
 use context_course;
 
@@ -44,7 +42,9 @@ class enrols extends external_api
     public static function get_cohort_enrol_instances_parameters()
     {
         return new external_function_parameters([
-            'cohortid' => new external_value(PARAM_INT, 'ID of the cohort')
+            'cohortid' => new external_value(PARAM_INT, 'ID of the cohort'),
+            'page' => new external_value(PARAM_INT, 'Page number (0-indexed)', VALUE_DEFAULT, 0),
+            'perpage' => new external_value(PARAM_INT, 'Records per page', VALUE_DEFAULT, 25),
         ]);
     }
 
@@ -54,23 +54,33 @@ class enrols extends external_api
      * @param int $cohortid ID of the cohort
      * @return array Array of enrol instances
      */
-    public static function get_cohort_enrol_instances($cohortid)
+    public static function get_cohort_enrol_instances($cohortid, $page, $perpage)
     {
         global $DB;
 
-        // Validate parameters
         $params = self::validate_parameters(self::get_cohort_enrol_instances_parameters(), [
-            'cohortid' => $cohortid
+            'cohortid' => $cohortid,
+            'page' => $page,
+            'perpage' => $perpage,
         ]);
 
-        // Get cohort enrol instances where customint1 equals the cohortid
         $sql = "SELECT e.*, c.fullname, c.shortname
                   FROM {enrol} e
                   JOIN {course} c ON e.courseid = c.id
                  WHERE e.enrol = 'cohort' AND e.customint1 = :cohortid
                  ORDER BY c.fullname";
 
-        $enrolinstances = $DB->get_records_sql($sql, ['cohortid' => $params['cohortid']]);
+        $total = $DB->count_records_sql(
+            "SELECT COUNT(*) FROM {enrol} WHERE enrol = 'cohort' AND customint1 = :cohortid",
+            ['cohortid' => $params['cohortid']]
+        );
+
+        $enrolinstances = $DB->get_records_sql(
+            $sql,
+            ['cohortid' => $params['cohortid']],
+            $params['page'] * $params['perpage'],
+            $params['perpage']
+        );
 
         $result = [];
         foreach ($enrolinstances as $instance) {
@@ -113,34 +123,40 @@ class enrols extends external_api
             ];
         }
 
-        return $result;
+        return [
+            'instances' => $result,
+            'total' => $total,
+        ];
     }
 
     /**
      * Returns description of method result value
      *
-     * @return external_multiple_structure
+     * @return external_single_structure
      */
     public static function get_cohort_enrol_instances_returns()
     {
-        return new external_multiple_structure(
-            new external_single_structure([
-                'id' => new external_value(PARAM_INT, 'ID of the enrol instance'),
-                'courseid' => new external_value(PARAM_INT, 'ID of the course'),
-                'coursefullname' => new external_value(PARAM_RAW, 'Name of the course'),
-                'courseshortname' => new external_value(PARAM_RAW, 'Short name of the course'),
-                'roleid' => new external_value(PARAM_INT, 'ID of the role'),
-                'rolename' => new external_value(PARAM_RAW, 'Name of the role'),
-                'status' => new external_value(PARAM_INT, 'Status of the enrol instance'),
-                'cohortid' => new external_value(PARAM_INT, 'Custom integer 1 (cohort ID)'),
-                'enroled' => new external_value(PARAM_INT, 'Counter of users enroled in instances'),
-                'groupid' => new external_value(PARAM_INT, 'Custom integer 2 (group ID)'),
-                'groupname' => new external_value(PARAM_RAW, 'Group name'),
-                'groupmembers' => new external_value(PARAM_INT, 'Group members counter'),
-                'timecreated' => new external_value(PARAM_INT, 'Time created'),
-                'timemodified' => new external_value(PARAM_INT, 'Time modified'),
-            ])
-        );
+        return new external_single_structure([
+            'instances' => new external_multiple_structure(
+                new external_single_structure([
+                    'id' => new external_value(PARAM_INT, 'ID of the enrol instance'),
+                    'courseid' => new external_value(PARAM_INT, 'ID of the course'),
+                    'coursefullname' => new external_value(PARAM_RAW, 'Name of the course'),
+                    'courseshortname' => new external_value(PARAM_RAW, 'Short name of the course'),
+                    'roleid' => new external_value(PARAM_INT, 'ID of the role'),
+                    'rolename' => new external_value(PARAM_RAW, 'Name of the role'),
+                    'status' => new external_value(PARAM_INT, 'Status of the enrol instance'),
+                    'cohortid' => new external_value(PARAM_INT, 'Custom integer 1 (cohort ID)'),
+                    'enroled' => new external_value(PARAM_INT, 'Counter of users enroled in instances'),
+                    'groupid' => new external_value(PARAM_INT, 'Custom integer 2 (group ID)'),
+                    'groupname' => new external_value(PARAM_RAW, 'Group name'),
+                    'groupmembers' => new external_value(PARAM_INT, 'Group members counter'),
+                    'timecreated' => new external_value(PARAM_INT, 'Time created'),
+                    'timemodified' => new external_value(PARAM_INT, 'Time modified'),
+                ])
+            ),
+            'total' => new external_value(PARAM_INT, 'Total number of enrol instances'),
+        ]);
     }
 
     /**
@@ -197,6 +213,12 @@ class enrols extends external_api
         return new external_function_parameters([
             'cohortid' => new external_value(PARAM_INT, 'The cohort id'),
             'query' => new external_value(PARAM_TEXT, 'The query string to search'),
+            'excludecourseids' => new external_multiple_structure(
+                new external_value(PARAM_INT, 'Course ID to exclude from search'),
+                'List of course IDs to exclude from search results',
+                VALUE_DEFAULT,
+                []
+            ),
         ]);
     }
 
@@ -205,16 +227,18 @@ class enrols extends external_api
      *
      * @param int    $cohortid The cohort id
      * @param string $query    The search string to match against fullname, shortname, or idnumber
-     * 
+     * @param array  $excludecourseids List of course IDs to exclude from search results
+     *
      * @return array of course records
      */
-    public static function get_potential_cohort_courses($cohortid, $query)
+    public static function get_potential_cohort_courses($cohortid, $query, $excludecourseids = [])
     {
         global $DB;
 
         $params = self::validate_parameters(self::get_potential_cohort_courses_parameters(), [
             'cohortid' => $cohortid,
-            'query' => $query
+            'query' => $query,
+            'excludecourseids' => $excludecourseids
         ]);
 
         $params = [
@@ -226,13 +250,20 @@ class enrols extends external_api
         $sql = "SELECT DISTINCT c.id, c.fullname
             FROM {course} c
             JOIN {role_context_levels} rcl ON rcl.contextlevel = :contextlevel
-            LEFT JOIN {enrol} e 
-                ON e.courseid = c.id 
-                AND e.enrol = 'cohort' 
-                AND e.customint1 = :cohortid 
+            LEFT JOIN {enrol} e
+                ON e.courseid = c.id
+                AND e.enrol = 'cohort'
+                AND e.customint1 = :cohortid
                 AND e.roleid = rcl.roleid
             WHERE e.id IS NULL
+                AND c.id > 1
         ";
+
+        if (!empty($excludecourseids)) {
+            [$insql, $inparams] = $DB->get_in_or_equal($excludecourseids, SQL_PARAMS_NAMED, 'exclude_', false);
+            $sql .= " AND c.id {$insql}";
+            $params = array_merge($params, $inparams);
+        }
 
         if (!empty($query)) {
 
@@ -277,29 +308,32 @@ class enrols extends external_api
         return new external_function_parameters([
             'cohortid' => new external_value(PARAM_INT, 'The cohort id'),
             'courseid' => new external_value(PARAM_INT, 'The course id'),
+            'enrolinstanceid' => new external_value(PARAM_INT, 'The enrol instance id (optional, for editing mode)', VALUE_DEFAULT, 0),
         ]);
     }
 
     /**
      * Returns a list of roles that are valid for the course context
      * but are NOT currently assigned to the specific cohort enrolment instance.
+     * When editing an existing instance, the current instance is excluded from the check.
      *
      * @param int $cohortid The cohort id
      * @param int $courseid The course id
-     * 
+     * @param int $enrolinstanceid The enrol instance id (optional, for editing mode)
+     *
      * @return array
      * @throws moodle_exception
      */
-    public static function get_cohort_course_roles($cohortid, $courseid)
+    public static function get_cohort_course_roles($cohortid, $courseid, $enrolinstanceid = 0)
     {
         global $DB;
 
         $params = self::validate_parameters(self::get_cohort_course_roles_parameters(), [
             'cohortid' => $cohortid,
-            'courseid' => $courseid
+            'courseid' => $courseid,
+            'enrolinstanceid' => $enrolinstanceid
         ]);
 
-        
         if (!$DB->record_exists('course', ['id' => $params['courseid']])) {
             throw new moodle_exception('invalidcourse', 'cohort', '', $params['courseid']);
         }
@@ -315,17 +349,23 @@ class enrols extends external_api
         $sql = "SELECT r.id
             FROM {role} r
             JOIN {role_context_levels} rcl ON rcl.roleid = r.id
-            LEFT JOIN {enrol} e 
+            LEFT JOIN {enrol} e
                 ON (
-                    e.roleid = r.id 
-                    AND e.enrol = 'cohort' 
-                    AND e.courseid = :courseid 
+                    e.roleid = r.id
+                    AND e.enrol = 'cohort'
+                    AND e.courseid = :courseid
                     AND e.customint1 = :cohortid
                 )
             WHERE rcl.contextlevel = :contextlevel
                 AND e.id IS NOT NULL
-            ORDER BY r.name ASC
         ";
+
+        // Add exclusion for current enrol instance when editing
+        if (!empty($params['enrolinstanceid'])) {
+            $sql .= " AND e.id <> :enrolinstanceid";
+        }
+
+        $sql .= " ORDER BY r.name ASC";
 
         $roleids = $DB->get_fieldset_sql($sql, $params);
 
@@ -333,8 +373,8 @@ class enrols extends external_api
 
         $roles = [];
 
-        foreach($course_roles as $roleid => $rolename) {
-            if(!in_array($roleid,$roleids)){
+        foreach ($course_roles as $roleid => $rolename) {
+            if (!in_array($roleid, $roleids)) {
                 $roles[] = [
                     'id' => $roleid,
                     'name' => $rolename
@@ -374,5 +414,327 @@ class enrols extends external_api
     private static function count_group_members($intanceid)
     {
         return count(groups_get_members($intanceid));
+    }
+
+    /**
+     * Parameter description for get_course_groups().
+     *
+     * @return external_function_parameters
+     */
+    public static function get_course_groups_parameters()
+    {
+        return new external_function_parameters([
+            'courseid' => new external_value(PARAM_INT, 'The course id'),
+        ]);
+    }
+
+    /**
+     * Get all groups for a specific course
+     *
+     * @param int $courseid The course id
+     * @return array of groups
+     */
+    public static function get_course_groups($courseid)
+    {
+        global $DB;
+
+        $params = self::validate_parameters(self::get_course_groups_parameters(), [
+            'courseid' => $courseid
+        ]);
+
+        // Verify course exists
+        if (!$DB->record_exists('course', ['id' => $params['courseid']])) {
+            throw new moodle_exception('invalidcourse', 'cohort', '', $params['courseid']);
+        }
+
+        $coursecontext = context_course::instance($params['courseid']);
+        $groups = groups_get_all_groups($params['courseid'], 0, 0, 'g.id, g.name, g.description');
+
+        $result = [];
+
+        // Add option to no group
+        $result[] = [
+            'id' => 0,
+            'name' => get_string('none'),
+            'description' => ''
+        ];
+
+        // Add option to create new group
+        $result[] = [
+            'id' => -1,
+            'name' => get_string('creategroup', 'enrol_cohort'),
+            'description' => ''
+        ];
+
+        foreach ($groups as $group) {
+            $result[] = [
+                'id' => $group->id,
+                'name' => format_string($group->name, true, ['context' => $coursecontext]),
+                'description' => format_text($group->description, $group->descriptionformat, ['context' => $coursecontext])
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Return description for get_course_groups().
+     *
+     * @return external_multiple_structure
+     */
+    public static function get_course_groups_returns()
+    {
+        return new external_multiple_structure(
+            new external_single_structure([
+                'id' => new external_value(PARAM_INT, 'ID of the group'),
+                'name' => new external_value(PARAM_TEXT, 'Name of the group'),
+                'description' => new external_value(PARAM_RAW, 'Description of the group'),
+            ])
+        );
+    }
+
+    /**
+     * Parameter description for create_cohort_enrol_instances().
+     *
+     * @return external_function_parameters
+     */
+    public static function create_cohort_enrol_instances_parameters()
+    {
+        return new external_function_parameters([
+            'cohortid' => new external_value(PARAM_INT, 'The cohort id'),
+            'courses' => new external_multiple_structure(
+                new external_single_structure([
+                    'courseid' => new external_value(PARAM_INT, 'ID of the course'),
+                    'roleid' => new external_value(PARAM_INT, 'ID of the role'),
+                    'status' => new external_value(PARAM_INT, 'Status of the enrol instance (0 = inactive, 1 = active)'),
+                    'groupid' => new external_value(PARAM_INT, 'ID of the group (optional, -1 to create new group)', VALUE_DEFAULT, 0),
+                ]),
+                'List of courses with role, status and group to create enrol instances'
+            ),
+        ]);
+    }
+
+    /**
+     * Create cohort enrol instances for multiple courses with optional group assignment
+     *
+     * @param int $cohortid The cohort id
+     * @param array $courses List of courses with role, status and group
+     * @return array
+     */
+    public static function create_cohort_enrol_instances($cohortid, $courses)
+    {
+        global $DB, $CFG;
+
+        // Validate parameters.
+        $params = self::validate_parameters(self::create_cohort_enrol_instances_parameters(), [
+            'cohortid' => $cohortid,
+            'courses' => $courses
+        ]);
+
+        // Verify cohort exists
+        if (!$DB->record_exists('cohort', ['id' => $params['cohortid']])) {
+            throw new moodle_exception('invalidcohort', 'cohort', '', $params['cohortid']);
+        }
+
+        $created_count = 0;
+        $errors = [];
+
+        // Create enrol instance
+        $enrol_plugin = enrol_get_plugin('cohort');
+        if (!$enrol_plugin) {
+            throw new moodle_exception('enrolpluginnotfound', 'enrol_cohort');
+        }
+
+        foreach ($params['courses'] as $course_data) {
+
+            $course = $DB->get_record('course', ['id' => $course_data['courseid']]);
+            if (!$course) {
+                $errors[] = get_string('errorcoursenotfound', 'local_cohortmanager', $course_data['courseid']);
+                continue;
+            }
+
+            $context = context_course::instance($course_data['courseid']);
+            if (!$DB->record_exists('role', ['id' => $course_data['roleid']])) {
+                $a = new \stdClass();
+                $a->roleid = $course_data['roleid'];
+                $a->courseid = $course_data['courseid'];
+                $errors[] = get_string('errorrolenotfoundforcourse', 'local_cohortmanager', $a);
+                continue;
+            }
+
+            $existing_enrol = $DB->get_record('enrol', [
+                'enrol' => 'cohort',
+                'courseid' => $course_data['courseid'],
+                'customint1' => $params['cohortid'],
+                'roleid' => $course_data['roleid']
+            ]);
+
+            if ($existing_enrol) {
+                $a = new \stdClass();
+                $a->courseid = $course_data['courseid'];
+                $a->roleid = $course_data['roleid'];
+                $errors[] = get_string('errorenrolinstancealreadyexists', 'local_cohortmanager', $a);
+                continue;
+            }
+
+            $fields = [
+                'enrol' => 'cohort',
+                'status' => $course_data['status'],
+                'roleid' => $course_data['roleid'],
+                'customint1' => $params['cohortid'],
+                'customint2' => $course_data['groupid'],
+            ];
+
+            $instanceid = $enrol_plugin->add_instance($course, $fields);
+
+            if ($instanceid) {
+                $created_count++;
+            } else {
+                $errors[] = get_string('errorfailedtocreateenrolinstance', 'local_cohortmanager', $course_data['courseid']);
+            }
+        }
+
+        return [
+            'created_count' => $created_count,
+            'errors' => $errors
+        ];
+    }
+
+    /**
+     * Return description for create_cohort_enrol_instances().
+     *
+     * @return external_single_structure
+     */
+    public static function create_cohort_enrol_instances_returns()
+    {
+        return new external_single_structure([
+            'created_count' => new external_value(PARAM_INT, 'Number of enrol instances created successfully'),
+            'errors' => new external_multiple_structure(
+                new external_value(PARAM_RAW, 'Error messages for failed creations'),
+                'List of error messages'
+            ),
+        ]);
+    }
+
+    /**
+     * Parameter description for delete_cohort_enrol_instance().
+     *
+     * @return external_function_parameters
+     */
+    public static function delete_cohort_enrol_instance_parameters()
+    {
+        return new external_function_parameters([
+            'enrolinstanceid' => new external_value(PARAM_INT, 'The enrol instance id to delete'),
+        ]);
+    }
+
+    /**
+     * Delete a cohort enrol instance
+     *
+     * @param int $enrolinstanceid The enrol instance id to delete
+     * @return array
+     */
+    public static function delete_cohort_enrol_instance($enrolinstanceid)
+    {
+        global $DB;
+
+        // Validate parameters
+        $params = self::validate_parameters(self::delete_cohort_enrol_instance_parameters(), [
+            'enrolinstanceid' => $enrolinstanceid
+        ]);
+
+        // Get the enrol instance
+        $instance = $DB->get_record('enrol', [
+            'id' => $params['enrolinstanceid'],
+            'enrol' => 'cohort'
+        ]);
+
+        if (!$instance) {
+            throw new moodle_exception('invalidinstance', 'enrol_cohort', '', $params['enrolinstanceid']);
+        }
+
+        // Get the cohort enrol plugin
+        $enrol_plugin = enrol_get_plugin('cohort');
+        if (!$enrol_plugin) {
+            throw new moodle_exception('enrolpluginnotfound', 'enrol_cohort');
+        }
+
+        // Check if user can delete this instance
+        $context = context_course::instance($instance->courseid);
+        self::validate_context($context);
+
+        if (!$enrol_plugin->can_delete_instance($instance)) {
+            throw new moodle_exception('nopermissions', 'error', '', 'enrol/cohort:config');
+        }
+
+        // Delete the instance using the plugin method
+        $enrol_plugin->delete_instance($instance);
+
+        return [
+            'success' => true,
+            'message' => get_string('enrolinstancedeletedsuccessfully', 'local_cohortmanager')
+        ];
+    }
+
+    /**
+     * Return description for delete_cohort_enrol_instance().
+     *
+     * @return external_single_structure
+     */
+    public static function delete_cohort_enrol_instance_returns()
+    {
+        return new external_single_structure([
+            'success' => new external_value(PARAM_BOOL, 'Whether the deletion was successful'),
+            'message' => new external_value(PARAM_TEXT, 'Success or error message'),
+        ]);
+    }
+
+    public static function toggle_cohort_enrol_instance_status_parameters()
+    {
+        return new external_function_parameters([
+            'enrolinstanceid' => new external_value(PARAM_INT, 'The enrol instance id to toggle status'),
+        ]);
+    }
+
+    public static function toggle_cohort_enrol_instance_status($enrolinstanceid)
+    {
+        global $DB;
+
+        $params = self::validate_parameters(self::toggle_cohort_enrol_instance_status_parameters(), [
+            'enrolinstanceid' => $enrolinstanceid
+        ]);
+
+        $instance = $DB->get_record('enrol', [
+            'id' => $params['enrolinstanceid'],
+            'enrol' => 'cohort'
+        ]);
+
+        if (!$instance) {
+            throw new moodle_exception('invalidinstance', 'enrol_cohort', '', $params['enrolinstanceid']);
+        }
+
+        $context = context_course::instance($instance->courseid);
+        self::validate_context($context);
+        require_capability('enrol/cohort:config', $context);
+
+        $newstatus = $instance->status ? 0 : 1;
+        $instance->status = $newstatus;
+        $instance->timemodified = time();
+        $DB->update_record('enrol', $instance);
+
+        return [
+            'success' => true,
+            'status' => $newstatus,
+            'message' => get_string('enrolinstancestatusupdated', 'local_cohortmanager')
+        ];
+    }
+
+    public static function toggle_cohort_enrol_instance_status_returns()
+    {
+        return new external_single_structure([
+            'success' => new external_value(PARAM_BOOL, 'Whether the toggle was successful'),
+            'status' => new external_value(PARAM_INT, 'The new status value (0=inactive, 1=active)'),
+            'message' => new external_value(PARAM_TEXT, 'Success or error message'),
+        ]);
     }
 }

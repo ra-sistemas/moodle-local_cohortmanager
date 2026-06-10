@@ -3,20 +3,20 @@
         <!-- Search and filters -->
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div class="input-group" style="max-width: 300px;">
-                <input type="text" class="form-control" placeholder="Search members..." v-model="searchQuery"
+                <input type="text" class="form-control" :placeholder="stringsStore.getString('searchmembers')" v-model="searchQuery"
                     @input="handleSearch">
             </div>
 
             <!-- Letter filters -->
             <div class="col-2">
                 <div class="input-group input-group-sm">
-                    <span class="input-group-text">First</span>
+                    <span class="input-group-text">{{ stringsStore.getString('first') }}</span>
                     <input type="text" class="form-control" maxlength="1" v-model="firstInitial"
                         @input="handleLetterFilter">
                 </div>
 
                 <div class="input-group input-group-sm">
-                    <span class="input-group-text">Last</span>
+                    <span class="input-group-text">{{ stringsStore.getString('last') }}</span>
                     <input type="text" class="form-control" maxlength="1" v-model="lastInitial"
                         @input="handleLetterFilter">
                 </div>
@@ -24,32 +24,44 @@
         </div>
 
         <div class="d-flex gap-2 mb-3 flex-wrap">
-            <button class="btn btn-sm btn-outline-secondary" @click="toggleColumnVisibility">
-                <i class="bi bi-grid-3x3"></i> Columns
+            <button class="btn btn-sm btn-outline-secondary" @click="toggleColumnVisibility"
+                :title="stringsStore.getString('columns')">
+                <i class="bi bi-grid-3x3"></i> {{ stringsStore.getString('columns') }}
             </button>
 
             <!-- Delete button - shown when users are selected -->
             <button v-if="selectedMembers.length > 0" class="btn btn-sm btn-outline-danger"
-                @click="showDeleteModal = true">
-                <i class="bi bi-trash"></i> Delete ({{ selectedMembers.length }})
+                @click="showDeleteModal = true"
+                :title="stringsStore.getString('delete') + ' (' + selectedMembers.length + ')'">
+                <i class="bi bi-trash"></i> {{ stringsStore.getString('delete') }} ({{ selectedMembers.length }})
             </button>
         </div>
 
-        <!-- Table -->
+        <!-- Loading State -->
         <div v-if="loading" class="text-center py-4">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
+            <i class="fa fa-spinner fa-spin"></i> {{ stringsStore.getString('loading') }}
         </div>
 
+        <!-- Error State -->
         <div v-else-if="error" class="alert alert-danger">
             {{ error }}
         </div>
 
+        <!-- Content -->
         <div v-else>
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
+            <!-- Empty State -->
+            <div v-if="members.length === 0" class="text-center py-4">
+                <i class="fa fa-users fa-3x text-muted mb-3"></i>
+                <h5>{{ stringsStore.getString('nomembersfound') }}</h5>
+                <p class="text-muted">{{ stringsStore.getString('nomembersfounddescription') }}</p>
+            </div>
+
+            <!-- Members Table -->
+            <div v-else class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
                         <tr>
                             <th v-if="!isColumnHidden('select')">
                                 <input type="checkbox" @change="toggleSelectAll" :checked="allSelected"
@@ -57,35 +69,35 @@
                             </th>
 
                             <th v-if="!isColumnHidden('fullname')" @click="toggleSort('fullname')">
-                                Name
+                                {{ stringsStore.getString('name') }}
                                 <span v-if="currentSortBy === 'fullname'">
                                     {{ currentSortOrder === 1 ? '↑' : '↓' }}
                                 </span>
                             </th>
 
                             <th v-if="!isColumnHidden('username')" @click="toggleSort('username')">
-                                Username
+                                {{ stringsStore.getString('username') }}
                                 <span v-if="currentSortBy === 'username'">
                                     {{ currentSortOrder === 1 ? '↑' : '↓' }}
                                 </span>
                             </th>
 
                             <th v-if="!isColumnHidden('email')" @click="toggleSort('email')">
-                                Email
+                                {{ stringsStore.getString('email') }}
                                 <span v-if="currentSortBy === 'email'">
                                     {{ currentSortOrder === 1 ? '↑' : '↓' }}
                                 </span>
                             </th>
 
                             <th v-if="!isColumnHidden('city')" @click="toggleSort('city')">
-                                City
+                                {{ stringsStore.getString('city') }}
                                 <span v-if="currentSortBy === 'city'">
                                     {{ currentSortOrder === 1 ? '↑' : '↓' }}
                                 </span>
                             </th>
 
                             <th v-if="!isColumnHidden('country')" @click="toggleSort('country')">
-                                Country
+                                {{ stringsStore.getString('country') }}
                                 <span v-if="currentSortBy === 'country'">
                                     {{ currentSortOrder === 1 ? '↑' : '↓' }}
                                 </span>
@@ -109,26 +121,21 @@
                         </tr>
                     </tbody>
                 </table>
+                    </div>
+                </div>
             </div>
 
             <!-- Pagination -->
-            <div class="d-flex justify-content-between align-items-center mt-3">
-                <div>
-                    Showing {{ (currentPage - 1) * pageSize + 1 }} to {{ Math.min(currentPage * pageSize, totalRows) }}
-                    of {{ totalRows }} members
-                </div>
-
-                <div class="btn-group">
-                    <button class="btn btn-sm btn-outline-secondary" :disabled="currentPage === 1"
-                        @click="currentPage--">
-                        Previous
-                    </button>
-
-                    <button class="btn btn-sm btn-outline-secondary" :disabled="!hasMore" @click="currentPage++">
-                        Next
-                    </button>
-                </div>
-            </div>
+            <TablePagination
+                :visible="members.length > 0"
+                :current-page="currentPage"
+                :total-pages="totalPages"
+                :pagination-info="paginationInfo"
+                :per-page="pageSize"
+                @update:per-page="changePerPage"
+                @prev="prevPage"
+                @next="nextPage"
+            />
         </div>
 
         <!-- Column visibility modal -->
@@ -157,7 +164,8 @@ import type { CohortMember } from '@/types/interfaces';
 import { getCohortMembers, deleteCohortMembers } from '../utils/moodle';
 import ColumnVisibilityModal from './ColumnVisibilityModal.vue';
 import DeleteConfirmationModal from './DeleteConfirmationModal.vue';
-// import { useStringsStore } from '@/stores/strings';
+import TablePagination from './TablePagination.vue';
+import { useStringsStore } from '@/stores/strings';
 
 // Define props
 const props = defineProps<{
@@ -165,7 +173,7 @@ const props = defineProps<{
 }>();
 
 // Initialize strings store
-// const stringsStore = useStringsStore();
+const stringsStore = useStringsStore();
 
 // State
 const members = ref<CohortMember[]>([]);
@@ -173,7 +181,7 @@ const totalRows = ref(0);
 const loading = ref(false);
 const error = ref<string | null>(null);
 const currentPage = ref(1);
-const pageSize = ref(20);
+const pageSize = ref(10);
 const sortData = ref<{ sortby: string, sortorder: number }[]>([]);
 const filters = ref<{ name: string, value: string }[]>([]);
 const searchQuery = ref('');
@@ -196,9 +204,13 @@ const partialSelected = computed(() =>
     selectedMembers.value.length > 0 &&
     selectedMembers.value.length < members.value.length
 );
-const hasMore = computed(() =>
-    (currentPage.value - 1) * pageSize.value + members.value.length < totalRows.value
-);
+
+const totalPages = computed(() => Math.ceil(totalRows.value / pageSize.value));
+const paginationInfo = computed(() => {
+    const start = (currentPage.value - 1) * pageSize.value + 1;
+    const end = Math.min(currentPage.value * pageSize.value, totalRows.value);
+    return `${start}-${end} of ${totalRows.value} ${stringsStore.getString('memberscount')}`;
+});
 
 // Methods
 const fetchMembers = async () => {
@@ -220,11 +232,11 @@ const fetchMembers = async () => {
         totalRows.value = response.totalrows;
 
         if (!response) {
-            throw new Error('Failed to fetch members');
+            throw new Error(stringsStore.getString('failedtofetchmembers'));
         }
         console.debug(response);
     } catch (err) {
-        error.value = err instanceof Error ? err.message : 'An error occurred';
+        error.value = err instanceof Error ? err.message : stringsStore.getString('anerroroccurred');
     } finally {
         loading.value = false;
     }
@@ -238,6 +250,30 @@ const toggleSort = (column: string) => {
     } else {
         sortData.value = [{ sortby: column, sortorder: 1 }];
     }
+    fetchMembers();
+};
+
+// Pagination handlers
+const goToPage = (page: number) => {
+    currentPage.value = page;
+    fetchMembers();
+};
+
+const prevPage = () => {
+    if (currentPage.value > 1) {
+        goToPage(currentPage.value - 1);
+    }
+};
+
+const nextPage = () => {
+    if (currentPage.value < totalPages.value) {
+        goToPage(currentPage.value + 1);
+    }
+};
+
+const changePerPage = (value: number) => {
+    pageSize.value = value;
+    currentPage.value = 1;
     fetchMembers();
 };
 
@@ -301,7 +337,7 @@ const isColumnHidden = (column: string): boolean => {
 // Helper function to get member fullname by ID
 const getMemberFullname = (memberId: number): string => {
     const member = members.value.find(m => m.id === memberId);
-    return member ? member.fullname : `Unknown (${memberId})`;
+    return member ? member.fullname : stringsStore.getString('unknown') + ` (${memberId})`;
 };
 
 const deleteSelectedMembers = async () => {
@@ -324,7 +360,7 @@ const deleteSelectedMembers = async () => {
         showDeleteModal.value = false;
         fetchMembers();
     } catch (err) {
-        error.value = err instanceof Error ? err.message : 'An error occurred while deleting members';
+        error.value = err instanceof Error ? err.message : stringsStore.getString('errordeletingmembers');
     } finally {
         deleting.value = false;
     }
