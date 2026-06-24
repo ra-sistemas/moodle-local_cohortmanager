@@ -8,5 +8,8 @@ app/dist
 # Local dev data (not distributed).
 cohort_plugins.csv
 
+# Local packaging helper.
+package.sh
+
 # Generated packaging artifacts.
 *.zip
