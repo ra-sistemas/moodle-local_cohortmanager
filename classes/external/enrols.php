@@ -87,10 +87,30 @@ class enrols extends external_api
             $params['perpage']
         );
 
+        // Preload related records in bulk to avoid querying the database once per
+        // enrol instance inside the loop below.
+        $roleids = array_values(array_unique(array_filter(array_column($enrolinstances, 'roleid'))));
+        $roles = $roleids ? $DB->get_records_list('role', 'id', $roleids) : [];
+
+        $groupids = [];
+        foreach ($enrolinstances as $instance) {
+            if (!empty($instance->customint2) && $instance->customint2 > 0) {
+                $groupids[$instance->customint2] = $instance->customint2;
+            }
+        }
+        $groupids = array_values($groupids);
+        $groups = $groupids ? $DB->get_records_list('groups', 'id', $groupids) : [];
+
+        $instanceids = array_keys($enrolinstances);
+        $enroledcounts = self::count_enrols_bulk($instanceids);
+        // Group members must be counted by group id (customint2), not by the enrol
+        // instance id, since {groups}.id matches the group, not the enrol instance.
+        $groupmembercounts = self::count_group_members_bulk($groupids);
+
         $result = [];
         foreach ($enrolinstances as $instance) {
             // Get role information
-            $role = $DB->get_record('role', ['id' => $instance->roleid]);
+            $role = $roles[$instance->roleid] ?? null;
             $coursecontext = context_course::instance($instance->courseid);
             $rolename = $role ? role_get_name($role, $coursecontext, ROLENAME_BOTH) : '';
 
@@ -100,7 +120,7 @@ class enrols extends external_api
                 if ($instance->customint2 == -1) {
                     $groupinfo = ['id' => -1, 'name' => get_string('creategroup', 'enrol_cohort')];
                 } else {
-                    $group = $DB->get_record('groups', ['id' => $instance->customint2, 'courseid' => $instance->courseid]);
+                    $group = $groups[$instance->customint2] ?? null;
                     if ($group) {
                         $groupinfo = [
                             'id' => $group->id,
@@ -120,9 +140,11 @@ class enrols extends external_api
                 'status' => $instance->status,
                 'cohortid' => $instance->customint1,
                 'groupid' => $instance->customint2,
-                'groupname' => $instance->customint2 ? groups_get_group_name($instance->customint2) : null,
-                'groupmembers' => self::count_group_members($instance->id),
-                'enroled' => self::count_enrols($instance->id),
+                'groupname' => !empty($instance->customint2) && isset($groups[$instance->customint2])
+                    ? $groups[$instance->customint2]->name : null,
+                'groupmembers' => ($instance->customint2 > 0 && isset($groupmembercounts[$instance->customint2]))
+                    ? $groupmembercounts[$instance->customint2] : 0,
+                'enroled' => $enroledcounts[$instance->id] ?? 0,
                 'timecreated' => usertime($instance->timecreated),
                 'timemodified' => usertime($instance->timemodified),
             ];
@@ -431,20 +453,118 @@ class enrols extends external_api
         );
     }
 
-    private static function count_enrols($instanceid)
+    /**
+     * Count user enrolments for several enrol instances in a single grouped query.
+     *
+     * Replaces one count query per instance with a single query, avoiding N+1
+     * database calls in get_cohort_enrol_instances().
+     *
+     * @param array $instanceids Enrol instance IDs.
+     * @return array Mapping of enrolid => count.
+     */
+    private static function count_enrols_bulk(array $instanceids)
     {
         global $DB;
-        return $DB->count_records(
-            'user_enrolments',
-            [
-                'enrolid' => $instanceid
-            ]
-        );
+
+        if (empty($instanceids)) {
+            return [];
+        }
+
+        [$insql, $inparams] = $DB->get_in_or_equal($instanceids, SQL_PARAMS_NAMED, 'enrol');
+
+        $sql = "SELECT enrolid, COUNT(*) AS cnt
+                  FROM {user_enrolments}
+                 WHERE enrolid {$insql}
+              GROUP BY enrolid";
+
+        $counts = $DB->get_records_sql($sql, $inparams);
+
+        $result = [];
+        foreach ($counts as $row) {
+            $result[$row->enrolid] = (int) $row->cnt;
+        }
+
+        return $result;
     }
 
-    private static function count_group_members($intanceid)
+    /**
+     * Count the members of several groups in a single grouped query.
+     *
+     * Mirrors the previous per-instance behaviour of count_group_members() (look up
+     * the group matching the given ID and count its members) while fetching every
+     * count at once to avoid N+1 database calls.
+     *
+     * @param array $groupids Group IDs to count members for.
+     * @return array Mapping of groupid => member count.
+     */
+    private static function count_group_members_bulk(array $groupids)
     {
-        return count(groups_get_members($intanceid));
+        global $DB;
+
+        if (empty($groupids)) {
+            return [];
+        }
+
+        [$insql, $inparams] = $DB->get_in_or_equal($groupids, SQL_PARAMS_NAMED, 'group');
+
+        $sql = "SELECT g.id AS groupid, COUNT(gm.userid) AS cnt
+                  FROM {groups} g
+             LEFT JOIN {groups_members} gm ON gm.groupid = g.id
+                 WHERE g.id {$insql}
+              GROUP BY g.id";
+
+        $counts = $DB->get_records_sql($sql, $inparams);
+
+        $result = [];
+        foreach ($counts as $row) {
+            $result[$row->groupid] = (int) $row->cnt;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Load existing cohort enrol instances for a set of courses in a single query.
+     *
+     * Returns a set of "courseid_roleid" keys for the existing cohort enrols of
+     * the given cohort, allowing the creation loop to check for duplicates against
+     * an in-memory map instead of querying the database once per course.
+     *
+     * @param int   $cohortid  The cohort ID (customint1).
+     * @param array $courseids Course IDs to check.
+     * @return array Associative array of "courseid_roleid" => true.
+     */
+    private static function get_existing_cohort_enrols($cohortid, array $courseids)
+    {
+        global $DB;
+
+        if (empty($courseids)) {
+            return [];
+        }
+
+        [$insql, $inparams] = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED, 'course');
+
+        $sql = "SELECT courseid, roleid
+                  FROM {enrol}
+                 WHERE enrol = :enrol AND customint1 = :cohortid AND courseid {$insql}";
+
+        $params = array_merge([
+            'enrol' => 'cohort',
+            'cohortid' => $cohortid,
+        ], $inparams);
+
+        // Use a recordset (not get_records_sql) because the result is keyed by the
+        // first column (courseid), which is not unique when a course already has
+        // multiple cohort enrols; a keyed array would drop roles and weaken the
+        // duplicate check.
+        $existing = [];
+        $rs = $DB->get_recordset_sql($sql, $params);
+        foreach ($rs as $record) {
+            $existing[$record->courseid . '_' . $record->roleid] = true;
+        }
+        $rs->close();
+
+        return $existing;
     }
 
     /**
@@ -582,9 +702,19 @@ class enrols extends external_api
             throw new moodle_exception('enrolpluginnotfound', 'enrol_cohort');
         }
 
+        // Preload courses, roles and existing enrol instances in bulk to avoid
+        // querying the database once per course inside the creation loop.
+        $courseids = array_values(array_unique(array_filter(array_column($params['courses'], 'courseid'))));
+        $courses = $courseids ? $DB->get_records_list('course', 'id', $courseids) : [];
+
+        $roleids = array_values(array_unique(array_filter(array_column($params['courses'], 'roleid'))));
+        $roleexists = $roleids ? $DB->get_records_list('role', 'id', $roleids, '', 'id') : [];
+
+        $existingenrols = self::get_existing_cohort_enrols($params['cohortid'], $courseids);
+
         foreach ($params['courses'] as $course_data) {
 
-            $course = $DB->get_record('course', ['id' => $course_data['courseid']]);
+            $course = $courses[$course_data['courseid']] ?? null;
             if (!$course) {
                 $errors[] = get_string('errorcoursenotfound', 'local_cohortmanager', $course_data['courseid']);
                 continue;
@@ -595,7 +725,7 @@ class enrols extends external_api
                 $errors[] = get_string('errornopermissionforcourse', 'local_cohortmanager', $course_data['courseid']);
                 continue;
             }
-            if (!$DB->record_exists('role', ['id' => $course_data['roleid']])) {
+            if (!isset($roleexists[$course_data['roleid']])) {
                 $a = new \stdClass();
                 $a->roleid = $course_data['roleid'];
                 $a->courseid = $course_data['courseid'];
@@ -603,14 +733,7 @@ class enrols extends external_api
                 continue;
             }
 
-            $existing_enrol = $DB->get_record('enrol', [
-                'enrol' => 'cohort',
-                'courseid' => $course_data['courseid'],
-                'customint1' => $params['cohortid'],
-                'roleid' => $course_data['roleid']
-            ]);
-
-            if ($existing_enrol) {
+            if (isset($existingenrols[$course_data['courseid'] . '_' . $course_data['roleid']])) {
                 $a = new \stdClass();
                 $a->courseid = $course_data['courseid'];
                 $a->roleid = $course_data['roleid'];

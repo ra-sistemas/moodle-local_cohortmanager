@@ -82,6 +82,31 @@ class cohortroles extends external_api
             'id', 'ASC', $params['page'] * $params['perpage'], $params['perpage']
         );
 
+        // Collect the IDs referenced by the visible records so the related data
+        // can be preloaded in bulk instead of being queried once per record.
+        $userids = [];
+        $roleids = [];
+        $cohortids = [];
+        foreach ($records as $record) {
+            if ($params['cohortid'] && $record->get('cohortid') != $params['cohortid']) {
+                continue;
+            }
+            $userids[$record->get('userid')] = $record->get('userid');
+            $roleids[$record->get('roleid')] = $record->get('roleid');
+            $cohortids[$record->get('cohortid')] = $record->get('cohortid');
+        }
+
+        $users = $userids
+            ? $DB->get_records_list('user', 'id', $userids, '', 'id, firstname, lastname, email')
+            : [];
+        $roles = $roleids
+            ? $DB->get_records_list('role', 'id', $roleids, '', 'id, name, shortname')
+            : [];
+        $cohorts = $cohortids
+            ? $DB->get_records_list('cohort', 'id', $cohortids, '', 'id, name')
+            : [];
+        $userroleassignmentsmap = self::preload_user_role_assignment_counts($userids, $roleids, $cohortids);
+
         $result = [];
         foreach ($records as $record) {
             if ($params['cohortid'] && $record->get('cohortid') != $params['cohortid']) {
@@ -92,17 +117,10 @@ class cohortroles extends external_api
             $roleid = $record->get('roleid');
             $cohortid = $record->get('cohortid');
 
-            $user = $DB->get_record('user', ['id' => $userid], 'id, firstname, lastname, email', IGNORE_MISSING);
-            $role = $DB->get_record('role', ['id' => $roleid], 'id, name, shortname', IGNORE_MISSING);
-            $cohort = $DB->get_record('cohort', ['id' => $cohortid], 'id, name', IGNORE_MISSING);
-            $userroleassignments = $DB->count_records_sql(
-                'SELECT COUNT(DISTINCT ra.id)
-                FROM {role_assignments} ra
-                JOIN {context} ctx ON ctx.id = ra.contextid AND ctx.contextlevel = ?
-                JOIN {cohort_members} cm ON cm.userid = ctx.instanceid
-                WHERE cm.cohortid = ? AND ra.roleid = ? AND ra.userid = ? AND ra.component = ?',
-                [CONTEXT_USER, $cohortid, $roleid, $userid, 'tool_cohortroles']
-            );
+            $user = $users[$userid] ?? null;
+            $role = $roles[$roleid] ?? null;
+            $cohort = $cohorts[$cohortid] ?? null;
+            $userroleassignments = $userroleassignmentsmap[$cohortid][$roleid][$userid] ?? 0;
 
             $result[] = [
                 'id' => $record->get('id'),
@@ -197,5 +215,59 @@ class cohortroles extends external_api
             'success' => new external_value(PARAM_BOOL, 'Whether the deletion was successful'),
             'message' => new external_value(PARAM_RAW, 'Success or error message'),
         ]);
+    }
+
+    /**
+     * Bulk-load the number of role assignments created by tool_cohortroles for the
+     * given users/roles/cohorts, returning a map keyed as [cohortid][roleid][userid].
+     *
+     * Replaces one COUNT query per assignment record with a single grouped query,
+     * avoiding N+1 database calls in list_cohort_role_assignments().
+     *
+     * @param array $userids
+     * @param array $roleids
+     * @param array $cohortids
+     * @return array
+     */
+    private static function preload_user_role_assignment_counts(array $userids, array $roleids, array $cohortids)
+    {
+        global $DB;
+
+        if (empty($userids) || empty($roleids) || empty($cohortids)) {
+            return [];
+        }
+
+        [$userinsql, $userparams] = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED, 'usr');
+        [$roleinsql, $roleparams] = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED, 'rol');
+        [$cohortinsql, $cohortparams] = $DB->get_in_or_equal($cohortids, SQL_PARAMS_NAMED, 'coh');
+
+        $sql = "SELECT cm.cohortid, ra.roleid, ra.userid, COUNT(DISTINCT ra.id) AS cnt
+                  FROM {role_assignments} ra
+                  JOIN {context} ctx ON ctx.id = ra.contextid AND ctx.contextlevel = :contextuser
+                  JOIN {cohort_members} cm ON cm.userid = ctx.instanceid
+                 WHERE ra.component = :component
+                   AND ra.userid {$userinsql}
+                   AND ra.roleid {$roleinsql}
+                   AND cm.cohortid {$cohortinsql}
+              GROUP BY cm.cohortid, ra.roleid, ra.userid";
+
+        $params = array_merge(
+            ['contextuser' => CONTEXT_USER, 'component' => 'tool_cohortroles'],
+            $userparams,
+            $roleparams,
+            $cohortparams
+        );
+
+        // Use a recordset (not get_records_sql) because the result is keyed by the
+        // first column, which is cohortid here and is not unique across the grouped
+        // rows; a keyed array would silently drop rows and undercount assignments.
+        $map = [];
+        $rs = $DB->get_recordset_sql($sql, $params);
+        foreach ($rs as $record) {
+            $map[$record->cohortid][$record->roleid][$record->userid] = (int) $record->cnt;
+        }
+        $rs->close();
+
+        return $map;
     }
 }
