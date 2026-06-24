@@ -234,16 +234,18 @@ class app extends external_api
             return $customfieldsdata;
         }
 
-        // Get custom field data for cohorts
+        // Get custom field data for cohorts.
+        [$instanceinsql, $instanceparams] = $DB->get_in_or_equal($cohortids, SQL_PARAMS_NAMED, 'coh');
+
         $sql = "SELECT cfi.id, cfi.shortname, cfv.value, cfv.instanceid
                   FROM {customfield_field} cfi
                   JOIN {customfield_category} cfc ON cfi.categoryid = cfc.id
                   JOIN {customfield_field} cf ON cf.id = cfi.id
                   JOIN {customfield_data} cfv ON cfv.fieldid = cfi.id
                  WHERE cfc.component = 'core_cohort'
-                   AND cfv.instanceid IN (" . implode(',', $cohortids) . ")";
+                   AND cfv.instanceid {$instanceinsql}";
 
-        $records = $DB->get_records_sql($sql);
+        $records = $DB->get_recordset_sql($sql, $instanceparams);
 
         foreach ($records as $record) {
             if (!isset($customfieldsdata[$record->instanceid])) {
@@ -255,6 +257,7 @@ class app extends external_api
                 'value' => $record->value
             );
         }
+        $records->close();
 
         return $customfieldsdata;
     }
