@@ -27,6 +27,9 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Cohort Manager';
 
+// Privacy API.
+$string['privacy:metadata'] = 'The Cohort Manager plugin does not store any personal data.';
+
 // App component strings
 $string['cohortmanager'] = 'Cohort Manager';
 $string['newcohort'] = 'New Cohort';
