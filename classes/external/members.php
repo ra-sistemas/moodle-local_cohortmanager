@@ -114,6 +114,7 @@ class members extends external_api
         $cohort = $DB->get_record('cohort', ['id' => $params['cohortid']], '*', MUST_EXIST);
         $context = context::instance_by_id($cohort->contextid, MUST_EXIST);
 
+        self::validate_context($context);
         $PAGE->set_context($context);
 
         // Check capabilities.

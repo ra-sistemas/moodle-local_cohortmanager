@@ -69,6 +69,10 @@ class app extends external_api
         // Validate parameters
         $params = self::validate_parameters(self::get_all_strings_parameters(), []);
 
+        $context = context_system::instance();
+        self::validate_context($context);
+        require_capability('moodle/cohort:manage', $context);
+
         // Get the current language
         $currentlang = current_language();
 

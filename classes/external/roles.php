@@ -70,6 +70,10 @@ class roles extends external_api {
             'perpage' => $perpage
         ]);
 
+        $context = context_system::instance();
+        self::validate_context($context);
+        require_capability('moodle/role:manage', $context);
+
         // Get roles that can be assigned in user context.
         $roles = get_roles_for_contextlevels(CONTEXT_USER);
 
