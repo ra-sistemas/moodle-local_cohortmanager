@@ -1,1 +1,12 @@
+# Composer dependencies (not distributed).
 vendor
+
+# Frontend build dependencies (not distributed).
+app/node_modules
+app/dist
+
+# Local dev data (not distributed).
+cohort_plugins.csv
+
+# Generated packaging artifacts.
+*.zip
