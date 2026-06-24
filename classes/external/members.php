@@ -262,6 +262,9 @@ class members extends external_api
         $cohort = $DB->get_record('cohort', array('id' => $params['cohortid']), '*', MUST_EXIST);
         $context = context::instance_by_id($cohort->contextid, MUST_EXIST);
 
+        self::validate_context($context);
+        require_capability('moodle/cohort:assign', $context);
+
         $potentialuserselector = new cohort_candidate_selector(
             'fake_menu',
             array(
@@ -337,8 +340,27 @@ class members extends external_api
             'cohortid' => $cohortid
         ]);
 
-        // Count members in the cohort.
-        return $DB->count_records('cohort_members', ['cohortid' => $params['cohortid']]);
+        $context = context_system::instance();
+        self::validate_context($context);
+        require_capability('moodle/cohort:view', $context);
+
+        return self::count_cohort_members_raw($params['cohortid']);
+    }
+
+    /**
+     * Count the members of a cohort without re-validating context/capabilities.
+     *
+     * Intended for internal use by callers that have already validated access
+     * (e.g. search_cohorts_with_total), to avoid redundant checks in a loop.
+     *
+     * @param int $cohortid The cohort id
+     * @return int
+     */
+    public static function count_cohort_members_raw($cohortid)
+    {
+        global $DB;
+
+        return $DB->count_records('cohort_members', ['cohortid' => (int) $cohortid]);
     }
 
     /**

@@ -173,13 +173,17 @@ class app extends external_api
             'perpage' => $limitnum,
         ));
 
+        $context = context_system::instance();
+        self::validate_context($context);
+        require_capability('moodle/cohort:view', $context);
+
         $context = ["contextlevel" => 'system'];
 
         $return = core_cohort_external::search_cohorts($params['query'], $context, 'all', $params['page'], $params['perpage']);
 
         foreach($return['cohorts'] as $cohort) {
-            $cohort->members = members::count_cohort_members($cohort->id);
-            $cohort->enrols = enrols::count_cohort_enrol_instances($cohort->id);
+            $cohort->members = members::count_cohort_members_raw($cohort->id);
+            $cohort->enrols = enrols::count_cohort_enrol_instances_raw($cohort->id);
         }
 
         $total_return = core_cohort_external::search_cohorts($params['query'], $context, 'all', 0, 0);
@@ -304,8 +308,10 @@ class app extends external_api
     public static function get_app_config()
     {
         global $PAGE;
-        
+
         $context = context_system::instance();
+        self::validate_context($context);
+        require_capability('moodle/cohort:manage', $context);
         $PAGE->set_context($context);
         $configs = get_config('local_cohortmanager');
         $configs->allowcohortthemes = get_config('core', 'allowcohortthemes');
@@ -489,6 +495,9 @@ class app extends external_api
         }
 
         $context = context::instance_by_id($cohort_contextid);
+
+        self::validate_context($context);
+        require_capability('moodle/cohort:manage', $context);
 
         // Determine type and value based on contextid
         if ($context->contextid == 1) {

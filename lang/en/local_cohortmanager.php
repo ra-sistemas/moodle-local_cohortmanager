@@ -296,5 +296,6 @@ $string['errorcoursenotfound'] = 'Course ID {$a} not found';
 $string['errorrolenotfoundforcourse'] = 'Role ID {$a->roleid} not found for course {$a->courseid}';
 $string['errorenrolinstancealreadyexists'] = 'Enrol instance already exists for course {$a->courseid} with role {$a->roleid}';
 $string['errorfailedtocreateenrolinstance'] = 'Failed to create enrol instance for course {$a}';
+$string['errornopermissionforcourse'] = 'You do not have permission to configure cohort enrolments in course {$a}';
 $string['moremembers'] = '+{$a} more members';
 

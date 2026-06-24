@@ -23,6 +23,7 @@ use core_external\external_single_structure;
 use core_external\external_value;
 use moodle_exception;
 use context_course;
+use context_system;
 
 /**
  * Class enrols
@@ -63,6 +64,10 @@ class enrols extends external_api
             'page' => $page,
             'perpage' => $perpage,
         ]);
+
+        $context = context_system::instance();
+        self::validate_context($context);
+        require_capability('enrol/cohort:config', $context);
 
         $sql = "SELECT e.*, c.fullname, c.shortname
                   FROM {enrol} e
@@ -186,10 +191,30 @@ class enrols extends external_api
             'cohortid' => $cohortid
         ]);
 
+        $context = context_system::instance();
+        self::validate_context($context);
+        require_capability('moodle/cohort:view', $context);
+
+        return self::count_cohort_enrol_instances_raw($params['cohortid']);
+    }
+
+    /**
+     * Count the enrol instances of a cohort without re-validating context/capabilities.
+     *
+     * Intended for internal use by callers that have already validated access
+     * (e.g. search_cohorts_with_total), to avoid redundant checks in a loop.
+     *
+     * @param int $cohortid The cohort id
+     * @return int
+     */
+    public static function count_cohort_enrol_instances_raw($cohortid)
+    {
+        global $DB;
+
         // Count enrol instances where customint1 equals the cohortid.
         return $DB->count_records_sql(
             "SELECT COUNT(*) FROM {enrol} WHERE enrol = 'cohort' AND customint1 = :cohortid",
-            ['cohortid' => $params['cohortid']]
+            ['cohortid' => (int) $cohortid]
         );
     }
 
@@ -240,6 +265,10 @@ class enrols extends external_api
             'query' => $query,
             'excludecourseids' => $excludecourseids
         ]);
+
+        $context = context_system::instance();
+        self::validate_context($context);
+        require_capability('enrol/cohort:config', $context);
 
         $params = [
             'cohortid' => $cohortid,
@@ -345,6 +374,8 @@ class enrols extends external_api
         $params['contextlevel'] = CONTEXT_COURSE;
 
         $context_course = context_course::instance($params['courseid']);
+        self::validate_context($context_course);
+        require_capability('enrol/cohort:config', $context_course);
 
         $sql = "SELECT r.id
             FROM {role} r
@@ -448,6 +479,8 @@ class enrols extends external_api
         }
 
         $coursecontext = context_course::instance($params['courseid']);
+        self::validate_context($coursecontext);
+        require_capability('enrol/cohort:config', $coursecontext);
         $groups = groups_get_all_groups($params['courseid'], 0, 0, 'g.id, g.name, g.description');
 
         $result = [];
@@ -531,6 +564,10 @@ class enrols extends external_api
             'courses' => $courses
         ]);
 
+        $context = context_system::instance();
+        self::validate_context($context);
+        require_capability('enrol/cohort:config', $context);
+
         // Verify cohort exists
         if (!$DB->record_exists('cohort', ['id' => $params['cohortid']])) {
             throw new moodle_exception('invalidcohort', 'cohort', '', $params['cohortid']);
@@ -554,6 +591,10 @@ class enrols extends external_api
             }
 
             $context = context_course::instance($course_data['courseid']);
+            if (!has_capability('enrol/cohort:config', $context)) {
+                $errors[] = get_string('errornopermissionforcourse', 'local_cohortmanager', $course_data['courseid']);
+                continue;
+            }
             if (!$DB->record_exists('role', ['id' => $course_data['roleid']])) {
                 $a = new \stdClass();
                 $a->roleid = $course_data['roleid'];

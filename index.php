@@ -28,7 +28,12 @@ require_login();
 
 $url = new moodle_url('/local/cohortmanager/', []);
 $PAGE->set_url($url);
-$PAGE->set_context(context_system::instance());
+
+$context = context_system::instance();
+$PAGE->set_context($context);
+
+// This page performs cohort management actions; restrict access accordingly.
+require_capability('moodle/cohort:manage', $context);
 
 $PAGE->set_heading($SITE->fullname);
 $PAGE->requires->css(new moodle_url('/local/cohortmanager/amd/build/app.min.css'));
