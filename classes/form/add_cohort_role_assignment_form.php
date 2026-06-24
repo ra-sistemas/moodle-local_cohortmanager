@@ -24,6 +24,13 @@ use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Class add_cohort_role_assignment_form
+ *
+ * @package    local_cohortmanager
+ * @copyright  2025 Davison Almeida <ramosdealmeidasistemas@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class add_cohort_role_assignment_form extends dynamic_form
 {
     public function definition()
