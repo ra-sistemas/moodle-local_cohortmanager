@@ -33,7 +33,8 @@ $functions = [
         'methodname' => 'get_all_strings',
         'description' => 'Returns all strings for the local_cohortmanager component',
         'type'       => 'read',
-        'ajax' => true
+        'ajax' => true,
+        'capabilities' => 'moodle/cohort:manage',
     ],
     'local_cohortmanager_add_cohort_members' => [
         'classname' => 'core_cohort_external',
@@ -86,7 +87,7 @@ $functions = [
         'description' => 'Get potential user to add in cohort.',
         'type' => 'read',
         'ajax' => true,
-        'capabilities' => 'moodle/cohort:view'
+        'capabilities' => 'moodle/cohort:assign'
     ],
     'local_cohortmanager_search_cohorts' => [
         'classname' => 'local_cohortmanager\\external\\app',
@@ -119,14 +120,16 @@ $functions = [
         'methodname' => 'get_app_config',
         'description' => 'Returns application configuration settings',
         'type'       => 'read',
-        'ajax' => true
+        'ajax' => true,
+        'capabilities' => 'moodle/cohort:manage',
     ],
     'local_cohortmanager_get_cohort_context_info' => [
         'classname'   => 'local_cohortmanager\\external\\app',
         'methodname' => 'get_cohort_context_info',
         'description' => 'Returns cohort context information based on contextid',
         'type'       => 'read',
-        'ajax' => true
+        'ajax' => true,
+        'capabilities' => 'moodle/cohort:manage',
     ],
     'local_cohortmanager_get_cohort_members_table_data' => [
         'classname'   => 'local_cohortmanager\\external\\members',
@@ -158,7 +161,7 @@ $functions = [
         'description' => 'Count the enrol instances of a specific cohort',
         'type'       => 'read',
         'ajax' => true,
-        'capabilities' => 'enrol/cohort:config'
+        'capabilities' => 'moodle/cohort:view'
     ],
     'local_cohortmanager_get_potential_cohort_courses' => [
         'classname'   => 'local_cohortmanager\\external\\enrols',

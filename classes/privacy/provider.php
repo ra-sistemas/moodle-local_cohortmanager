@@ -15,29 +15,36 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * TODO describe file index
+ * Privacy Subsystem implementation for local_cohortmanager.
  *
  * @package    local_cohortmanager
  * @copyright  2025 Davison Almeida <ramosdealmeidasistemas@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require('../../config.php');
+namespace local_cohortmanager\privacy;
 
-require_login();
+defined('MOODLE_INTERNAL') || die();
 
-$url = new moodle_url('/local/cohortmanager/', []);
-$PAGE->set_url($url);
+/**
+ * The local_cohortmanager plugin does not store any personal data.
+ *
+ * It only reads and writes data held by core subsystems (cohorts, members,
+ * roles, enrolments and role assignments) which have their own privacy
+ * providers.
+ *
+ * @copyright  2025 Davison Almeida <ramosdealmeidasistemas@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class provider implements \core_privacy\local\metadata\null_provider {
 
-$context = context_system::instance();
-$PAGE->set_context($context);
-
-// This page performs cohort management actions; restrict access accordingly.
-require_capability('moodle/cohort:manage', $context);
-
-$PAGE->set_heading($SITE->fullname);
-$PAGE->requires->css(new moodle_url('/local/cohortmanager/amd/build/app.min.css'));
-$PAGE->requires->js_call_amd('local_cohortmanager/app', 'init', ['#cohort-manager-app']);
-echo $OUTPUT->header();
-echo html_writer::div('','',['id' => 'cohort-manager-app']);
-echo $OUTPUT->footer();
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
+     */
+    public static function get_reason(): string {
+        return 'privacy:metadata';
+    }
+}

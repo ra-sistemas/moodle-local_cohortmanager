@@ -70,7 +70,10 @@ class roles extends external_api {
             'perpage' => $perpage
         ]);
 
-        // Get roles that can be assigned in user context.
+        $context = context_system::instance();
+        self::validate_context($context);
+        require_capability('moodle/role:manage', $context);
+
         $roles = get_roles_for_contextlevels(CONTEXT_USER);
 
         if (empty($roles)) {
@@ -88,7 +91,6 @@ class roles extends external_api {
 
         $params_sql = $inparams;
 
-        // Add search condition if query is provided.
         if (!empty($params['query'])) {
             $sql .= " AND (" . $DB->sql_like('r.name', ':queryname', false, false) . "
                        OR " . $DB->sql_like('r.shortname', ':queryshortname', false, false) . ")";
@@ -98,10 +100,8 @@ class roles extends external_api {
 
         $sql .= " ORDER BY r.sortorder ASC";
 
-        // Get total count.
         $countsql = "SELECT COUNT(*) FROM ({$sql}) AS countquery";
         $total = $DB->count_records_sql($countsql, $params_sql);
-        // Get paginated records.
         $records = $DB->get_records_sql($sql, $params_sql, $page * $perpage, $perpage);
 
         $roleslist = [];
@@ -174,7 +174,6 @@ class roles extends external_api {
         self::validate_context($context);
         require_capability('moodle/role:manage', $context);
 
-        // Verify the role exists and can be assigned in user context.
         $role = $DB->get_record('role', ['id' => $params['roleid']], '*', MUST_EXIST);
 
         $usercontextroles = get_roles_for_contextlevels(CONTEXT_USER);
@@ -182,13 +181,11 @@ class roles extends external_api {
             throw new moodle_exception('rolenotfound', 'local_cohortmanager');
         }
 
-        // Update role description.
         if ($params['description'] !== '') {
             $role->description = $params['description'];
             $DB->update_record('role', $role);
         }
 
-        // Clear cache.
         cache::make('core', 'roledefs')->delete('roles');
 
         return [
@@ -262,12 +259,10 @@ class roles extends external_api {
         self::validate_context($context);
         require_capability('moodle/role:manage', $context);
 
-        // Check if shortname already exists.
         if ($DB->record_exists('role', ['shortname' => $params['shortname']])) {
             throw new moodle_exception('roleexists', 'local_cohortmanager');
         }
 
-        // Create the role.
         $roleid = create_role(
             $params['name'],
             $params['shortname'],
@@ -275,10 +270,8 @@ class roles extends external_api {
             $params['archetype'] ?: ''
         );
 
-        // Set the role to be assignable in user context.
         set_role_contextlevels($roleid, [CONTEXT_USER]);
 
-        // Get the created role.
         $role = $DB->get_record('role', ['id' => $roleid], '*', MUST_EXIST);
 
         return [
@@ -343,10 +336,8 @@ class roles extends external_api {
         self::validate_context($context);
         require_capability('moodle/role:manage', $context);
 
-        // Verify the role exists.
         $role = $DB->get_record('role', ['id' => $params['roleid']], '*', MUST_EXIST);
 
-        // Check if this is a system role that cannot be deleted.
         $undeletableroles = [
             get_config('core', 'notloggedinroleid'),
             get_config('core', 'guestroleid'),
@@ -357,7 +348,6 @@ class roles extends external_api {
             throw new moodle_exception('cannotdeletethisrole', 'core_role');
         }
 
-        // Delete the role.
         if (!delete_role($role->id)) {
             throw new moodle_exception('cannotdeleterolewithid', 'core_role', '', $role->id);
         }
@@ -408,10 +398,8 @@ class roles extends external_api {
         self::validate_context($context);
         require_capability('moodle/role:manage', $context);
 
-        // Get the role.
         $role = $DB->get_record('role', ['id' => $params['roleid']], '*', MUST_EXIST);
 
-        // Check if it's a user context role.
         $usercontextroles = get_roles_for_contextlevels(CONTEXT_USER);
         if (!isset($usercontextroles[$role->id])) {
             throw new moodle_exception('rolenotfound', 'local_cohortmanager');

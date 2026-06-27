@@ -27,6 +27,9 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Cohort Manager';
 
+// Privacy API.
+$string['privacy:metadata'] = 'The Cohort Manager plugin does not store any personal data.';
+
 // App component strings
 $string['cohortmanager'] = 'Cohort Manager';
 $string['newcohort'] = 'New Cohort';
@@ -293,5 +296,6 @@ $string['errorcoursenotfound'] = 'Course ID {$a} not found';
 $string['errorrolenotfoundforcourse'] = 'Role ID {$a->roleid} not found for course {$a->courseid}';
 $string['errorenrolinstancealreadyexists'] = 'Enrol instance already exists for course {$a->courseid} with role {$a->roleid}';
 $string['errorfailedtocreateenrolinstance'] = 'Failed to create enrol instance for course {$a}';
+$string['errornopermissionforcourse'] = 'You do not have permission to configure cohort enrolments in course {$a}';
 $string['moremembers'] = '+{$a} more members';
 
