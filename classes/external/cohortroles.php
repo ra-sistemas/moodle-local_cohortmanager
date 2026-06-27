@@ -82,8 +82,6 @@ class cohortroles extends external_api
             'id', 'ASC', $params['page'] * $params['perpage'], $params['perpage']
         );
 
-        // Collect the IDs referenced by the visible records so the related data
-        // can be preloaded in bulk instead of being queried once per record.
         $userids = [];
         $roleids = [];
         $cohortids = [];
@@ -221,9 +219,6 @@ class cohortroles extends external_api
      * Bulk-load the number of role assignments created by tool_cohortroles for the
      * given users/roles/cohorts, returning a map keyed as [cohortid][roleid][userid].
      *
-     * Replaces one COUNT query per assignment record with a single grouped query,
-     * avoiding N+1 database calls in list_cohort_role_assignments().
-     *
      * @param array $userids
      * @param array $roleids
      * @param array $cohortids
@@ -258,9 +253,6 @@ class cohortroles extends external_api
             $cohortparams
         );
 
-        // Use a recordset (not get_records_sql) because the result is keyed by the
-        // first column, which is cohortid here and is not unique across the grouped
-        // rows; a keyed array would silently drop rows and undercount assignments.
         $map = [];
         $rs = $DB->get_recordset_sql($sql, $params);
         foreach ($rs as $record) {

@@ -66,17 +66,14 @@ class app extends external_api
     {
         global $CFG;
 
-        // Validate parameters
         $params = self::validate_parameters(self::get_all_strings_parameters(), []);
 
         $context = context_system::instance();
         self::validate_context($context);
         require_capability('moodle/cohort:manage', $context);
 
-        // Get the current language
         $currentlang = current_language();
 
-        // Get all strings for the current language
         $lang_strings = [];
         $langfile = $CFG->dirroot . '/local/cohortmanager/lang/' . $currentlang . '/local_cohortmanager.php';
         if (file_exists($langfile)) {
@@ -85,7 +82,6 @@ class app extends external_api
             $lang_strings[$currentlang] = $string;
         }
 
-        // Also get English strings as fallback
         if ($currentlang !== 'en') {
             $enlangfile = $CFG->dirroot . '/local/cohortmanager/lang/en/local_cohortmanager.php';
             if (file_exists($enlangfile)) {
@@ -95,7 +91,6 @@ class app extends external_api
             }
         }
 
-        // Format the result according to the expected structure
         $result = [];
         foreach ($lang_strings as $lang => $stringlist) {
             $langstrings = [];
@@ -234,7 +229,6 @@ class app extends external_api
             return $customfieldsdata;
         }
 
-        // Get custom field data for cohorts.
         [$instanceinsql, $instanceparams] = $DB->get_in_or_equal($cohortids, SQL_PARAMS_NAMED, 'coh');
 
         $sql = "SELECT cfi.id, cfi.shortname, cfv.value, cfv.instanceid
@@ -358,10 +352,8 @@ class app extends external_api
      */
     protected static function get_theme_list()
     {
-        // Get the list of themes using Moodle's core function
         $themes = get_list_of_themes();
 
-        // Build the choices array in the expected format
         $choices = array();
         $choices[] = array(
             'value' => '',
@@ -405,20 +397,17 @@ class app extends external_api
     protected static function get_tinymce_config(context $context)
     {
         global $PAGE;
-        // Generate the configuration fosr this editor.
+
         $editormanager = new manager;
         $siteconfig = get_config('editor_tiny');
         $config = (object) [
-            // The URL to the CSS file for the editor.
+
             'css' => $PAGE->theme->editor_css_url()->out(false),
 
-            // The current context for this page or editor.
             'context' => $context->id,
 
-            // File picker options.
             'filepicker' => (object) [],
 
-            // Default draft item ID.
             'draftitemid' => 0,
 
             'currentLanguage' => current_language(),
@@ -426,23 +415,14 @@ class app extends external_api
             'branding' => property_exists($siteconfig, 'branding') ? !empty($siteconfig->branding) : true,
             'extended_valid_elements' => $siteconfig->extended_valid_elements ?? 'script[*],p[*],i[*]',
 
-            // Language options.
             'language' => [
                 'currentlang' => current_language(),
                 'installed' => get_string_manager()->get_list_of_translations(true),
                 'available' => get_string_manager()->get_list_of_languages()
             ],
 
-            // Placeholder selectors.
-            // Some contents (Example: placeholder elements) are only shown in the editor, and not to users. It is unrelated to the
-            // real display. We created a list of placeholder selectors, so we can decide to or not to apply rules, styles... to
-            // these elements.
-            // The default of this list will be empty.
-            // Other plugins can register their placeholder elements to placeholderSelectors list by calling
-            // editor_tiny/options::registerPlaceholderSelectors.
             'placeholderSelectors' => [],
 
-            // Plugin configuration.
             'plugins' => $editormanager->get_plugin_configuration($context),
         ];
 
@@ -481,12 +461,10 @@ class app extends external_api
     {
         global $DB;
 
-        // Validate parameters
         $params = self::validate_parameters(self::get_cohort_context_info_parameters(), array(
             'cohortid' => $cohortid
         ));
 
-        // Get cohort context
         $cohort_contextid = $DB->get_field(
             'cohort',
             'contextid',
@@ -502,15 +480,12 @@ class app extends external_api
         self::validate_context($context);
         require_capability('moodle/cohort:manage', $context);
 
-        // Determine type and value based on contextid
         if ($context->contextid == 1) {
-            // System context
             $result = array(
                 'type' => 'system',
                 'value' => ''
             );
         } else {
-            // Course category context
             $result = array(
                 'type' => 'id',
                 'value' => $context->instanceid

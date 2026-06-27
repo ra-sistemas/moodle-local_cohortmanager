@@ -87,8 +87,6 @@ class enrols extends external_api
             $params['perpage']
         );
 
-        // Preload related records in bulk to avoid querying the database once per
-        // enrol instance inside the loop below.
         $roleids = array_values(array_unique(array_filter(array_column($enrolinstances, 'roleid'))));
         $roles = $roleids ? $DB->get_records_list('role', 'id', $roleids) : [];
 
@@ -103,18 +101,15 @@ class enrols extends external_api
 
         $instanceids = array_keys($enrolinstances);
         $enroledcounts = self::count_enrols_bulk($instanceids);
-        // Group members must be counted by group id (customint2), not by the enrol
-        // instance id, since {groups}.id matches the group, not the enrol instance.
+
         $groupmembercounts = self::count_group_members_bulk($groupids);
 
         $result = [];
         foreach ($enrolinstances as $instance) {
-            // Get role information
             $role = $roles[$instance->roleid] ?? null;
             $coursecontext = context_course::instance($instance->courseid);
             $rolename = $role ? role_get_name($role, $coursecontext, ROLENAME_BOTH) : '';
 
-            // Get group information if customint2 is set
             $groupinfo = null;
             if (!empty($instance->customint2)) {
                 if ($instance->customint2 == -1) {
@@ -413,7 +408,6 @@ class enrols extends external_api
                 AND e.id IS NOT NULL
         ";
 
-        // Add exclusion for current enrol instance when editing
         if (!empty($params['enrolinstanceid'])) {
             $sql .= " AND e.id <> :enrolinstanceid";
         }
@@ -553,10 +547,6 @@ class enrols extends external_api
             'cohortid' => $cohortid,
         ], $inparams);
 
-        // Use a recordset (not get_records_sql) because the result is keyed by the
-        // first column (courseid), which is not unique when a course already has
-        // multiple cohort enrols; a keyed array would drop roles and weaken the
-        // duplicate check.
         $existing = [];
         $rs = $DB->get_recordset_sql($sql, $params);
         foreach ($rs as $record) {
@@ -593,7 +583,6 @@ class enrols extends external_api
             'courseid' => $courseid
         ]);
 
-        // Verify course exists
         if (!$DB->record_exists('course', ['id' => $params['courseid']])) {
             throw new moodle_exception('invalidcourse', 'cohort', '', $params['courseid']);
         }
@@ -605,14 +594,12 @@ class enrols extends external_api
 
         $result = [];
 
-        // Add option to no group
         $result[] = [
             'id' => 0,
             'name' => get_string('none'),
             'description' => ''
         ];
 
-        // Add option to create new group
         $result[] = [
             'id' => -1,
             'name' => get_string('creategroup', 'enrol_cohort'),
@@ -678,7 +665,6 @@ class enrols extends external_api
     {
         global $DB, $CFG;
 
-        // Validate parameters.
         $params = self::validate_parameters(self::create_cohort_enrol_instances_parameters(), [
             'cohortid' => $cohortid,
             'courses' => $courses
@@ -688,7 +674,6 @@ class enrols extends external_api
         self::validate_context($context);
         require_capability('enrol/cohort:config', $context);
 
-        // Verify cohort exists
         if (!$DB->record_exists('cohort', ['id' => $params['cohortid']])) {
             throw new moodle_exception('invalidcohort', 'cohort', '', $params['cohortid']);
         }
@@ -696,14 +681,11 @@ class enrols extends external_api
         $created_count = 0;
         $errors = [];
 
-        // Create enrol instance
         $enrol_plugin = enrol_get_plugin('cohort');
         if (!$enrol_plugin) {
             throw new moodle_exception('enrolpluginnotfound', 'enrol_cohort');
         }
 
-        // Preload courses, roles and existing enrol instances in bulk to avoid
-        // querying the database once per course inside the creation loop.
         $courseids = array_values(array_unique(array_filter(array_column($params['courses'], 'courseid'))));
         $courses = $courseids ? $DB->get_records_list('course', 'id', $courseids) : [];
 
@@ -802,12 +784,10 @@ class enrols extends external_api
     {
         global $DB;
 
-        // Validate parameters
         $params = self::validate_parameters(self::delete_cohort_enrol_instance_parameters(), [
             'enrolinstanceid' => $enrolinstanceid
         ]);
 
-        // Get the enrol instance
         $instance = $DB->get_record('enrol', [
             'id' => $params['enrolinstanceid'],
             'enrol' => 'cohort'
@@ -817,13 +797,11 @@ class enrols extends external_api
             throw new moodle_exception('invalidinstance', 'enrol_cohort', '', $params['enrolinstanceid']);
         }
 
-        // Get the cohort enrol plugin
         $enrol_plugin = enrol_get_plugin('cohort');
         if (!$enrol_plugin) {
             throw new moodle_exception('enrolpluginnotfound', 'enrol_cohort');
         }
 
-        // Check if user can delete this instance
         $context = context_course::instance($instance->courseid);
         self::validate_context($context);
 
@@ -831,7 +809,6 @@ class enrols extends external_api
             throw new moodle_exception('nopermissions', 'error', '', 'enrol/cohort:config');
         }
 
-        // Delete the instance using the plugin method
         $enrol_plugin->delete_instance($instance);
 
         return [

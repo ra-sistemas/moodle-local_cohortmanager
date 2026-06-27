@@ -83,8 +83,6 @@ class members extends external_api
      * @param int $cohortid The cohort id
      * @param array $sortdata Sort data
      * @param array $filters Filters
-     * @param string $firstinitial First initial filter
-     * @param string $lastinitial Last initial filter
      * @param int $pagenumber Page number
      * @param int $pagesize Page size
      * @param array $hiddencolumns Hidden columns
@@ -100,7 +98,6 @@ class members extends external_api
     ) {
         global $DB, $PAGE;
 
-        // Validate parameters.
         $params = self::validate_parameters(self::get_cohort_members_table_data_parameters(), [
             'cohortid' => $cohortid,
             'sortdata' => $sortdata,
@@ -110,21 +107,17 @@ class members extends external_api
             'hiddencolumns' => $hiddencolumns
         ]);
 
-        // Get cohort and context.
         $cohort = $DB->get_record('cohort', ['id' => $params['cohortid']], '*', MUST_EXIST);
         $context = context::instance_by_id($cohort->contextid, MUST_EXIST);
 
         self::validate_context($context);
         $PAGE->set_context($context);
 
-        // Check capabilities.
         require_capability('moodle/cohort:manage', $context);
 
-        // Build WHERE clause.
         $where = '';
         $params_sql = [];
 
-        // Apply filters.
         foreach ($params['filters'] as $filter) {
             if ($filter['name'] === 'search') {
                 $where .= " AND (u.firstname LIKE :search1 OR u.lastname LIKE :search2 OR u.email LIKE :search3)";
@@ -140,7 +133,6 @@ class members extends external_api
             }
         }
 
-        // Build ORDER BY clause.
         $orderby = '';
         if (!empty($params['sortdata'])) {
             $sortclauses = [];
@@ -155,16 +147,13 @@ class members extends external_api
             $orderby = "ORDER BY u.lastname ASC, u.firstname ASC";
         }
 
-        // Calculate pagination.
         $offset = ($params['pagenumber'] - 1) * $params['pagesize'];
 
-        // Get total count.
         $totalcount = $DB->count_records_sql(
             "SELECT COUNT(*) FROM {cohort_members} cm JOIN {user} u ON cm.userid = u.id WHERE cm.cohortid = :cohortid" . $where,
             array_merge(['cohortid' => $params['cohortid']], $params_sql)
         );
 
-        // Get members.
         $members = $DB->get_records_sql(
             "SELECT u.* FROM {cohort_members} cm 
              JOIN {user} u ON cm.userid = u.id 
@@ -174,7 +163,6 @@ class members extends external_api
             $params['pagesize']
         );
 
-        // Format the data for the table.
         $formattedmembers = [];
         foreach ($members as $member) {
             $formattedmembers[] = [
@@ -258,7 +246,6 @@ class members extends external_api
             'query' => $query
         ]);
 
-
         $cohort = $DB->get_record('cohort', array('id' => $params['cohortid']), '*', MUST_EXIST);
         $context = context::instance_by_id($cohort->contextid, MUST_EXIST);
 
@@ -335,7 +322,6 @@ class members extends external_api
     {
         global $DB;
 
-        // Validate parameters.
         $params = self::validate_parameters(self::count_cohort_members_parameters(), [
             'cohortid' => $cohortid
         ]);
