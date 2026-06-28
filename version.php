@@ -26,11 +26,11 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component    = 'local_cohortmanager';
 $plugin->release      = '1.0';
-$plugin->version      = 2026062700;
-$plugin->requires     = 2024100700;
-$plugin->supported    = [405, 405];
+$plugin->version      = 2026062800;
+$plugin->requires     = 2023042400;
+$plugin->supported    = [402, 502];
 $plugin->maturity     = MATURITY_STABLE;
 $plugin->dependencies = [
-    'enrol_cohort' => 2024100700,
-    'tool_cohortroles' => 2024100700
+    'enrol_cohort' => 2023042400,
+    'tool_cohortroles' => 2023042400
 ];
