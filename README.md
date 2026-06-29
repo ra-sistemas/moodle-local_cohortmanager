@@ -1,5 +1,7 @@
 # Cohort Manager for Moodle
 
+> 100% powered by AI. AI pull requests are welcomed
+
 **A unified, reactive interface for managing everything about Moodle cohorts — in a single plugin.**
 
 Moodle ships cohort management scattered across multiple screens: one page to create cohorts, another to assign members, a separate admin section for cohort sync enrolments, and yet another for cohort-based role assignments (via `tool_cohortroles`). **Cohort Manager** brings all of these workflows into one modern, fast, single-page application built with Vue 3 + TypeScript + Pinia and served directly inside Moodle.
