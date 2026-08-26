@@ -27,9 +27,9 @@ const filteredInstances = computed(() => {
   let result = enrolInstances.value;
 
   if (statusFilter.value === 'active') {
-    result = result.filter(i => i.status);
-  } else if (statusFilter.value === 'inactive') {
     result = result.filter(i => !i.status);
+  } else if (statusFilter.value === 'inactive') {
+    result = result.filter(i => i.status);
   }
 
   if (searchQuery.value.trim()) {
@@ -202,13 +202,13 @@ let props = defineProps<{
                     <td>
                       <button
                         class="btn btn-sm"
-                        :class="instance.status ? 'btn-outline-success' : 'btn-outline-secondary'"
+                        :class="instance.status ? 'btn-outline-secondary' : 'btn-outline-success'"
                         :disabled="togglingIds.has(instance.id)"
                         :title="stringsStore.getString('togglestatus')"
                         @click="toggleStatus(instance)"
                       >
                         <i v-if="togglingIds.has(instance.id)" class="fa fa-spinner fa-spin me-1"></i>
-                        {{ instance.status ? stringsStore.getString('active') : stringsStore.getString('inactive') }}
+                        {{ instance.status ? stringsStore.getString('inactive') : stringsStore.getString('active') }}
                       </button>
                     </td>
                     <td>
