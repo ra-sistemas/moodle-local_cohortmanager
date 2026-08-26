@@ -19,7 +19,7 @@ const updateValue = (e: Event) => {
 
 <template>
   <div class="mb-3">
-    <label for="idnumber" class="form-label">{{ stringsStore.getString('idnumber') }} <span class="text-danger">*</span></label>
+    <label for="idnumber" class="form-label">{{ stringsStore.getString('idnumber') }}</label>
     <input
       id="idnumber"
       :value="modelValue"
