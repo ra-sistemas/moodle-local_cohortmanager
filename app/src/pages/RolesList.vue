@@ -109,7 +109,7 @@ const openEditModal = async (role: RoleFormData) => {
 
 const deleteRoleConfirm = async (role: RoleFormData) => {
   const title = stringsStore.getString('deleterole');
-  const message = stringsStore.getString('roledeleteconfirmation').replace('%s', role.name);
+  const message = stringsStore.getString('roledeleteconfirmation', role.name);
   const deleteLabel = stringsStore.getString('delete');
 
   await deleteCancel(

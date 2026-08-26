@@ -18,8 +18,12 @@ export const useStringsStore = defineStore('strings', {
   }),
 
   getters: {
-    getString: (state: StringsState) => (key: string, fallback?: string) => {
-      return state.strings[key] || fallback || key;
+    getString: (state: StringsState) => (key: string, substitute?: string) => {
+      const str = state.strings[key] || key;
+      if (substitute) {
+        return str.replace('%s', substitute).replace('{$a}', substitute);
+      }
+      return str;
     },
     
     isComponentLoaded: (state: StringsState) => (component: string) => {
