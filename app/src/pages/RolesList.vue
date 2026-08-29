@@ -195,11 +195,11 @@ const goBack = () => {
           <table class="table table-hover mb-0">
             <thead class="table-light">
               <tr>
-                <th style="width: 60px;">{{ stringsStore.getString('roleid') }}</th>
+                <th class="col-role-id">{{ stringsStore.getString('roleid') }}</th>
                 <th>{{ stringsStore.getString('rolename') }}</th>
                 <th>{{ stringsStore.getString('roleshortname') }}</th>
-                <th style="width: 160px;">{{ stringsStore.getString('rolearchetype') }}</th>
-                <th class="text-center" style="width: 120px;">{{ stringsStore.getString('roleactions') }}</th>
+                <th class="col-role-archetype">{{ stringsStore.getString('rolearchetype') }}</th>
+                <th class="text-center col-role-actions">{{ stringsStore.getString('roleactions') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -248,3 +248,17 @@ const goBack = () => {
     />
   </div>
 </template>
+
+<style scoped>
+.col-role-id {
+    width: 60px;
+}
+
+.col-role-archetype {
+    width: 160px;
+}
+
+.col-role-actions {
+    width: 120px;
+}
+</style>

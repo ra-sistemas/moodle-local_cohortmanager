@@ -144,8 +144,8 @@ let props = defineProps<{
       <CohortEnrolInstancesAddModal :cohortid="cohort.id" @added:enrolinstances="handleAddedEnrolInstances" />
     </div>
 
-    <div class="d-flex flex-wrap align-items-center mb-3" style="gap: 0.75rem;">
-      <input type="text" class="form-control" style="max-width: 300px;" :placeholder="stringsStore.getString('searchenrolinstances')" v-model="searchQuery" />
+    <div class="d-flex flex-wrap align-items-center mb-3 filter-toolbar">
+      <input type="text" class="form-control toolbar-search" :placeholder="stringsStore.getString('searchenrolinstances')" v-model="searchQuery" />
 
       <div class="btn-group btn-group-sm" role="group">
         <button class="btn" :class="statusFilter === 'all' ? 'btn-primary' : 'btn-outline-secondary'" @click="statusFilter = 'all'">
@@ -247,3 +247,13 @@ let props = defineProps<{
     </div>
   </div>
 </template>
+
+<style scoped>
+.filter-toolbar {
+    gap: 0.75rem;
+}
+
+.toolbar-search {
+    max-width: 300px;
+}
+</style>

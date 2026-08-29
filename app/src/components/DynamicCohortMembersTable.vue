@@ -2,7 +2,7 @@
     <div>
         <!-- Search and filters -->
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="input-group" style="max-width: 300px;">
+            <div class="input-group col-3">
                 <input type="text" class="form-control" :placeholder="stringsStore.getString('searchmembers')" v-model="searchQuery"
                     @input="handleSearch">
             </div>

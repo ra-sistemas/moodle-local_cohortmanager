@@ -1,5 +1,5 @@
 <template>
-    <div v-if="show" class="modal show" style="display: block;">
+    <div v-if="show" class="modal show d-block">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -102,14 +102,12 @@ const saveColumnVisibility = () => {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .modal-content {
-    background-color: white;
     padding: 20px;
     border-radius: 5px;
     width: 400px;
