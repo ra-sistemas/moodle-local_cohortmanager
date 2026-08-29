@@ -3,12 +3,14 @@ import { ref, onMounted, reactive, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { searchCohorts as searchCohortsApi } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
+import { useCohortsStore } from '../stores/cohorts';
 import Notification from 'core/notification';
 import type { Cohort, Pagination } from '../types/interfaces';
 import TablePagination from '../components/TablePagination.vue';
 
-// Initialize strings store
+// Initialize stores
 const stringsStore = useStringsStore();
+const cohortsStore = useCohortsStore();
 
 // Define types
 
@@ -16,12 +18,19 @@ const stringsStore = useStringsStore();
 const router = useRouter();
 const cohorts = ref<Cohort[]>([]);
 const loading = ref(false);
-const searchQuery = ref('');
+const searchQuery = ref(cohortsStore.searchQuery);
 const pagination = reactive<Pagination>({
-  page: 1,
-  perpage: 10,
+  page: cohortsStore.page,
+  perpage: cohortsStore.perpage,
   total: 0
 });
+
+// Persist table parameters so navigation back retains the same state
+const persistState = () => {
+  cohortsStore.setSearchQuery(searchQuery.value);
+  cohortsStore.setPage(pagination.page);
+  cohortsStore.setPerPage(pagination.perpage);
+};
 
 // Initialize the component
 onMounted(async () => {
@@ -50,18 +59,21 @@ const loadCohorts = async () => {
 // Search cohorts
 const searchCohorts = () => {
   pagination.page = 1;
+  persistState();
   loadCohorts();
 };
 
 // Pagination handlers
 const goToPage = (page: number) => {
   pagination.page = page;
+  persistState();
   loadCohorts();
 };
 
 const changePerPage = (value: number) => {
   pagination.perpage = value;
   pagination.page = 1;
+  persistState();
   loadCohorts();
 };
 
@@ -81,6 +93,7 @@ const nextPage = () => {
 
 // View cohort details
 const viewCohort = (cohort: Cohort) => {
+  persistState();
   // Navigate to cohort details page
   router.push(`cohort/${cohort.id}`);
 };
