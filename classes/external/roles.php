@@ -176,7 +176,7 @@ class roles extends external_api {
 
         $role = $DB->get_record('role', ['id' => $params['roleid']], '*', MUST_EXIST);
 
-        $usercontextroles = get_roles_for_contextlevels(CONTEXT_USER);
+        $usercontextroles = array_flip(get_roles_for_contextlevels(CONTEXT_USER));
         if (!isset($usercontextroles[$role->id])) {
             throw new moodle_exception('rolenotfound', 'local_cohortmanager');
         }
@@ -400,7 +400,7 @@ class roles extends external_api {
 
         $role = $DB->get_record('role', ['id' => $params['roleid']], '*', MUST_EXIST);
 
-        $usercontextroles = get_roles_for_contextlevels(CONTEXT_USER);
+        $usercontextroles = array_flip(get_roles_for_contextlevels(CONTEXT_USER));
         if (!isset($usercontextroles[$role->id])) {
             throw new moodle_exception('rolenotfound', 'local_cohortmanager');
         }
