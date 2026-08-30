@@ -27,9 +27,9 @@ const filteredInstances = computed(() => {
   let result = enrolInstances.value;
 
   if (statusFilter.value === 'active') {
-    result = result.filter(i => i.status);
-  } else if (statusFilter.value === 'inactive') {
     result = result.filter(i => !i.status);
+  } else if (statusFilter.value === 'inactive') {
+    result = result.filter(i => i.status);
   }
 
   if (searchQuery.value.trim()) {
@@ -144,8 +144,8 @@ let props = defineProps<{
       <CohortEnrolInstancesAddModal :cohortid="cohort.id" @added:enrolinstances="handleAddedEnrolInstances" />
     </div>
 
-    <div class="d-flex flex-wrap align-items-center mb-3" style="gap: 0.75rem;">
-      <input type="text" class="form-control" style="max-width: 300px;" :placeholder="stringsStore.getString('searchenrolinstances')" v-model="searchQuery" />
+    <div class="d-flex flex-wrap align-items-center mb-3 filter-toolbar">
+      <input type="text" class="form-control toolbar-search" :placeholder="stringsStore.getString('searchenrolinstances')" v-model="searchQuery" />
 
       <div class="btn-group btn-group-sm" role="group">
         <button class="btn" :class="statusFilter === 'all' ? 'btn-primary' : 'btn-outline-secondary'" @click="statusFilter = 'all'">
@@ -202,13 +202,13 @@ let props = defineProps<{
                     <td>
                       <button
                         class="btn btn-sm"
-                        :class="instance.status ? 'btn-outline-success' : 'btn-outline-secondary'"
+                        :class="instance.status ? 'btn-outline-secondary' : 'btn-outline-success'"
                         :disabled="togglingIds.has(instance.id)"
                         :title="stringsStore.getString('togglestatus')"
                         @click="toggleStatus(instance)"
                       >
                         <i v-if="togglingIds.has(instance.id)" class="fa fa-spinner fa-spin me-1"></i>
-                        {{ instance.status ? stringsStore.getString('active') : stringsStore.getString('inactive') }}
+                        {{ instance.status ? stringsStore.getString('inactive') : stringsStore.getString('active') }}
                       </button>
                     </td>
                     <td>
@@ -247,3 +247,13 @@ let props = defineProps<{
     </div>
   </div>
 </template>
+
+<style scoped>
+.filter-toolbar {
+    gap: 0.75rem;
+}
+
+.toolbar-search {
+    max-width: 300px;
+}
+</style>

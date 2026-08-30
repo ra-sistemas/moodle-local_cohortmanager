@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
+import Config from 'core/config';
 import CohortList from '@/pages/CohortList.vue';
 import CohortDetail from '@/pages/CohortDetail.vue';
 import CohortEdit from '@/pages/CohortEdit.vue';
@@ -59,8 +60,15 @@ const routes: RouteRecordRaw[] = [
   }
 ];
 
+// Moodle may be installed under a subdirectory (e.g. /moodle50/). Derive the
+// base path from Config.wwwroot so Vue Router matches the real URL instead of
+// hardcoding it. index.php always serves this SPA at .../local/cohortmanager/,
+// so the base is <wwwroot>/local/cohortmanager/.
+const wwwrootPath = new URL(Config.wwwroot).pathname.replace(/\/+$/, '');
+const base = `${wwwrootPath}/local/cohortmanager/`;
+
 const router = createRouter({
-  history: createWebHistory('/local/cohortmanager/'),
+  history: createWebHistory(base),
   routes
 });
 

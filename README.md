@@ -148,6 +148,28 @@ location /local/cohortmanager/index.php {
 | `/local/cohortmanager/custom-fields` | Custom fields manager |
 | `/local/cohortmanager/roles` | User-context roles management |
 
+### REST API (Moodle Routing subsystem)
+
+Cohort Manager also exposes server-side endpoints through Moodle's Routing subsystem (`core\router\route`, see [Routing API](https://moodledev.io/docs/4.5/apis/subsystems/routing)). Routes are defined with the `#[route]` attribute in `classes/route/api/` and registered automatically — no `db/routes.php` declarations are required. All endpoints are prefixed with `/api/rest/v2/local_cohortmanager`.
+
+| Method | Path | Description | Capability |
+|---|---|---|---|
+| GET | `/cohorts` | List cohorts with search and pagination (`query`, `page`, `perpage`) | `moodle/cohort:view` |
+| POST | `/cohorts/create` | Create a new cohort | `moodle/cohort:manage` |
+| GET | `/cohorts/{cohort}` | Fetch a cohort and its portrait (member/enrol counts) | `moodle/cohort:view` |
+| PUT | `/cohorts/{cohort}` | Update an existing cohort | `moodle/cohort:manage` |
+| GET | `/cohorts/{cohort}/edit` | Fetch cohort data for the edit form | `moodle/cohort:manage` |
+| GET | `/roles` | List user-context assignable roles with search and pagination | `moodle/role:manage` |
+| POST | `/roles` | Create a user-context role | `moodle/role:manage` |
+| GET | `/roles/{roleid}` | Fetch a single role | `moodle/role:manage` |
+| PUT | `/roles/{roleid}` | Update a role's description | `moodle/role:manage` |
+| DELETE | `/roles/{roleid}` | Delete a role | `moodle/role:manage` |
+| GET | `/custom-fields` | List cohort custom field categories | `moodle/cohort:manage` |
+
+The `{cohort}` path segment is resolved by `local_cohortmanager\route\api\parameters\path_cohort`, a mapped parameter that loads the cohort record and its context so that capability checks run against the correct context.
+
+> **Note:** Because the Routing subsystem caches discovered routes in MUC (`core/routes`), purge the cache after adding or changing routes: `php admin/cli/purge_caches.php`.
+
 ## Multilingual Support
 
 Ships with language packs for **13 languages**: Arabic, German, English, Spanish, French, Hindi, Italian, Korean, Dutch, Polish, Brazilian Portuguese, Russian, and Simplified Chinese.

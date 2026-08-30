@@ -1,5 +1,5 @@
 <template>
-    <div v-if="false" class="modal show" style="display: none;">
+    <div v-if="false" class="modal show d-none">
     </div>
 </template>
 

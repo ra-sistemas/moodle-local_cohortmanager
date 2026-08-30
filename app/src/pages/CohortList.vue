@@ -3,12 +3,15 @@ import { ref, onMounted, reactive, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { searchCohorts as searchCohortsApi } from '../utils/moodle';
 import { useStringsStore } from '../stores/strings';
+import { useCohortsStore } from '../stores/cohorts';
 import Notification from 'core/notification';
 import type { Cohort, Pagination } from '../types/interfaces';
 import TablePagination from '../components/TablePagination.vue';
+import ContextSelect from '../components/ContextSelect.vue';
 
-// Initialize strings store
+// Initialize stores
 const stringsStore = useStringsStore();
+const cohortsStore = useCohortsStore();
 
 // Define types
 
@@ -16,12 +19,22 @@ const stringsStore = useStringsStore();
 const router = useRouter();
 const cohorts = ref<Cohort[]>([]);
 const loading = ref(false);
-const searchQuery = ref('');
+const searchQuery = ref(cohortsStore.searchQuery);
+const contextType = ref(cohortsStore.contextType);
+const contextValue = ref(cohortsStore.contextValue);
 const pagination = reactive<Pagination>({
-  page: 1,
-  perpage: 10,
+  page: cohortsStore.page,
+  perpage: cohortsStore.perpage,
   total: 0
 });
+
+// Persist table parameters so navigation back retains the same state
+const persistState = () => {
+  cohortsStore.setSearchQuery(searchQuery.value);
+  cohortsStore.setContext(contextType.value, contextValue.value);
+  cohortsStore.setPage(pagination.page);
+  cohortsStore.setPerPage(pagination.perpage);
+};
 
 // Initialize the component
 onMounted(async () => {
@@ -36,7 +49,9 @@ const loadCohorts = async () => {
     const cohortsResponse = await searchCohortsApi({
       query: searchQuery.value,
       page: (pagination.page - 1),
-      perpage: pagination.perpage
+      perpage: pagination.perpage,
+      contexttype: contextType.value,
+      contextvalue: contextValue.value
     });
     cohorts.value = cohortsResponse?.cohorts || [];
     pagination.total = cohortsResponse?.total || 0;
@@ -50,18 +65,28 @@ const loadCohorts = async () => {
 // Search cohorts
 const searchCohorts = () => {
   pagination.page = 1;
+  persistState();
   loadCohorts();
+};
+
+// Context filter handler
+const updateContextFilter = (context: { type: string; value: string }) => {
+  contextType.value = context.type;
+  contextValue.value = context.value;
+  searchCohorts();
 };
 
 // Pagination handlers
 const goToPage = (page: number) => {
   pagination.page = page;
+  persistState();
   loadCohorts();
 };
 
 const changePerPage = (value: number) => {
   pagination.perpage = value;
   pagination.page = 1;
+  persistState();
   loadCohorts();
 };
 
@@ -81,6 +106,7 @@ const nextPage = () => {
 
 // View cohort details
 const viewCohort = (cohort: Cohort) => {
+  persistState();
   // Navigate to cohort details page
   router.push(`cohort/${cohort.id}`);
 };
@@ -135,7 +161,8 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
     <div class="mb-4">
       <div class="row">
         <div class="col-12 col-md-6">
-          <div class="input-group mb-3">
+          <label class="form-label">{{ stringsStore.getString('searchcohorts') }}</label>
+          <div class="input-group">
             <input v-model="searchQuery" type="text" class="form-control" :placeholder="stringsStore.getString('searchcohorts')" @keyup.enter="searchCohorts" />
             <div class="input-group-append">
               <button class="btn btn-secondary" type="button" @click="searchCohorts"
@@ -144,6 +171,10 @@ const totalPages = computed(() => Math.ceil(pagination.total / pagination.perpag
               </button>
             </div>
           </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <ContextSelect :model-value="{ type: contextType, value: contextValue }"
+            @update:model-value="updateContextFilter" />
         </div>
       </div>
     </div>

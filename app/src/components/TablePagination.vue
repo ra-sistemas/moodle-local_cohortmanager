@@ -33,13 +33,13 @@ const onPerPageChange = (event: Event) => {
 
 <template>
     <div v-if="visible" class="d-flex justify-content-between align-items-center flex-wrap mt-3">
-        <div class="input-group input-group-sm" style="width: auto;">
+        <div class="input-group input-group-md w-auto">
             <div class="input-group-prepend">
                 <span class="input-group-text border-right-0 bg-white">
                     {{ stringsStore.getString('perpage') }}
                 </span>
             </div>
-            <select class="custom-select custom-select-sm border-left-0" style="max-width: 80px;"
+            <select class="custom-select custom-select-sm border-left-0 w-auto"
                 :value="perPage" @change="onPerPageChange">
                 <option v-for="opt in perPageOptions" :key="opt" :value="opt">{{ opt }}</option>
             </select>

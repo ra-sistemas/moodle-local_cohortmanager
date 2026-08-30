@@ -165,7 +165,6 @@ onMounted(() => {
         class="custom-select d-flex justify-content-between align-items-center"
         @click="toggleDropdown"
         :class="{ 'active': isDropdownOpen }"
-        style="cursor: pointer;"
       >
         <span v-if="selectedOption" class="text-truncate flex-grow-1">
           <i class="fa mr-1" :class="selectedOption.type !== 'system' ? 'fa-book text-info' : 'fa-desktop text-secondary'"></i>
@@ -188,7 +187,7 @@ onMounted(() => {
           />
         </div>
 
-        <div class="dropdown-list" style="max-height: 200px; overflow-y: auto;">
+        <div class="dropdown-list">
           <template v-if="filteredContextList.length > 0">
             <button
               type="button"
@@ -221,24 +220,12 @@ onMounted(() => {
   padding: 0.375rem 0.75rem;
   height: auto;
   min-height: calc(1.5em + 0.75rem + 2px);
+  cursor: pointer;
 }
 
-.context-select-dropdown .custom-select:hover {
-  border-color: #80bdff;
+.dropdown-list {
+  max-height: 200px;
+  overflow-y: auto;
 }
 
-.context-select-dropdown .custom-select.active {
-  border-color: #80bdff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
-
-.dropdown-item.active,
-.dropdown-item:active {
-  background-color: #e9ecef;
-  color: #212529;
-}
-
-.dropdown-item:hover {
-  background-color: #f8f9fa;
-}
 </style>

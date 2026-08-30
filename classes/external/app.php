@@ -144,7 +144,9 @@ class app extends external_api
         return new external_function_parameters(array(
             'query' => new external_value(PARAM_RAW, 'Query string'),
             'page' => new external_value(PARAM_INT, 'page we are fetching the records from', VALUE_DEFAULT, 0),
-            'perpage' => new external_value(PARAM_INT, 'Number of records to fetch', VALUE_DEFAULT, 25)
+            'perpage' => new external_value(PARAM_INT, 'Number of records to fetch', VALUE_DEFAULT, 25),
+            'contexttype' => new external_value(PARAM_ALPHANUMEXT, 'Context type to filter by (system or id)', VALUE_DEFAULT, 'system'),
+            'contextvalue' => new external_value(PARAM_RAW, 'Context value to filter by (category id when type is id)', VALUE_DEFAULT, '')
         ));
     }
 
@@ -158,7 +160,7 @@ class app extends external_api
      * @param int $limitnum
      * @return array
      */
-    public static function search_cohorts_with_total($query, $limitfrom = 0, $limitnum = 25)
+    public static function search_cohorts_with_total($query, $limitfrom = 0, $limitnum = 25, $contexttype = 'system', $contextvalue = '')
     {
         global $CFG;
 
@@ -166,22 +168,34 @@ class app extends external_api
             'query' => $query,
             'page' => $limitfrom,
             'perpage' => $limitnum,
+            'contexttype' => $contexttype,
+            'contextvalue' => $contextvalue,
         ));
 
         $context = context_system::instance();
         self::validate_context($context);
         require_capability('moodle/cohort:view', $context);
 
-        $context = ["contextlevel" => 'system'];
+        // Determine the context to search within. Attend to contexts are filtered either to a
+        // specific course category (self) or, when none/system is selected, to all contexts (all).
+        if ($params['contexttype'] === 'id' && $params['contextvalue'] !== '') {
+            $catcontext = \context_coursecat::instance((int) $params['contextvalue'], MUST_EXIST);
+            self::validate_context($catcontext);
+            $searchcontext = ['contextlevel' => 'coursecat', 'instanceid' => (int) $params['contextvalue']];
+            $includes = 'self';
+        } else {
+            $searchcontext = ['contextlevel' => 'system'];
+            $includes = 'all';
+        }
 
-        $return = core_cohort_external::search_cohorts($params['query'], $context, 'all', $params['page'], $params['perpage']);
+        $return = core_cohort_external::search_cohorts($params['query'], $searchcontext, $includes, $params['page'], $params['perpage']);
 
         foreach($return['cohorts'] as $cohort) {
             $cohort->members = members::count_cohort_members_raw($cohort->id);
             $cohort->enrols = enrols::count_cohort_enrol_instances_raw($cohort->id);
         }
 
-        $total_return = core_cohort_external::search_cohorts($params['query'], $context, 'all', 0, 0);
+        $total_return = core_cohort_external::search_cohorts($params['query'], $searchcontext, $includes, 0, 0);
         $return['total'] = count($total_return['cohorts']);
 
         return $return;

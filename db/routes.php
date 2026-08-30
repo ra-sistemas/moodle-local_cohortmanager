@@ -15,30 +15,29 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * TODO describe file index
+ * Route definition file for Cohort Manager.
+ *
+ * Note: Moodle's Routing subsystem (MDL-81301) does not use a per-component
+ * `db/routes.php` file. Routes are discovered automatically from classes in
+ * the `route` namespace of a component.
+ *
+ * The Cohort Manager routes are defined via the `#[core\router\route]`
+ * attribute in the following classes:
+ *
+ *   - classes/route/api/cohorts.php       (list, detail, create, edit cohort)
+ *   - classes/route/api/roles.php         (user-context roles management)
+ *   - classes/route/api/custom_fields.php (cohort custom fields)
+ *
+ * Each route is exposed under the `api` route group, which resolves to the
+ * URI prefix:
+ *
+ *   /api/rest/v2/local_cohortmanager/...
+ *
+ * See {@link https://moodledev.io/docs/4.5/apis/subsystems/routing}.
  *
  * @package    local_cohortmanager
  * @copyright  2026 Davison Almeida <ramosdealmeidasistemas@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
-require(dirname(__DIR__, 2) . '/config.php');
-
-require_login();
-
-$url = new moodle_url('/local/cohortmanager/', []);
-$PAGE->set_url($url);
-
-$context = context_system::instance();
-$PAGE->set_context($context);
-
-// This page performs cohort management actions; restrict access accordingly.
-require_capability('moodle/cohort:manage', $context);
-
-$PAGE->set_heading($SITE->fullname);
-$PAGE->requires->css(new moodle_url('/local/cohortmanager/amd/build/app.min.css'));
-$PAGE->requires->js_call_amd('local_cohortmanager/app', 'init', ['#cohort-manager-app']);
-echo $OUTPUT->header();
-echo html_writer::div('','',['id' => 'cohort-manager-app']);
-echo $OUTPUT->footer();
+defined('MOODLE_INTERNAL') || die();
